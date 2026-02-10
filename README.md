@@ -28,20 +28,19 @@
 ---
 
 ## 🚀 Key Features (MVP)
-This project implements three core features developed during a high-intensity development sprint, specifically tailored for the modern <b>hooper</b>.
+This project implements three core features developed during a high-intensity development sprint, specifically tailored for the modern **hooper**.
 
-### **1. Basketball Shoe Recommendation**
-* **Definition**: A feature that derives the optimal model for a <b>hooper</b> from an extensive basketball shoe database using 'RAG' (Retrieval-Augmented Generation) technology.
-* **Details**: It cross-references a <b>hooper's</b> foot width, weight, and primary playstyle with technical specifications stored in **ChromaDB** to provide scientifically grounded recommendations.
+### **1. AI Skill Lab (Personalized Skill Trainer)**
+* **Definition**: A structured training generator that creates actionable **'Daily Routine Cards'** based on a **hooper's** specific weaknesses, position, and available time.
+* **Details**: Instead of generic advice, it retrieves specific drills from a vector database and orchestrates them into a complete workout session (Warm-up → Main Drills → Cool-down) in a checklist format to ensure immediate court application.
 
-### **2. Skills & Training**
-* **Definition**: An intelligent coaching feature that diagnoses a <b>hooper's</b> current capabilities and generates a personalized training program to reach their target skill level.
-* **Details**: Based on the reasoning capabilities of **GPT-4o**, it designs position-specific technical drills and daily workout routines for <b>hoopers</b> of all levels.
+### **2. Gear Advisor (Sensory-based Recommendation)**
+* **Definition**: A next-gen recommendation engine that matches basketball shoes based on **'Sensory Preferences'** (e.g., cushion feel, traction sound) and **'Player Archetypes'**.
+* **Details**: It goes beyond basic specs by analyzing subjective inputs (like "I want to move like Kyrie") alongside physical constraints (wide feet, injuries) to find the perfect fit using RAG technology.
 
-### **3. Rulebook Q&A**
-* **Definition**: A knowledge extraction feature that answers complex basketball regulations through real-time search, ensuring every <b>hooper</b> plays by the book.
-* **Details**: It stores actual rulebook data in a vectorized format and provides official grounds for judgment regarding specific in-game situations described by the <b>hooper</b>.
-
+### **3. The Whistle (AI Referee & Rule Dictionary)**
+* **Definition**: An on-court dispute solver that provides authoritative judgments and clear definitions of complex basketball regulations (FIBA/NBA/KBL).
+* **Details**: It acts as a real-time judge by searching vectorized rulebooks to cite specific articles for controversial plays (e.g., traveling vs. gather step) and serves as an instant glossary for technical terms.
 ---
 
 ## 🛠 Tech Stack
