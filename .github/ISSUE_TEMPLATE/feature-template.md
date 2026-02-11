@@ -1,6 +1,6 @@
 ---
-name: 이슈 생성 템플릿
-about: 해당 이슈 템플릿을 사용하여 이슈를 생성하라.
+name: Feature Template
+about: 기능 추가 이슈 템플릿
 title: ''
 labels: ''
 assignees: ''
