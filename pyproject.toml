@@ -36,6 +36,3 @@ select = ["E", "F", "I"]
 
 [tool.ruff.format]
 quote-style = "double"
-
-[tool.uv.sources]
-pypi = { url = "https://pypi.org/simple" }
