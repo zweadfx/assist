@@ -59,7 +59,9 @@ class SkillLabResponse(BaseModel):
         ..., description="A catchy title for the generated routine."
     )
     total_duration_min: int = Field(
-        ..., description="The total estimated duration of the routine in minutes."
+        ...,
+        gt=0,
+        description="The total estimated duration of the routine in minutes.",
     )
     coach_message: str = Field(
         ..., description="A personalized motivational message from the AI coach."
