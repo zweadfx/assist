@@ -1,11 +1,11 @@
 from typing import Generic, Optional, TypeVar
 
-from pydantic.generics import GenericModel
+from pydantic import BaseModel
 
 T = TypeVar("T")
 
 
-class SuccessResponse(GenericModel, Generic[T]):
+class SuccessResponse(BaseModel, Generic[T]):
     """Standard success response wrapper for all APIs."""
 
     success: bool = True
