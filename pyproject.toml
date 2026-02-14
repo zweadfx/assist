@@ -26,10 +26,13 @@ dev = [
 [project.scripts]
 dev = "uvicorn src.main:app --reload --host 0.0.0.0 --port 8000"
 
+[tool.ruff]
+# As per Black standard
+line-length = 88
+
 [tool.ruff.lint]
 # Select linter rules (E: pycodestyle errors, F: Pyflakes, I: isort)
 select = ["E", "F", "I"]
-line-length = 88 # As per Black standard
 
 [tool.ruff.format]
 quote-style = "double"
