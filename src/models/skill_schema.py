@@ -40,7 +40,9 @@ class Drill(BaseModel):
     )
     drill_id: str = Field(..., description="Unique identifier for the drill.")
     name: str = Field(..., description="The name of the drill.")
-    duration_min: int = Field(..., gt=0, description="Duration of the drill in minutes.")
+    duration_min: int = Field(
+        ..., gt=0, description="Duration of the drill in minutes."
+    )
     description: str = Field(
         ..., description="A brief description of how to perform the drill."
     )
@@ -66,4 +68,6 @@ class SkillLabResponse(BaseModel):
     coach_message: str = Field(
         ..., description="A personalized motivational message from the AI coach."
     )
-    drills: List[Drill] = Field(..., description="A list of drills sequenced for the routine.")
+    drills: List[Drill] = Field(
+        ..., description="A list of drills sequenced for the routine."
+    )
