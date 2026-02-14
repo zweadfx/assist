@@ -30,3 +30,38 @@ class SkillLabRequest(BaseModel):
         description="List of available equipment for training.",
         examples=[["ball", "cones"]],
     )
+
+
+class Drill(BaseModel):
+    """Represents a single training drill within a routine."""
+
+    phase: Literal["warmup", "main", "cooldown"] = Field(
+        ..., description="The phase of the workout this drill belongs to."
+    )
+    drill_id: str = Field(..., description="Unique identifier for the drill.")
+    name: str = Field(..., description="The name of the drill.")
+    duration_min: int = Field(..., gt=0, description="Duration of the drill in minutes.")
+    description: str = Field(
+        ..., description="A brief description of how to perform the drill."
+    )
+    coaching_tip: str = Field(
+        ..., description="An AI-generated tip for performing the drill effectively."
+    )
+
+
+class SkillLabResponse(BaseModel):
+    """Response model for the AI Skill Lab endpoint.
+
+    Provides a personalized daily routine card.
+    """
+
+    routine_title: str = Field(
+        ..., description="A catchy title for the generated routine."
+    )
+    total_duration_min: int = Field(
+        ..., description="The total estimated duration of the routine in minutes."
+    )
+    coach_message: str = Field(
+        ..., description="A personalized motivational message from the AI coach."
+    )
+    drills: List[Drill] = Field(..., description="A list of drills sequenced for the routine.")
