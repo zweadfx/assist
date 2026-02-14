@@ -9,7 +9,7 @@ router = APIRouter()
 @router.post("/", response_model=SuccessResponse[SkillLabResponse])
 async def create_skill_routine(
     request: SkillLabRequest,
-) -> SuccessResponse[SkillLabLResponse]:
+) -> SuccessResponse[SkillLabResponse]:
     """
     Receives user's skill profile and returns a personalized training routine.
     (This is a mock response for now)
