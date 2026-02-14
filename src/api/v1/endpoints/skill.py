@@ -1,17 +1,20 @@
 from fastapi import APIRouter
 
+from src.models.response_schema import SuccessResponse
 from src.models.skill_schema import Drill, SkillLabRequest, SkillLabResponse
 
 router = APIRouter()
 
 
-@router.post("/", response_model=SkillLabResponse)
-async def create_skill_routine(request: SkillLabRequest) -> SkillLabResponse:
+@router.post("/", response_model=SuccessResponse[SkillLabResponse])
+async def create_skill_routine(
+    request: SkillLabRequest,
+) -> SuccessResponse[SkillLabLResponse]:
     """
     Receives user's skill profile and returns a personalized training routine.
     (This is a mock response for now)
     """
-    # Mock response based on the output interface specification
+    # Mock response data based on the output interface specification
     mock_drills = [
         Drill(
             phase="warmup",
@@ -39,11 +42,11 @@ async def create_skill_routine(request: SkillLabRequest) -> SkillLabResponse:
         ),
     ]
 
-    mock_response = SkillLabResponse(
+    mock_response_data = SkillLabResponse(
         routine_title=f"Personalized {request.focus_area.capitalize()} Workout",
         total_duration_min=sum(drill.duration_min for drill in mock_drills),
         coach_message=f"Here is a routine to improve your {request.focus_area}. Let's get to work!",
         drills=mock_drills,
     )
 
-    return mock_response
+    return SuccessResponse(data=mock_response_data)
