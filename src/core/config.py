@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     """
 
     OPENAI_API_KEY: str
+    CHROMA_DB_PATH: str = "./data/chroma"
 
     class Config:
         env_file = ".env"

@@ -1,0 +1,57 @@
+from typing import Any, Dict, List
+
+import chromadb
+
+from src.core.config import settings
+from src.core.constants import DRILLS_COLLECTION_NAME
+
+
+class ChromaDBManager:
+    """Manages interactions with the ChromaDB vector store."""
+
+    def __init__(self) -> None:
+        """Initializes the ChromaDB client and collection."""
+        self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+        self.collection = self.client.get_or_create_collection(
+            name=DRILLS_COLLECTION_NAME
+        )
+
+    def add_drills(
+        self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
+    ) -> None:
+        """
+        Adds drill documents and their embeddings to the ChromaDB collection.
+
+        Args:
+            drills: A list of drill documents (dictionaries).
+            embeddings: A list of corresponding embedding vectors.
+        """
+        if not drills:
+            return
+
+        ids = [drill["id"] for drill in drills]
+        documents = [
+            f"Drill: {drill['name']}\nDescription: {drill['description']}"
+            for drill in drills
+        ]
+
+        # Prepare metadata, ensuring all values are simple types for ChromaDB.
+        metadatas = []
+        for drill in drills:
+            metadata = {
+                "name": drill["name"],
+                "category": drill["category"],
+                "difficulty": drill["difficulty"],
+                "phase": drill["phase"],
+                # Join list into a comma-separated string for metadata compatibility
+                "required_equipment": ",".join(drill.get("required_equipment", [])),
+            }
+            metadatas.append(metadata)
+
+        self.collection.add(
+            ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
+        )
+
+
+# Create a single instance for the application to use.
+chroma_manager = ChromaDBManager()
