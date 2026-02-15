@@ -1,0 +1,228 @@
+import json
+import logging
+from typing import List, TypedDict
+
+import openai
+from langchain_core.documents import Document
+from langchain_core.messages import BaseMessage
+from langgraph.graph import END, StateGraph
+from pydantic import BaseModel, Field, ValidationError
+
+from src.services.rag.embedding import client as openai_client
+
+
+class CoachAgentState(TypedDict):
+    """
+    Represents the state of the CoachAgent workflow. It holds all the data
+    that is passed between nodes in the graph.
+    """
+
+    # The conversation history. The last message is the user's request.
+    messages: List[BaseMessage]
+
+    # Information about the user (e.g., skill level, available time, equipment).
+    # This will be extracted from the user's request.
+    user_info: dict
+
+    # A list of relevant drills retrieved from the RAG store.
+    context: List[Document]
+
+    # The final generated "Daily Routine Card" in JSON format.
+    final_response: str
+
+
+class UserDrillPreferences(BaseModel):
+    """
+    A model to hold the structured user preferences for a drill session,
+    extracted from their natural language request.
+    """
+
+    focus_area: str = Field(
+        description=(
+            "The primary basketball skill the user wants to improve, e.g., "
+            "'dribbling', 'shooting'."
+        )
+    )
+    available_time_min: int = Field(
+        description="The total available time for the training session in minutes."
+    )
+    equipment: List[str] = Field(
+        description=(
+            "A list of equipment the user has available, e.g., ['ball', 'hoop', "
+            "'cones']."
+        )
+    )
+
+
+def diagnose_user_state(state: CoachAgentState) -> dict:
+    """
+    Takes the user's natural language request and extracts structured information
+    about their training preferences using an LLM. This forms the first node
+    in our graph.
+    """
+    print("---NODE: Diagnosing User State---")
+    if not state["messages"]:
+        raise ValueError("No messages found in state.")
+    user_message = state["messages"][-1].content
+
+    prompt = f"""
+    You are an expert basketball coach's assistant. A user has sent the
+    following request for a training plan. Your task is to extract the key
+    details needed to create the plan. Please extract the information and format
+    it as a JSON object that strictly follows this Pydantic schema:
+
+    ```json
+    {UserDrillPreferences.model_json_schema()}
+    ```
+
+    User Request: "{user_message}"
+
+    JSON Output:
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+
+        if not response.choices or not response.choices[0].message.content:
+            raise ValueError("Received an invalid or empty response from OpenAI API.")
+
+        content = response.choices[0].message.content
+
+        try:
+            extracted_data = json.loads(content)
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse JSON from LLM response: {e}")
+            raise ValueError(f"LLM returned malformed JSON: {content}") from e
+
+        try:
+            validated_info = UserDrillPreferences.model_validate(extracted_data)
+            print(f"---Extracted User Info: {validated_info.model_dump_json()}---")
+            return {"user_info": validated_info.model_dump()}
+        except ValidationError as e:
+            logging.error(f"Failed to validate extracted data: {e}")
+            raise ValueError(f"LLM response did not match schema: {content}") from e
+
+    except openai.APIError as e:
+        logging.error(f"OpenAI API error during user state diagnosis: {e}")
+        raise ValueError("Failed to diagnose user state due to an API error.") from e
+    except ValueError:
+        # Re-raise the specific ValueError to propagate the detailed message
+        raise
+    except Exception as e:
+        logging.error(f"An unexpected error occurred during diagnosis: {e}")
+        raise ValueError(
+            "An unexpected error occurred while diagnosing user state."
+        ) from e
+
+
+def retrieve_drills(state: CoachAgentState) -> dict:
+    """
+    (Placeholder) Retrieves relevant drills from the vector store based on user_info.
+    This node will perform a RAG search.
+    """
+    print("---NODE: Retrieving Drills---")
+    user_info = state["user_info"]
+    print(f"---Querying for drills related to: {user_info['focus_area']}---")
+
+    # TODO: Implement actual RAG search using ChromaDBManager
+    # For now, return a dummy document
+    dummy_doc = Document(
+        page_content="This is a placeholder for a retrieved basketball drill.",
+        metadata={"name": "Dummy Drill", "category": user_info["focus_area"]},
+    )
+
+    return {"context": [dummy_doc]}
+
+
+def generate_routine(state: CoachAgentState) -> dict:
+    """
+    (Placeholder) Generates the final "Daily Routine Card" based on the
+    retrieved drills and user preferences.
+    """
+    print("---NODE: Generating Routine---")
+    context = state["context"]
+    user_info = state["user_info"]
+
+    if context:
+        main_drill = {
+            "phase": "main",
+            "drill_id": context[0].metadata.get("name", "retrieved-drill-01"),
+            "name": context[0].metadata.get("name", "Retrieved Drill"),
+            "duration_min": 15,
+            "description": context[0].page_content,
+            "coaching_tip": "Maintain good form.",
+        }
+    else:
+        logging.warning("No drills retrieved from RAG. Using a default main drill.")
+        main_drill = {
+            "phase": "main",
+            "drill_id": "default-drill-01",
+            "name": "Practice Fundamentals",
+            "duration_min": 15,
+            "description": (
+                f"No specific drill was found for '{user_info['focus_area']}'. "
+                "Focus on fundamental movements for this skill."
+            ),
+            "coaching_tip": "Consistency is key.",
+        }
+
+    drills_list = [
+        {
+            "phase": "warmup",
+            "drill_id": "dummy-01",
+            "name": "Stretching",
+            "duration_min": 5,
+            "description": "Dynamic stretches to prepare your body.",
+            "coaching_tip": "Focus on fluid movements.",
+        },
+        main_drill,
+        {
+            "phase": "cooldown",
+            "drill_id": "dummy-02",
+            "name": "Cool-down Jog",
+            "duration_min": 5,
+            "description": "Light jogging and static stretches.",
+            "coaching_tip": "Help your body recover.",
+        },
+    ]
+
+    # Calculate total duration from the actual drills in the list
+    total_duration = sum(d.get("duration_min", 0) for d in drills_list)
+    final_duration = total_duration or user_info.get("available_time_min", 25)
+
+    # TODO: When implementing real LLM-based generation, ensure the routine's
+    #  total_duration_min is synchronized with the sum of drill durations.
+    dummy_routine = {
+        "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
+        "total_duration_min": final_duration,
+        "coach_message": (
+            "Here is a personalized routine to help you improve. Let's get to work!"
+        ),
+        "drills": drills_list,
+    }
+
+    final_response_str = json.dumps(dummy_routine, indent=2)
+    print(f"---Generated Response: {final_response_str}---")
+
+    return {"final_response": final_response_str}
+
+
+# Define the graph workflow
+workflow = StateGraph(CoachAgentState)
+
+# Add nodes to the graph
+workflow.add_node("diagnose", diagnose_user_state)
+workflow.add_node("retrieve", retrieve_drills)
+workflow.add_node("generate", generate_routine)
+
+# Define the edges for the graph
+workflow.set_entry_point("diagnose")
+workflow.add_edge("diagnose", "retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_edge("generate", END)
+
+# Compile the graph into a runnable object
+coach_agent_graph = workflow.compile()
