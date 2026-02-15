@@ -3,6 +3,7 @@ from typing import List, TypedDict
 
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
+from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field
 
 from src.services.rag.embedding import client as openai_client
@@ -35,13 +36,19 @@ class UserDrillPreferences(BaseModel):
     """
 
     focus_area: str = Field(
-        description="The primary basketball skill the user wants to improve, e.g., 'dribbling', 'shooting'."
+        description=(
+            "The primary basketball skill the user wants to improve, e.g., "
+            "'dribbling', 'shooting'."
+        )
     )
     available_time_min: int = Field(
         description="The total available time for the training session in minutes."
     )
     equipment: List[str] = Field(
-        description="A list of equipment the user has available, e.g., ['ball', 'hoop', 'cones']."
+        description=(
+            "A list of equipment the user has available, e.g., ['ball', 'hoop', "
+            "'cones']."
+        )
     )
 
 
@@ -59,9 +66,10 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
 
     # Create the prompt for the LLM
     prompt = f"""
-    You are an expert basketball coach's assistant. A user has sent the following request for a training plan.
-    Your task is to extract the key details needed to create the plan.
-    Please extract the information and format it as a JSON object that strictly follows this Pydantic schema:
+    You are an expert basketball coach's assistant. A user has sent the
+    following request for a training plan. Your task is to extract the key
+    details needed to create the plan. Please extract the information and format
+    it as a JSON object that strictly follows this Pydantic schema:
 
     ```json
     {UserDrillPreferences.model_json_schema()}
@@ -121,7 +129,9 @@ def generate_routine(state: CoachAgentState) -> dict:
     dummy_routine = {
         "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
         "total_duration_min": user_info["available_time_min"],
-        "coach_message": "Here is a personalized routine to help you improve. Let's get to work!",
+        "coach_message": (
+            "Here is a personalized routine to help you improve. Let's get to work!"
+        ),
         "drills": [
             {
                 "phase": "warmup",
@@ -154,3 +164,21 @@ def generate_routine(state: CoachAgentState) -> dict:
     print(f"---Generated Response: {final_response_str}---")
 
     return {"final_response": final_response_str}
+
+
+# Define the graph workflow
+workflow = StateGraph(CoachAgentState)
+
+# Add nodes to the graph
+workflow.add_node("diagnose", diagnose_user_state)
+workflow.add_node("retrieve", retrieve_drills)
+workflow.add_node("generate", generate_routine)
+
+# Define the edges for the graph
+workflow.set_entry_point("diagnose")
+workflow.add_edge("diagnose", "retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_edge("generate", END)
+
+# Compile the graph into a runnable object
+coach_agent_graph = workflow.compile()
