@@ -41,5 +41,12 @@ async def create_skill_routine(
             )
 
     except Exception as e:
-        # Catch any exceptions from the agent workflow and return a proper error
-        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+        # If the exception is already an HTTPException, re-raise it to preserve
+        # the specific status code and detail.
+        if isinstance(e, HTTPException):
+            raise
+        # For any other unexpected errors from the agent workflow, wrap them
+        # in a generic 500 error.
+        raise HTTPException(
+            status_code=500, detail=f"An internal error occurred: {e}"
+        ) from e
