@@ -7,6 +7,7 @@ from src.api.v1.router import api_router
 from src.core.constants import DRILLS_FILE_PATH
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import generate_embeddings
+from src.services.rag.utils import format_drill_document
 from src.utils.file_loader import load_json_data
 
 # Configure logging
@@ -28,10 +29,7 @@ async def lifespan(app: FastAPI):
             drills = load_json_data(DRILLS_FILE_PATH)
             logger.info(f"Loaded {len(drills)} drills from file.")
 
-            texts_to_embed = [
-                f"Drill: {drill['name']}\nDescription: {drill['description']}"
-                for drill in drills
-            ]
+            texts_to_embed = [format_drill_document(drill) for drill in drills]
             embeddings = generate_embeddings(texts_to_embed)
             logger.info(f"Generated {len(embeddings)} embeddings.")
 

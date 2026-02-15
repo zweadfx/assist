@@ -4,6 +4,7 @@ import chromadb
 
 from src.core.config import settings
 from src.core.constants import DRILLS_COLLECTION_NAME
+from src.services.rag.utils import format_drill_document
 
 
 class ChromaDBManager:
@@ -39,10 +40,7 @@ class ChromaDBManager:
             return
 
         ids = [drill["id"] for drill in drills]
-        documents = [
-            f"Drill: {drill['name']}\nDescription: {drill['description']}"
-            for drill in drills
-        ]
+        documents = [format_drill_document(drill) for drill in drills]
 
         # Prepare metadata, ensuring all values are simple types for ChromaDB.
         metadatas = []
