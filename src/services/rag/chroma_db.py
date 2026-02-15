@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import chromadb
 
@@ -60,7 +60,10 @@ class ChromaDBManager:
         )
 
     def query_drills(
-        self, query_texts: List[str], n_results: int = 3
+        self,
+        query_texts: List[str],
+        n_results: int = 3,
+        where: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, List[Any]]:
         """
         Queries the drills collection for relevant documents.
@@ -68,11 +71,14 @@ class ChromaDBManager:
         Args:
             query_texts: A list of query texts to search for.
             n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
 
         Returns:
             A dictionary containing the query results.
         """
-        results = self.collection.query(query_texts=query_texts, n_results=n_results)
+        results = self.collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
         return results
 
 
