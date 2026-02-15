@@ -25,7 +25,16 @@ class ChromaDBManager:
         Args:
             drills: A list of drill documents (dictionaries).
             embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of drills and embeddings do not match.
         """
+        if len(drills) != len(embeddings):
+            raise ValueError(
+                f"The number of drills ({len(drills)}) must match the number of "
+                f"embeddings ({len(embeddings)})."
+            )
+
         if not drills:
             return
 
