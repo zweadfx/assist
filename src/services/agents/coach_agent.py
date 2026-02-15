@@ -143,8 +143,31 @@ def generate_routine(state: CoachAgentState) -> dict:
     context = state["context"]
     user_info = state["user_info"]
 
+    if context:
+        main_drill = {
+            "phase": "main",
+            "drill_id": context[0].metadata.get("name", "retrieved-drill-01"),
+            "name": context[0].metadata.get("name", "Retrieved Drill"),
+            "duration_min": 15,
+            "description": context[0].page_content,
+            "coaching_tip": "Maintain good form.",
+        }
+    else:
+        logging.warning("No drills retrieved from RAG. Using a default main drill.")
+        main_drill = {
+            "phase": "main",
+            "drill_id": "default-drill-01",
+            "name": "Practice Fundamentals",
+            "duration_min": 15,
+            "description": (
+                f"No specific drill was found for '{user_info['focus_area']}'. "
+                "Focus on fundamental movements for this skill."
+            ),
+            "coaching_tip": "Consistency is key.",
+        }
+
     # TODO: Implement LLM call to generate a structured routine
-    # For now, return a dummy JSON string
+    # For now, build a dummy JSON string
     dummy_routine = {
         "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
         "total_duration_min": user_info["available_time_min"],
@@ -160,14 +183,7 @@ def generate_routine(state: CoachAgentState) -> dict:
                 "description": "Dynamic stretches to prepare your body.",
                 "coaching_tip": "Focus on fluid movements.",
             },
-            {
-                "phase": "main",
-                "drill_id": context[0].metadata["name"],
-                "name": context[0].metadata["name"],
-                "duration_min": 15,
-                "description": context[0].page_content,
-                "coaching_tip": "Maintain good form.",
-            },
+            main_drill,  # Add the dynamically created main drill
             {
                 "phase": "cooldown",
                 "drill_id": "dummy-02",
