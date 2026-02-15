@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+
+from fastapi import APIRouter, HTTPException
+from langchain_core.messages import HumanMessage
 
 from src.models.response_schema import SuccessResponse
-from src.models.skill_schema import Drill, SkillLabRequest, SkillLabResponse
+from src.models.skill_schema import SkillLabRequest, SkillLabResponse
+from src.services.agents.coach_agent import coach_agent_graph
 
 router = APIRouter()
 
@@ -11,56 +14,33 @@ async def create_skill_routine(
     request: SkillLabRequest,
 ) -> SuccessResponse[SkillLabResponse]:
     """
-    Receives user's skill profile and returns a personalized training routine.
-    (This is a mock response for now)
+    Receives user's skill profile and returns a personalized training routine
+    by invoking the CoachAgent.
     """
-    # Mock response data based on the output interface specification
-    mock_drills = [
-        Drill(
-            phase="warmup",
-            drill_id="drill-001",
-            name="Mikan Drill",
-            duration_min=5,
-            description="Classic drill for practicing layups and touch around the rim.",
-            coaching_tip=(
-                "Focus on using the backboard and keeping your eyes on the target."
-            ),
-        ),
-        Drill(
-            phase="main",
-            drill_id="drill-002",
-            name="Stationary Dribbling Series",
-            duration_min=15,
-            description=(
-                "A series of stationary dribbling exercises: crossovers, between the "
-                "legs, behind the back."
-            ),
-            coaching_tip=(
-                "Keep your head up to see the court and use your fingertips to "
-                "control the ball."
-            ),
-        ),
-        Drill(
-            phase="cooldown",
-            drill_id="drill-003",
-            name="Static Stretching",
-            duration_min=5,
-            description=(
-                "Hold various stretches for major muscle groups (quads, "
-                "hamstrings, calves, shoulders)."
-            ),
-            coaching_tip="Hold each stretch for at least 30 seconds without bouncing.",
-        ),
-    ]
+    try:
+        # The agent expects a list of messages, but our primary input is the
+        # structured user_info. We can pass a synthetic message for context.
+        initial_state = {
+            "messages": [
+                HumanMessage(
+                    content=f"Generate a training routine for {request.focus_area}"
+                )
+            ],
+            "user_info": request.model_dump(),
+        }
 
-    mock_response_data = SkillLabResponse(
-        routine_title=f"Personalized {request.focus_area.capitalize()} Workout",
-        total_duration_min=sum(drill.duration_min for drill in mock_drills),
-        coach_message=(
-            f"Here is a routine to improve your {request.focus_area}. Let's get to "
-            "work!"
-        ),
-        drills=mock_drills,
-    )
+        # Invoke the agent graph
+        final_state = coach_agent_graph.invoke(initial_state)
 
-    return SuccessResponse(data=mock_response_data)
+        # The agent's final response is a JSON string, parse and validate it
+        if final_response_str := final_state.get("final_response"):
+            response_data = SkillLabResponse.model_validate_json(final_response_str)
+            return SuccessResponse(data=response_data)
+        else:
+            raise HTTPException(
+                status_code=500, detail="Agent failed to produce a final response."
+            )
+
+    except Exception as e:
+        # Catch any exceptions from the agent workflow and return a proper error
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")

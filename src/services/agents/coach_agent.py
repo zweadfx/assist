@@ -57,66 +57,18 @@ class UserDrillPreferences(BaseModel):
 
 def diagnose_user_state(state: CoachAgentState) -> dict:
     """
-    Takes the user's natural language request and extracts structured information
-    about their training preferences using an LLM. This forms the first node
-    in our graph.
+    Validates that the user_info is present in the state. In a more complex
+    scenario, this node could be used to further refine or validate the user
+    profile. For now, it's a pass-through and logging step.
     """
     print("---NODE: Diagnosing User State---")
-    if not state["messages"]:
-        raise ValueError("No messages found in state.")
-    user_message = state["messages"][-1].content
+    if not state.get("user_info"):
+        raise ValueError("User info is missing from the state.")
 
-    prompt = f"""
-    You are an expert basketball coach's assistant. A user has sent the
-    following request for a training plan. Your task is to extract the key
-    details needed to create the plan. Please extract the information and format
-    it as a JSON object that strictly follows this Pydantic schema:
-
-    ```json
-    {UserDrillPreferences.model_json_schema()}
-    ```
-
-    User Request: "{user_message}"
-
-    JSON Output:
-    """
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-        )
-
-        if not response.choices or not response.choices[0].message.content:
-            raise ValueError("Received an invalid or empty response from OpenAI API.")
-
-        content = response.choices[0].message.content
-
-        try:
-            extracted_data = json.loads(content)
-        except json.JSONDecodeError as e:
-            logging.error(f"Failed to parse JSON from LLM response: {e}")
-            raise ValueError(f"LLM returned malformed JSON: {content}") from e
-
-        try:
-            validated_info = UserDrillPreferences.model_validate(extracted_data)
-            print(f"---Extracted User Info: {validated_info.model_dump_json()}---")
-            return {"user_info": validated_info.model_dump()}
-        except ValidationError as e:
-            logging.error(f"Failed to validate extracted data: {e}")
-            raise ValueError(f"LLM response did not match schema: {content}") from e
-
-    except openai.APIError as e:
-        logging.error(f"OpenAI API error during user state diagnosis: {e}")
-        raise ValueError("Failed to diagnose user state due to an API error.") from e
-    except ValueError:
-        # Re-raise the specific ValueError to propagate the detailed message
-        raise
-    except Exception as e:
-        logging.error(f"An unexpected error occurred during diagnosis: {e}")
-        raise ValueError(
-            "An unexpected error occurred while diagnosing user state."
-        ) from e
+    print(f"---User Info: {state['user_info']}---")
+    # The user_info is already structured and passed in the initial call
+    # so we just pass it along to the next node.
+    return {"user_info": state["user_info"]}
 
 
 def retrieve_drills(state: CoachAgentState) -> dict:
