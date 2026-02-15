@@ -1,0 +1,35 @@
+[
+  {
+    "id": "drill-001",
+    "name": "Mikan Drill",
+    "category": "shooting",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["ball", "hoop"],
+    "phase": "warmup",
+    "description": "A classic drill for practicing layups and touch around the rim.",
+    "tags": ["finishing", "layups", "touch"]
+  },
+  {
+    "id": "drill-002",
+    "name": "Stationary Dribbling Series",
+    "category": "dribble",
+    "difficulty": "beginner",
+    "duration_min": 10,
+    "required_equipment": ["ball"],
+    "phase": "main",
+    "description": "A series of stationary dribbling exercises: crossovers, between the legs, behind the back.",
+    "tags": ["ball-handling", "control"]
+  },
+  {
+    "id": "drill-003",
+    "name": "Catch and Shoot",
+    "category": "shooting",
+    "difficulty": "intermediate",
+    "duration_min": 15,
+    "required_equipment": ["ball", "hoop"],
+    "phase": "main",
+    "description": "Practice catching a pass and immediately going into a shooting motion.",
+    "tags": ["shooting", "form", "off-ball"]
+  }
+]
