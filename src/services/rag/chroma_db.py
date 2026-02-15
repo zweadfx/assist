@@ -59,6 +59,22 @@ class ChromaDBManager:
             ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
         )
 
+    def query_drills(
+        self, query_texts: List[str], n_results: int = 3
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the drills collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        results = self.collection.query(query_texts=query_texts, n_results=n_results)
+        return results
+
 
 # Create a single instance for the application to use.
 chroma_manager = ChromaDBManager()
