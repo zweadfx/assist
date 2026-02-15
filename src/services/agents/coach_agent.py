@@ -1,10 +1,12 @@
 import json
+import logging
 from typing import List, TypedDict
 
+import openai
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from src.services.rag.embedding import client as openai_client
 
@@ -59,12 +61,10 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
     in our graph.
     """
     print("---NODE: Diagnosing User State---")
-    # Get the latest user message
     if not state["messages"]:
         raise ValueError("No messages found in state.")
     user_message = state["messages"][-1].content
 
-    # Create the prompt for the LLM
     prompt = f"""
     You are an expert basketball coach's assistant. A user has sent the
     following request for a training plan. Your task is to extract the key
@@ -79,21 +79,40 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
 
     JSON Output:
     """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
 
-    # Use the OpenAI client to get structured output
-    response = openai_client.chat.completions.create(
-        # Using a model that is good at following instructions and JSON formatting
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    extracted_data = json.loads(response.choices[0].message.content)
+        if not response.choices or not response.choices[0].message.content:
+            raise ValueError("Received an invalid or empty response from OpenAI API.")
 
-    # Validate the data with the Pydantic model
-    validated_info = UserDrillPreferences.model_validate(extracted_data)
-    print(f"---Extracted User Info: {validated_info.model_dump_json()}---")
+        content = response.choices[0].message.content
 
-    return {"user_info": validated_info.model_dump()}
+        try:
+            extracted_data = json.loads(content)
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse JSON from LLM response: {e}")
+            raise ValueError(f"LLM returned malformed JSON: {content}") from e
+
+        try:
+            validated_info = UserDrillPreferences.model_validate(extracted_data)
+            print(f"---Extracted User Info: {validated_info.model_dump_json()}---")
+            return {"user_info": validated_info.model_dump()}
+        except ValidationError as e:
+            logging.error(f"Failed to validate extracted data: {e}")
+            raise ValueError(f"LLM response did not match schema: {content}") from e
+
+    except openai.APIError as e:
+        logging.error(f"OpenAI API error during user state diagnosis: {e}")
+        raise ValueError("Failed to diagnose user state due to an API error.") from e
+    except Exception as e:
+        logging.error(f"An unexpected error occurred during diagnosis: {e}")
+        raise ValueError(
+            "An unexpected error occurred while diagnosing user state."
+        ) from e
 
 
 def retrieve_drills(state: CoachAgentState) -> dict:
