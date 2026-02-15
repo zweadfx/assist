@@ -74,34 +74,51 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
 
 def retrieve_drills(state: CoachAgentState) -> dict:
     """
-    Retrieves relevant drills from the vector store based on user_info.
-    This node performs a RAG search.
+    Retrieves relevant drills from the vector store based on user_info. This
+    node performs a semantic search and then post-filters the results based
+    on the user's available equipment.
     """
     print("---NODE: Retrieving Drills---")
     user_info = state["user_info"]
     focus_area = user_info.get("focus_area", "")
+    user_equipment = set(user_info.get("equipment", []))
     query_text = f"A basketball drill focusing on improving {focus_area} skills."
     print(f"---Querying for drills related to: {focus_area}---")
 
-    retrieved_docs = []
+    unfiltered_docs = []
     try:
-        # TODO: Implement metadata filtering for equipment
-        results = chroma_manager.query_drills(query_texts=[query_text], n_results=3)
+        # Retrieve a larger pool of candidates for filtering
+        results = chroma_manager.query_drills(query_texts=[query_text], n_results=10)
         if results and results.get("documents"):
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
             for i, doc_content in enumerate(documents):
                 doc = Document(page_content=doc_content, metadata=metadatas[i])
-                retrieved_docs.append(doc)
-            print(f"---Retrieved {len(retrieved_docs)} drills.---")
+                unfiltered_docs.append(doc)
+            print(f"---Retrieved {len(unfiltered_docs)} candidate drills.---")
         else:
-            print("---No drills retrieved.---")
+            print("---No drills retrieved from DB.---")
     except Exception as e:
         logging.error(f"An error occurred during drill retrieval: {e}")
-        # Gracefully handle error by returning an empty context
         print("---Error during retrieval, returning empty context.---")
+        return {"context": []}
 
-    return {"context": retrieved_docs}
+    # Post-filter the results based on available equipment
+    filtered_docs = []
+    for doc in unfiltered_docs:
+        required_equipment_str = doc.metadata.get("required_equipment", "")
+        if (
+            not required_equipment_str
+        ):  # If no equipment is required, it's a valid drill
+            filtered_docs.append(doc)
+            continue
+
+        required_equipment = set(required_equipment_str.split(","))
+        if required_equipment.issubset(user_equipment):
+            filtered_docs.append(doc)
+
+    print(f"---Filtered down to {len(filtered_docs)} drills based on equipment.---")
+    return {"context": filtered_docs}
 
 
 class DailyRoutineCard(BaseModel):
