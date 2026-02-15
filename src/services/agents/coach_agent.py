@@ -86,3 +86,71 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
     print(f"---Extracted User Info: {validated_info.model_dump_json()}---")
 
     return {"user_info": validated_info.model_dump()}
+
+
+def retrieve_drills(state: CoachAgentState) -> dict:
+    """
+    (Placeholder) Retrieves relevant drills from the vector store based on user_info.
+    This node will perform a RAG search.
+    """
+    print("---NODE: Retrieving Drills---")
+    user_info = state["user_info"]
+    print(f"---Querying for drills related to: {user_info['focus_area']}---")
+
+    # TODO: Implement actual RAG search using ChromaDBManager
+    # For now, return a dummy document
+    dummy_doc = Document(
+        page_content="This is a placeholder for a retrieved basketball drill.",
+        metadata={"name": "Dummy Drill", "category": user_info["focus_area"]},
+    )
+
+    return {"context": [dummy_doc]}
+
+
+def generate_routine(state: CoachAgentState) -> dict:
+    """
+    (Placeholder) Generates the final "Daily Routine Card" based on the
+    retrieved drills and user preferences.
+    """
+    print("---NODE: Generating Routine---")
+    context = state["context"]
+    user_info = state["user_info"]
+
+    # TODO: Implement LLM call to generate a structured routine
+    # For now, return a dummy JSON string
+    dummy_routine = {
+        "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
+        "total_duration_min": user_info["available_time_min"],
+        "coach_message": "Here is a personalized routine to help you improve. Let's get to work!",
+        "drills": [
+            {
+                "phase": "warmup",
+                "drill_id": "dummy-01",
+                "name": "Stretching",
+                "duration_min": 5,
+                "description": "Dynamic stretches to prepare your body.",
+                "coaching_tip": "Focus on fluid movements.",
+            },
+            {
+                "phase": "main",
+                "drill_id": context[0].metadata["name"],
+                "name": context[0].metadata["name"],
+                "duration_min": 15,
+                "description": context[0].page_content,
+                "coaching_tip": "Maintain good form.",
+            },
+            {
+                "phase": "cooldown",
+                "drill_id": "dummy-02",
+                "name": "Cool-down Jog",
+                "duration_min": 5,
+                "description": "Light jogging and static stretches.",
+                "coaching_tip": "Help your body recover.",
+            },
+        ],
+    }
+
+    final_response_str = json.dumps(dummy_routine, indent=2)
+    print(f"---Generated Response: {final_response_str}---")
+
+    return {"final_response": final_response_str}
