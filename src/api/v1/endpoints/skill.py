@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
 
@@ -28,8 +30,8 @@ async def create_skill_routine(
             "user_info": request.model_dump(),
         }
 
-        # Invoke the agent graph
-        final_state = coach_agent_graph.invoke(initial_state)
+        # Invoke the agent graph in a separate thread to avoid blocking the event loop
+        final_state = await asyncio.to_thread(coach_agent_graph.invoke, initial_state)
 
         # The agent's final response is a JSON string, parse and validate it
         if final_response_str := final_state.get("final_response"):

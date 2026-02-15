@@ -80,28 +80,26 @@ def retrieve_drills(state: CoachAgentState) -> dict:
     print("---NODE: Retrieving Drills---")
     user_info = state["user_info"]
     focus_area = user_info.get("focus_area", "")
-
-    # 1. Transform user input into a query
     query_text = f"A basketball drill focusing on improving {focus_area} skills."
     print(f"---Querying for drills related to: {focus_area}---")
 
-    # 2. Call the search function
-    # TODO: Implement metadata filtering for equipment
-    results = chroma_manager.query_drills(query_texts=[query_text], n_results=3)
-
-    # 3. Process the results into Document objects
     retrieved_docs = []
-    if results and results.get("documents"):
-        # The result is a list containing one list of documents for our single query
-        documents = results["documents"][0]
-        metadatas = results["metadatas"][0]
-
-        for i, doc_content in enumerate(documents):
-            doc = Document(page_content=doc_content, metadata=metadatas[i])
-            retrieved_docs.append(doc)
-        print(f"---Retrieved {len(retrieved_docs)} drills.---")
-    else:
-        print("---No drills retrieved.---")
+    try:
+        # TODO: Implement metadata filtering for equipment
+        results = chroma_manager.query_drills(query_texts=[query_text], n_results=3)
+        if results and results.get("documents"):
+            documents = results["documents"][0]
+            metadatas = results["metadatas"][0]
+            for i, doc_content in enumerate(documents):
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                retrieved_docs.append(doc)
+            print(f"---Retrieved {len(retrieved_docs)} drills.---")
+        else:
+            print("---No drills retrieved.---")
+    except Exception as e:
+        logging.error(f"An error occurred during drill retrieval: {e}")
+        # Gracefully handle error by returning an empty context
+        print("---Error during retrieval, returning empty context.---")
 
     return {"context": retrieved_docs}
 
@@ -113,7 +111,8 @@ class DailyRoutineCard(BaseModel):
         description="A catchy and relevant title for the routine."
     )
     total_duration_min: int = Field(
-        description="The total calculated duration for the entire routine in minutes."
+        description="The total calculated duration for the entire routine in minutes.",
+        gt=0,
     )
     coach_message: str = Field(
         description="A personalized, encouraging message from the AI coach."
