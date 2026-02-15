@@ -108,6 +108,9 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
     except openai.APIError as e:
         logging.error(f"OpenAI API error during user state diagnosis: {e}")
         raise ValueError("Failed to diagnose user state due to an API error.") from e
+    except ValueError:
+        # Re-raise the specific ValueError to propagate the detailed message
+        raise
     except Exception as e:
         logging.error(f"An unexpected error occurred during diagnosis: {e}")
         raise ValueError(
