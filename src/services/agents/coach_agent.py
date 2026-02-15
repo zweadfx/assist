@@ -1,9 +1,11 @@
+import json
 from typing import List, TypedDict
 
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
-import json
+from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field
+
 from src.services.rag.embedding import client as openai_client
 
 
@@ -128,8 +130,7 @@ def generate_routine(state: CoachAgentState) -> dict:
         "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
         "total_duration_min": user_info["available_time_min"],
         "coach_message": (
-            "Here is a personalized routine to help you improve. "
-            "Let's get to work!"
+            "Here is a personalized routine to help you improve. Let's get to work!"
         ),
         "drills": [
             {
@@ -163,3 +164,21 @@ def generate_routine(state: CoachAgentState) -> dict:
     print(f"---Generated Response: {final_response_str}---")
 
     return {"final_response": final_response_str}
+
+
+# Define the graph workflow
+workflow = StateGraph(CoachAgentState)
+
+# Add nodes to the graph
+workflow.add_node("diagnose", diagnose_user_state)
+workflow.add_node("retrieve", retrieve_drills)
+workflow.add_node("generate", generate_routine)
+
+# Define the edges for the graph
+workflow.set_entry_point("diagnose")
+workflow.add_edge("diagnose", "retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_edge("generate", END)
+
+# Compile the graph into a runnable object
+coach_agent_graph = workflow.compile()
