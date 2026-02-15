@@ -8,6 +8,7 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field, ValidationError
 
+from src.models.skill_schema import Drill
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import client as openai_client
 
@@ -103,21 +104,6 @@ def retrieve_drills(state: CoachAgentState) -> dict:
         print("---No drills retrieved.---")
 
     return {"context": retrieved_docs}
-
-
-class Drill(BaseModel):
-    """Data model for a single drill within a routine."""
-
-    phase: str = Field(
-        description="The phase of the workout, e.g., 'warmup', 'main', 'cooldown'."
-    )
-    drill_id: str = Field(description="A unique identifier for the drill.")
-    name: str = Field(description="The name of the drill.")
-    duration_min: int = Field(description="The duration of the drill in minutes.")
-    description: str = Field(
-        description="A brief description of how to perform the drill."
-    )
-    coaching_tip: str = Field(description="A personalized coaching tip for the user.")
 
 
 class DailyRoutineCard(BaseModel):
