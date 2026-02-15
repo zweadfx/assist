@@ -18,37 +18,46 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """
     Handles application startup and shutdown events.
+    On startup, it initializes the vector database if it's empty.
     """
     logger.info("Application startup...")
     try:
-        # Check if the drills collection is empty
         if chroma_manager.collection.count() == 0:
             logger.info("Drills collection is empty. Initializing...")
 
-            # 1. Load drill data from the source file
             drills = load_json_data(DRILLS_FILE_PATH)
             logger.info(f"Loaded {len(drills)} drills from file.")
 
-            # 2. Prepare texts for embedding
             texts_to_embed = [
                 f"Drill: {drill['name']}\nDescription: {drill['description']}"
                 for drill in drills
             ]
-
-            # 3. Generate embeddings
             embeddings = generate_embeddings(texts_to_embed)
-            logger.info("Generated embeddings for all drills.")
+            logger.info(f"Generated {len(embeddings)} embeddings.")
 
-            # 4. Add drills to ChromaDB
+            # Validate that the number of drills and embeddings match
+            if len(drills) != len(embeddings):
+                error_msg = (
+                    f"Mismatch between number of drills ({len(drills)}) and "
+                    f"embeddings ({len(embeddings)}). Aborting startup."
+                )
+                logger.critical(error_msg)
+                raise ValueError(error_msg)
+
             chroma_manager.add_drills(drills=drills, embeddings=embeddings)
             logger.info("Successfully added drills to ChromaDB.")
         else:
             logger.info("Drills collection is already initialized.")
+
     except Exception as e:
-        logger.error(f"An error occurred during startup: {e}", exc_info=True)
+        logger.critical(
+            f"A critical error occurred during startup data initialization: {e}",
+            exc_info=True,
+        )
+        # Re-raise the exception to prevent the app from starting in a broken state
+        raise
 
     yield
-    # Cleanup logic can go here if needed
     logger.info("Application shutdown.")
 
 
