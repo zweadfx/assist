@@ -169,33 +169,39 @@ def generate_routine(state: CoachAgentState) -> dict:
             "coaching_tip": "Consistency is key.",
         }
 
-    # TODO: Implement LLM call to generate a structured routine
-    # For now, build a dummy JSON string
+    drills_list = [
+        {
+            "phase": "warmup",
+            "drill_id": "dummy-01",
+            "name": "Stretching",
+            "duration_min": 5,
+            "description": "Dynamic stretches to prepare your body.",
+            "coaching_tip": "Focus on fluid movements.",
+        },
+        main_drill,
+        {
+            "phase": "cooldown",
+            "drill_id": "dummy-02",
+            "name": "Cool-down Jog",
+            "duration_min": 5,
+            "description": "Light jogging and static stretches.",
+            "coaching_tip": "Help your body recover.",
+        },
+    ]
+
+    # Calculate total duration from the actual drills in the list
+    total_duration = sum(d.get("duration_min", 0) for d in drills_list)
+    final_duration = total_duration or user_info.get("available_time_min", 25)
+
+    # TODO: When implementing real LLM-based generation, ensure the routine's
+    #  total_duration_min is synchronized with the sum of drill durations.
     dummy_routine = {
         "routine_title": f"Personalized {user_info['focus_area'].title()} Routine",
-        "total_duration_min": user_info["available_time_min"],
+        "total_duration_min": final_duration,
         "coach_message": (
             "Here is a personalized routine to help you improve. Let's get to work!"
         ),
-        "drills": [
-            {
-                "phase": "warmup",
-                "drill_id": "dummy-01",
-                "name": "Stretching",
-                "duration_min": 5,
-                "description": "Dynamic stretches to prepare your body.",
-                "coaching_tip": "Focus on fluid movements.",
-            },
-            main_drill,  # Add the dynamically created main drill
-            {
-                "phase": "cooldown",
-                "drill_id": "dummy-02",
-                "name": "Cool-down Jog",
-                "duration_min": 5,
-                "description": "Light jogging and static stretches.",
-                "coaching_tip": "Help your body recover.",
-            },
-        ],
+        "drills": drills_list,
     }
 
     final_response_str = json.dumps(dummy_routine, indent=2)
