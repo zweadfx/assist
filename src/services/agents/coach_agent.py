@@ -141,6 +141,9 @@ def generate_routine(state: CoachAgentState) -> dict:
     if not context_str:
         context_str = "No specific drills found in the database."
 
+    # Prepare the JSON schema for the prompt to ensure valid JSON output.
+    schema_json = json.dumps(DailyRoutineCard.model_json_schema(), indent=2)
+
     prompt = f"""
     You are an expert basketball coach. Your task is to create a personalized
     training routine for a user based on their preferences and a list of
@@ -167,7 +170,7 @@ def generate_routine(state: CoachAgentState) -> dict:
        Pydantic schema:
 
     ```json
-    {DailyRoutineCard.model_json_schema()}
+    {schema_json}
     ```
 
     JSON Output:
