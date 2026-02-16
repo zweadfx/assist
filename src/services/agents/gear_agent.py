@@ -106,9 +106,9 @@ def generate_recommendations(state: GearAgentState) -> dict:
     user_info = state["user_info"]
     context_docs = state["context"]
 
-    # Separate shoes and players from context
-    shoe_docs = [doc for doc in context_docs if "brand" in doc.metadata]
-    player_docs = [doc for doc in context_docs if "position" in doc.metadata and "brand" not in doc.metadata]
+    # Separate shoes and players from context using explicit doc_type
+    shoe_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "shoe"]
+    player_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "player"]
 
     # Prepare shoes context string
     shoes_context_str = "\n\n".join(

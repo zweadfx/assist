@@ -134,6 +134,8 @@ class ChromaDBManager:
         metadatas = []
         for shoe in shoes:
             metadata = {
+                "doc_type": "shoe",
+                "shoe_id": shoe["id"],
                 "brand": shoe["brand"],
                 "model_name": shoe["model_name"],
                 "price_krw": shoe["price_krw"],
@@ -205,6 +207,7 @@ class ChromaDBManager:
         metadatas = []
         for player in players:
             metadata = {
+                "doc_type": "player",
                 "name": player["name"],
                 "position": player["position"],
                 # Join lists into comma-separated strings for metadata compatibility
