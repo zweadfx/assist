@@ -9,8 +9,8 @@ from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
 from src.models.gear_schema import GearAdvisorResponse
-from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import client as openai_client
+from src.services.rag.shoe_retrieval import shoe_retriever
 
 
 class GearAgentState(TypedDict):
@@ -54,82 +54,44 @@ def analyze_preferences(state: GearAgentState) -> dict:
 
 def retrieve_shoes_and_players(state: GearAgentState) -> dict:
     """
-    Retrieves relevant shoes and player archetypes from the vector store
-    based on user_info. This node performs semantic search and post-filters
-    the results based on the user's budget.
+    Retrieves relevant shoes and player archetypes using the ShoeRetriever.
+    Uses cross-analysis search combining sensory preferences and player archetype.
     """
     print("---NODE: Retrieving Shoes and Players---")
     user_info = state["user_info"]
     sensory_preferences = user_info.get("sensory_preferences", [])
     player_archetype = user_info.get("player_archetype")
     budget_max_krw = user_info.get("budget_max_krw")
+    position = user_info.get("position")
 
-    # Build query from sensory preferences
-    sensory_query = " ".join(sensory_preferences)
-    print(f"---Querying for shoes with sensory preferences: {sensory_query}---")
+    print(
+        f"---Search params: sensory={sensory_preferences}, "
+        f"player={player_archetype}, budget={budget_max_krw}, position={position}---"
+    )
 
-    context_docs = []
-
-    # Query players collection if archetype specified
-    if player_archetype:
-        print(f"---Querying for player archetype: {player_archetype}---")
-        try:
-            players_results = chroma_manager.query_players(
-                query_texts=[player_archetype], n_results=3
-            )
-            if players_results and players_results.get("documents"):
-                documents = players_results["documents"][0]
-                metadatas = players_results["metadatas"][0]
-                for i, doc_content in enumerate(documents):
-                    doc = Document(page_content=doc_content, metadata=metadatas[i])
-                    context_docs.append(doc)
-                print(f"---Retrieved {len(documents)} player archetypes.---")
-        except Exception as e:
-            logging.error(f"An error occurred during player retrieval: {e}")
-            print("---Error during player retrieval, continuing with shoes only.---")
-
-    # Query shoes collection
     try:
-        # Retrieve a larger pool of candidates for filtering
-        shoes_results = chroma_manager.query_shoes(
-            query_texts=[sensory_query], n_results=15
+        # Use ShoeRetriever's cross-analysis search
+        search_results = shoe_retriever.cross_analysis_search(
+            sensory_keywords=sensory_preferences,
+            player_archetype=player_archetype,
+            budget_max_krw=budget_max_krw,
+            position=position,
+            n_shoes=5,
         )
-        if shoes_results and shoes_results.get("documents"):
-            documents = shoes_results["documents"][0]
-            metadatas = shoes_results["metadatas"][0]
 
-            # Post-filter by budget if specified
-            shoes_added = 0
-            for i, doc_content in enumerate(documents):
-                metadata = metadatas[i]
+        # Combine shoes and players into context
+        context_docs = search_results["players"] + search_results["shoes"]
 
-                # Budget filtering
-                if budget_max_krw:
-                    try:
-                        price = int(metadata.get("price_krw", 0))
-                        if price > budget_max_krw:
-                            continue
-                    except (ValueError, TypeError):
-                        continue
+        print(
+            f"---Retrieved {len(search_results['shoes'])} shoes, "
+            f"{len(search_results['players'])} players---"
+        )
+        return {"context": context_docs}
 
-                doc = Document(page_content=doc_content, metadata=metadata)
-                context_docs.append(doc)
-                shoes_added += 1
-
-                # Limit to top 5 shoes
-                if shoes_added >= 5:
-                    break
-
-            print(f"---Retrieved {shoes_added} shoes (filtered by budget).---")
-        else:
-            print("---No shoes retrieved from DB.---")
     except Exception as e:
-        logging.error(f"An error occurred during shoe retrieval: {e}")
+        logging.error(f"An error occurred during retrieval: {e}")
         print("---Error during retrieval, returning empty context.---")
         return {"context": []}
-
-    print(f"---Total context documents: {len(context_docs)}---")
-    return {"context": context_docs}
 
 
 def generate_recommendations(state: GearAgentState) -> dict:
