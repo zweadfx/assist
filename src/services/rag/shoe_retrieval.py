@@ -46,10 +46,20 @@ class ShoeRetriever:
         Returns:
             List of Document objects with shoe information
         """
-        logger.info(f"Searching shoes by sensory preferences: {sensory_keywords}")
+        # Early guard: check if sensory keywords are provided
+        if not sensory_keywords or not any(k.strip() for k in sensory_keywords):
+            logger.info("No sensory keywords provided, returning empty results")
+            return []
 
         # Build search query from sensory keywords
-        query_text = " ".join(sensory_keywords)
+        query_text = " ".join(sensory_keywords).strip()
+
+        # Additional safety check for empty query after joining
+        if not query_text:
+            logger.info("Sensory keywords resulted in empty query, returning empty results")
+            return []
+
+        logger.info(f"Searching shoes by sensory preferences: {sensory_keywords}")
 
         try:
             # Retrieve candidates from ChromaDB
@@ -134,6 +144,11 @@ class ShoeRetriever:
         Returns:
             List of Document objects with player archetype information
         """
+        # Early guard: check if player name is provided
+        if not player_name or not player_name.strip():
+            logger.info("No player name provided, returning empty results")
+            return []
+
         logger.info(f"Searching player archetype: {player_name}")
 
         try:
