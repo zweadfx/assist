@@ -89,9 +89,12 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
         return {"context": context_docs}
 
     except Exception as e:
-        logging.error(f"An error occurred during retrieval: {e}")
-        print("---Error during retrieval, returning empty context.---")
-        return {"context": []}
+        logging.exception("Failed to retrieve shoes and players from RAG")
+        print(f"---Error during retrieval: {e}---")
+        # Re-raise the exception to prevent hallucinations with empty context
+        raise ValueError(
+            "Failed to retrieve shoe recommendations from database"
+        ) from e
 
 
 def generate_recommendations(state: GearAgentState) -> dict:
