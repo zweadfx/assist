@@ -4,10 +4,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.api.v1.router import api_router
-from src.core.constants import DRILLS_FILE_PATH
+from src.core.constants import DRILLS_FILE_PATH, PLAYERS_FILE_PATH, SHOES_FILE_PATH
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import generate_embeddings
-from src.services.rag.utils import format_drill_document
+from src.services.rag.utils import (
+    format_drill_document,
+    format_player_document,
+    format_shoe_document,
+)
 from src.utils.file_loader import load_json_data
 
 # Configure logging
@@ -46,6 +50,38 @@ async def lifespan(app: FastAPI):
             logger.info("Successfully added drills to ChromaDB.")
         else:
             logger.info("Drills collection is already initialized.")
+
+        # Initialize shoes collection
+        if chroma_manager.shoes_collection.count() == 0:
+            logger.info("Shoes collection is empty. Initializing...")
+
+            shoes = load_json_data(SHOES_FILE_PATH)
+            logger.info(f"Loaded {len(shoes)} shoes from file.")
+
+            shoes_texts = [format_shoe_document(shoe) for shoe in shoes]
+            shoes_embeddings = generate_embeddings(shoes_texts)
+            logger.info(f"Generated {len(shoes_embeddings)} shoe embeddings.")
+
+            chroma_manager.add_shoes(shoes=shoes, embeddings=shoes_embeddings)
+            logger.info("Successfully added shoes to ChromaDB.")
+        else:
+            logger.info("Shoes collection is already initialized.")
+
+        # Initialize players collection
+        if chroma_manager.players_collection.count() == 0:
+            logger.info("Players collection is empty. Initializing...")
+
+            players = load_json_data(PLAYERS_FILE_PATH)
+            logger.info(f"Loaded {len(players)} players from file.")
+
+            players_texts = [format_player_document(player) for player in players]
+            players_embeddings = generate_embeddings(players_texts)
+            logger.info(f"Generated {len(players_embeddings)} player embeddings.")
+
+            chroma_manager.add_players(players=players, embeddings=players_embeddings)
+            logger.info("Successfully added players to ChromaDB.")
+        else:
+            logger.info("Players collection is already initialized.")
 
     except Exception as e:
         logger.critical(
