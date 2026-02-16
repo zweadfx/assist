@@ -229,7 +229,13 @@ class TestShoeRetrieval:
             ]
             # At least one Curry shoe should be highly ranked if available
             has_curry_shoe = any("curry" in model.lower() for model in shoe_models)
-            # This is a soft assertion - only verify if Curry shoes exist in DB
+
+            # Verify signature shoe boosting behavior
+            # Since we searched for "Stephen Curry", his signature shoes should appear
+            assert has_curry_shoe, (
+                f"Expected Curry signature shoes in results when searching for '{player}', "
+                f"but found: {shoe_models}"
+            )
 
 
 class TestGearAdvisorAPI:
