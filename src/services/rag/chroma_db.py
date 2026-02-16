@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import chromadb
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 from src.core.config import settings
 from src.core.constants import (
@@ -17,14 +18,24 @@ class ChromaDBManager:
     def __init__(self) -> None:
         """Initializes the ChromaDB client and collections."""
         self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+
+        # Use OpenAI embedding function for consistency
+        embedding_function = OpenAIEmbeddingFunction(
+            api_key=settings.OPENAI_API_KEY,
+            model_name="text-embedding-3-small"
+        )
+
         self.collection = self.client.get_or_create_collection(
-            name=DRILLS_COLLECTION_NAME
+            name=DRILLS_COLLECTION_NAME,
+            embedding_function=embedding_function
         )
         self.shoes_collection = self.client.get_or_create_collection(
-            name=SHOES_COLLECTION_NAME
+            name=SHOES_COLLECTION_NAME,
+            embedding_function=embedding_function
         )
         self.players_collection = self.client.get_or_create_collection(
-            name=PLAYERS_COLLECTION_NAME
+            name=PLAYERS_COLLECTION_NAME,
+            embedding_function=embedding_function
         )
 
     def add_drills(

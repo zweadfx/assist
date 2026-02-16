@@ -11,6 +11,7 @@ class GearAdvisorRequest(BaseModel):
 
     sensory_preferences: List[str] = Field(
         ...,
+        min_length=1,
         description="User's sensory preferences (e.g., 'sticky traction', 'cloud cushion')",
         examples=[["쫀득한 접지", "가벼운 무게"]],
     )
