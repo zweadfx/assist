@@ -13,10 +13,38 @@ from src.services.rag.utils import format_drill_document
 
 
 class ChromaDBManager:
-    """Manages interactions with the ChromaDB vector store."""
+    """Manages interactions with the ChromaDB vector store with lazy initialization."""
 
     def __init__(self) -> None:
-        """Initializes the ChromaDB client and collections."""
+        """
+        Initializes the manager without connecting to ChromaDB.
+        Actual initialization is deferred until first use to avoid import-time failures.
+        """
+        self._initialized = False
+        self.client = None
+        self.collection = None
+        self.shoes_collection = None
+        self.players_collection = None
+
+    def _ensure_initialized(self) -> None:
+        """
+        Ensures ChromaDB client and collections are initialized.
+        Called lazily on first access to avoid import-time side effects.
+
+        Raises:
+            ValueError: If OPENAI_API_KEY is not configured in settings.
+        """
+        if self._initialized:
+            return
+
+        # Validate API key before attempting to create embedding function
+        if not settings.OPENAI_API_KEY:
+            raise ValueError(
+                "OPENAI_API_KEY is not configured. Please set it in your environment "
+                "or configuration file before using ChromaDBManager."
+            )
+
+        # Initialize ChromaDB client
         self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
 
         # Use OpenAI embedding function for consistency
@@ -25,6 +53,7 @@ class ChromaDBManager:
             model_name="text-embedding-3-small"
         )
 
+        # Create or get collections
         self.collection = self.client.get_or_create_collection(
             name=DRILLS_COLLECTION_NAME,
             embedding_function=embedding_function
@@ -37,6 +66,8 @@ class ChromaDBManager:
             name=PLAYERS_COLLECTION_NAME,
             embedding_function=embedding_function
         )
+
+        self._initialized = True
 
     def add_drills(
         self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
@@ -51,6 +82,7 @@ class ChromaDBManager:
         Raises:
             ValueError: If the number of drills and embeddings do not match.
         """
+        self._ensure_initialized()
         if len(drills) != len(embeddings):
             raise ValueError(
                 f"The number of drills ({len(drills)}) must match the number of "
@@ -97,6 +129,7 @@ class ChromaDBManager:
         Returns:
             A dictionary containing the query results.
         """
+        self._ensure_initialized()
         results = self.collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
@@ -115,6 +148,7 @@ class ChromaDBManager:
         Raises:
             ValueError: If the number of shoes and embeddings do not match.
         """
+        self._ensure_initialized()
         if len(shoes) != len(embeddings):
             raise ValueError(
                 f"The number of shoes ({len(shoes)}) must match the number of "
@@ -170,6 +204,7 @@ class ChromaDBManager:
         Returns:
             A dictionary containing the query results.
         """
+        self._ensure_initialized()
         results = self.shoes_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
@@ -188,6 +223,7 @@ class ChromaDBManager:
         Raises:
             ValueError: If the number of players and embeddings do not match.
         """
+        self._ensure_initialized()
         if len(players) != len(embeddings):
             raise ValueError(
                 f"The number of players ({len(players)}) must match the number of "
@@ -240,6 +276,7 @@ class ChromaDBManager:
         Returns:
             A dictionary containing the query results.
         """
+        self._ensure_initialized()
         results = self.players_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
