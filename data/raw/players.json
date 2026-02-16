@@ -1,0 +1,451 @@
+[
+  {
+    "id": "player_001",
+    "name": "Stephen Curry",
+    "position": "guard",
+    "play_style": [
+      "오프볼 무브먼트",
+      "빠른 릴리즈 3점슛",
+      "픽앤롤 핸들러",
+      "민첩한 방향 전환",
+      "정교한 피니싱"
+    ],
+    "signature_shoes": [
+      "Under Armour Curry 12",
+      "Under Armour Curry 11",
+      "Under Armour Curry Flow 10"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "NBA 역사상 최고의 슈터. 끊임없는 오프볼 무브먼트와 빠른 릴리즈로 상대 수비를 무너뜨립니다. 정교한 접지력과 민첩한 움직임이 필수적인 플레이 스타일입니다."
+  },
+  {
+    "id": "player_002",
+    "name": "LeBron James",
+    "position": "forward",
+    "play_style": [
+      "파워풀한 림 어택",
+      "올라운드 플레이메이킹",
+      "포스트업 플레이",
+      "트랜지션 공격",
+      "강력한 피지컬 플레이"
+    ],
+    "signature_shoes": [
+      "Nike LeBron XX",
+      "Nike LeBron 21",
+      "Nike LeBron Witness"
+    ],
+    "preferred_features": {
+      "cushion": "firm",
+      "support": "high",
+      "traction": "moderate"
+    },
+    "description": "NBA 올타임 그레이트. 파워풀한 림 어택과 뛰어난 코트 비전을 겸비한 만능 플레이어입니다. 강력한 지지력과 안정적인 착지가 중요합니다."
+  },
+  {
+    "id": "player_003",
+    "name": "Kobe Bryant",
+    "position": "guard",
+    "play_style": [
+      "미드레인지 슈팅",
+      "백투더바스켓",
+      "발 작업 기술",
+      "페이드어웨이 점퍼",
+      "락다운 디펜스"
+    ],
+    "signature_shoes": [
+      "Nike Kobe 6 Protro",
+      "Nike Kobe 5 Protro",
+      "Nike Kobe 4 Protro"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "전설적인 득점왕. 정교한 발 작업과 미드레인지 슈팅에 특화되었습니다. 최상급 코트 감각과 접지력이 필수적인 플레이 스타일입니다."
+  },
+  {
+    "id": "player_004",
+    "name": "Kevin Durant",
+    "position": "forward",
+    "play_style": [
+      "만능형 스코어링",
+      "풀업 점퍼",
+      "미스매치 공략",
+      "효율적인 드라이브",
+      "길이를 활용한 슈팅"
+    ],
+    "signature_shoes": [
+      "Nike KD 17",
+      "Nike KD 16",
+      "Nike KD 15"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "7피트 득점 머신. 어디서든 득점 가능한 만능 스코어러입니다. 균형잡힌 쿠셔닝과 반응성이 중요한 플레이 스타일입니다."
+  },
+  {
+    "id": "player_005",
+    "name": "Damian Lillard",
+    "position": "guard",
+    "play_style": [
+      "딥 3점슛",
+      "폭발적인 첫 걸음",
+      "픽앤롤 마스터",
+      "클러치 슈팅",
+      "급정거와 급출발"
+    ],
+    "signature_shoes": [
+      "Adidas Dame 9",
+      "Adidas Dame 8",
+      "Adidas Dame Certified"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "클러치 타임의 킬러. 로고샷으로 유명한 딥 3점 슈터이자 폭발적인 드라이버입니다. 즉각적인 반응성과 접지력이 핵심입니다."
+  },
+  {
+    "id": "player_006",
+    "name": "Ja Morant",
+    "position": "guard",
+    "play_style": [
+      "폭발적인 수직 점프",
+      "공중 플레이",
+      "빠른 트랜지션",
+      "민첩한 레이업 피니싱",
+      "돌파형 가드"
+    ],
+    "signature_shoes": [
+      "Nike Ja 2",
+      "Nike Ja 1"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "차세대 하이플라이어. 폭발적인 점프력과 공중 플레이로 관중을 사로잡습니다. 초경량과 유연성이 필수적인 플레이 스타일입니다."
+  },
+  {
+    "id": "player_007",
+    "name": "James Harden",
+    "position": "guard",
+    "play_style": [
+      "스텝백 점퍼",
+      "유로스텝 드라이브",
+      "픽앤롤 마스터",
+      "파울 유도 기술",
+      "플레이메이킹"
+    ],
+    "signature_shoes": [
+      "Adidas Harden Vol. 8",
+      "Adidas Harden Vol. 7",
+      "Adidas Harden Vol. 6"
+    ],
+    "preferred_features": {
+      "cushion": "soft",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "스텝백의 예술가. 시그니처 스텝백 점퍼와 유로스텝으로 득점을 양산합니다. 부드러운 쿠셔닝과 안정성이 중요합니다."
+  },
+  {
+    "id": "player_008",
+    "name": "Giannis Antetokounmpo",
+    "position": "forward",
+    "play_style": [
+      "유로스텝 드라이브",
+      "림 돌파",
+      "파워풀한 덩크",
+      "수비적 만능성",
+      "트랜지션 주도"
+    ],
+    "signature_shoes": [
+      "Nike Zoom Freak 5",
+      "Nike Giannis Immortality 3",
+      "Nike Zoom Freak 4"
+    ],
+    "preferred_features": {
+      "cushion": "firm",
+      "support": "mid",
+      "traction": "aggressive"
+    },
+    "description": "그리스 괴물. 긴 보폭과 파워풀한 유로스텝으로 림을 공략합니다. 강력한 지지력과 내구성이 필수적인 플레이 스타일입니다."
+  },
+  {
+    "id": "player_009",
+    "name": "Kawhi Leonard",
+    "position": "forward",
+    "play_style": [
+      "미드레인지 특화",
+      "양방향 플레이",
+      "락다운 디펜스",
+      "효율적인 득점",
+      "측면 이동"
+    ],
+    "signature_shoes": [
+      "New Balance Kawhi 4",
+      "New Balance TWO WXY v4",
+      "New Balance Kawhi 3"
+    ],
+    "preferred_features": {
+      "cushion": "firm",
+      "support": "mid",
+      "traction": "aggressive"
+    },
+    "description": "2-way 슈퍼스타. 미드레인지 슈팅과 엘리트 디펜스를 겸비했습니다. 측면 이동과 안정적인 지지력이 핵심입니다."
+  },
+  {
+    "id": "player_010",
+    "name": "LaMelo Ball",
+    "position": "guard",
+    "play_style": [
+      "크리에이티브 패싱",
+      "화려한 플레이메이킹",
+      "풀코트 비전",
+      "빠른 전환 공격",
+      "노룩 패스"
+    ],
+    "signature_shoes": [
+      "Puma MB.03",
+      "Puma MB.02",
+      "Puma MB.01"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "moderate"
+    },
+    "description": "뉴제너레이션 플레이메이커. 화려한 패스와 크리에이티브한 플레이로 팀을 이끕니다. 반응성과 민첩성이 중요한 플레이 스타일입니다."
+  },
+  {
+    "id": "player_011",
+    "name": "Luka Doncic",
+    "position": "guard",
+    "play_style": [
+      "스텝백 3점슛",
+      "픽앤롤 마스터",
+      "포스트업 미스매치",
+      "높은 농구 IQ",
+      "페이스 컨트롤"
+    ],
+    "signature_shoes": [
+      "Jordan Luka 5",
+      "Nike Luka 4",
+      "Jordan Luka 3"
+    ],
+    "preferred_features": {
+      "cushion": "soft",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "유럽 스타일 마에스트로. 뛰어난 농구 IQ와 스텝백 슈팅으로 경기를 지배합니다. 안정적인 쿠셔닝과 지지력이 필수입니다."
+  },
+  {
+    "id": "player_012",
+    "name": "Kyrie Irving",
+    "position": "guard",
+    "play_style": [
+      "환상적인 핸들링",
+      "민첩한 드리블 무브",
+      "360도 레이업",
+      "창의적인 피니싱",
+      "아이솔레이션 마스터"
+    ],
+    "signature_shoes": [
+      "Anta KAI 2",
+      "Anta Kai 1",
+      "Nike Kyrie 8"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "마법 같은 핸들러. 믿을 수 없는 볼 핸들링과 창의적인 피니싱이 특징입니다. 최상급 접지력과 민첩성이 핵심입니다."
+  },
+  {
+    "id": "player_013",
+    "name": "Devin Booker",
+    "position": "guard",
+    "play_style": [
+      "미드레인지 마스터",
+      "스무스한 풀업 점퍼",
+      "효율적인 스코어링",
+      "클러치 퍼포먼스",
+      "백투더바스켓"
+    ],
+    "signature_shoes": [
+      "Nike Book 1"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "moderate"
+    },
+    "description": "순수 스코어러. 스무스한 슈팅 폼과 미드레인지 특화 플레이가 특징입니다. 부드러운 쿠셔닝과 접지력이 중요합니다."
+  },
+  {
+    "id": "player_014",
+    "name": "Jayson Tatum",
+    "position": "forward",
+    "play_style": [
+      "만능형 스코어링",
+      "사이드 스텝 점퍼",
+      "효율적인 3점슛",
+      "양방향 플레이",
+      "미스매치 활용"
+    ],
+    "signature_shoes": [
+      "Jordan Tatum 3",
+      "Jordan Tatum 2"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "현대적 포워드. 슈팅, 드라이브, 디펜스 모두 뛰어난 만능 플레이어입니다. 균형잡힌 성능이 필수적입니다."
+  },
+  {
+    "id": "player_015",
+    "name": "Anthony Edwards",
+    "position": "guard",
+    "play_style": [
+      "폭발적인 애슬레티시즘",
+      "공격적인 드라이브",
+      "강력한 덩크",
+      "3점 슈팅 발전",
+      "에너지 넘치는 플레이"
+    ],
+    "signature_shoes": [
+      "Adidas AE 1"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "뉴스쿨 슈퍼스타. 폭발적인 운동능력과 공격적인 플레이가 특징입니다. 반응성과 접지력이 핵심입니다."
+  },
+  {
+    "id": "player_016",
+    "name": "Klay Thompson",
+    "position": "guard",
+    "play_style": [
+      "캐치앤슛 전문가",
+      "오프볼 무브먼트",
+      "빠른 릴리즈",
+      "스팟업 슈팅",
+      "3앤D 플레이어"
+    ],
+    "signature_shoes": [
+      "Anta KT 10",
+      "Anta KT 9"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "low",
+      "traction": "aggressive"
+    },
+    "description": "최고의 슈터 중 한 명. 캐치앤슛과 끊임없는 오프볼 무브먼트가 특징입니다. 안정적인 지지력과 접지력이 중요합니다."
+  },
+  {
+    "id": "player_017",
+    "name": "Dwyane Wade",
+    "position": "guard",
+    "play_style": [
+      "민첩한 드라이브",
+      "블로킹 능력",
+      "미드레인지 풀업",
+      "유로스텝 마스터",
+      "양방향 플레이"
+    ],
+    "signature_shoes": [
+      "Li-Ning Way of Wade 12",
+      "Li-Ning Way of Wade 11",
+      "Li-Ning Way of Wade All City 13"
+    ],
+    "preferred_features": {
+      "cushion": "soft",
+      "support": "mid",
+      "traction": "aggressive"
+    },
+    "description": "플래쉬. 폭발적인 드라이브와 뛰어난 블로킹 능력을 겸비한 슈팅가드입니다. 부드러운 쿠셔닝과 지지력이 필수입니다."
+  },
+  {
+    "id": "player_018",
+    "name": "Paul George",
+    "position": "forward",
+    "play_style": [
+      "양방향 만능형",
+      "3점 슈팅",
+      "락다운 디펜스",
+      "미드레인지 풀업",
+      "효율적인 스코어링"
+    ],
+    "signature_shoes": [
+      "Nike PG 6",
+      "Nike PG 5"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "2-way 스타. 공격과 수비 모두 엘리트 수준의 포워드입니다. 균형잡힌 성능이 중요한 플레이 스타일입니다."
+  },
+  {
+    "id": "player_019",
+    "name": "Nikola Jokic",
+    "position": "center",
+    "play_style": [
+      "포스트업 플레이메이킹",
+      "높은 농구 IQ",
+      "정교한 패스",
+      "미드레인지 터치",
+      "느린 템포 컨트롤"
+    ],
+    "signature_shoes": [
+      "361° Joker 1"
+    ],
+    "preferred_features": {
+      "cushion": "soft",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "포인트 센터. 빅맨임에도 뛰어난 패싱과 플레이메이킹이 특징입니다. 안정성과 균형이 중요한 플레이 스타일입니다."
+  },
+  {
+    "id": "player_020",
+    "name": "Sabrina Ionescu",
+    "position": "guard",
+    "play_style": [
+      "올라운드 스킬셋",
+      "3점 슈팅 능력",
+      "플레이메이킹",
+      "리더십",
+      "효율적인 스코어링"
+    ],
+    "signature_shoes": [
+      "Nike Sabrina 2",
+      "Nike Sabrina 1"
+    ],
+    "preferred_features": {
+      "cushion": "responsive",
+      "support": "mid",
+      "traction": "moderate"
+    },
+    "description": "WNBA 슈퍼스타. 트리플더블 능력자이자 균형잡힌 올라운드 가드입니다. 안정적인 지지력과 반응성이 중요합니다."
+  }
+]

@@ -11,6 +11,10 @@ RAW_DATA_DIR = DATA_DIR / "raw"
 
 # Data Files
 DRILLS_FILE_PATH = RAW_DATA_DIR / "drills.json"
+SHOES_FILE_PATH = RAW_DATA_DIR / "shoes.json"
+PLAYERS_FILE_PATH = RAW_DATA_DIR / "players.json"
 
 # ChromaDB Collection Names
 DRILLS_COLLECTION_NAME = "basketball_drills"
+SHOES_COLLECTION_NAME = "basketball_shoes"
+PLAYERS_COLLECTION_NAME = "basketball_players"

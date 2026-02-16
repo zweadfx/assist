@@ -22,6 +22,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff"
+
 ]
 [tool.ruff]
 # As per Black standard
@@ -33,3 +34,9 @@ select = ["E", "F", "I"]
 
 [tool.ruff.format]
 quote-style = "double"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+]
