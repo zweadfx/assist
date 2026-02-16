@@ -12,6 +12,8 @@ from src.models.skill_schema import Drill
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import client as openai_client
 
+logger = logging.getLogger(__name__)
+
 
 class CoachAgentState(TypedDict):
     """
@@ -62,11 +64,11 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
     scenario, this node could be used to further refine or validate the user
     profile. For now, it's a pass-through and logging step.
     """
-    print("---NODE: Diagnosing User State---")
+    logger.info("NODE: Diagnosing User State")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
-    print(f"---User Info: {state['user_info']}---")
+    logger.debug("User Info: %s", state["user_info"])
     # The user_info is already structured and passed in the initial call
     # so we just pass it along to the next node.
     return {"user_info": state["user_info"]}
@@ -78,30 +80,44 @@ def retrieve_drills(state: CoachAgentState) -> dict:
     node performs a semantic search and then post-filters the results based
     on the user's available equipment.
     """
-    print("---NODE: Retrieving Drills---")
+    logger.info("NODE: Retrieving Drills")
     user_info = state["user_info"]
     focus_area = user_info.get("focus_area", "")
+    skill_level = user_info.get("skill_level", "")
     user_equipment = set(user_info.get("equipment", []))
-    query_text = f"A basketball drill focusing on improving {focus_area} skills."
-    print(f"---Querying for drills related to: {focus_area}---")
+
+    # Build enriched query with user context for better semantic matching
+    level_phrase = f"{skill_level} " if skill_level else ""
+    equipment_str = ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
+    query_text = (
+        f"A {level_phrase}basketball drill focusing on improving "
+        f"{focus_area} skills using {equipment_str}."
+    )
+    logger.info("Querying for drills related to: %s", focus_area)
 
     unfiltered_docs = []
     try:
-        # Retrieve a larger pool of candidates for filtering
-        results = chroma_manager.query_drills(query_texts=[query_text], n_results=10)
+        # Build metadata filter for DB-level pre-filtering
+        where_filter = {"category": focus_area} if focus_area else None
+
+        # Retrieve candidates with DB-level category filtering
+        results = chroma_manager.query_drills(
+            query_texts=[query_text], n_results=10, where=where_filter
+        )
         if results and results.get("documents"):
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
             for i, doc_content in enumerate(documents):
                 doc = Document(page_content=doc_content, metadata=metadatas[i])
                 unfiltered_docs.append(doc)
-            print(f"---Retrieved {len(unfiltered_docs)} candidate drills.---")
+            logger.info("Retrieved %d candidate drills", len(unfiltered_docs))
         else:
-            print("---No drills retrieved from DB.---")
+            logger.warning("No drills retrieved from DB")
     except Exception as e:
-        logging.error(f"An error occurred during drill retrieval: {e}")
-        print("---Error during retrieval, returning empty context.---")
-        return {"context": []}
+        logger.exception("Failed to retrieve drills from RAG")
+        raise ValueError(
+            "Failed to retrieve drills from database"
+        ) from e
 
     # Post-filter the results based on available equipment
     filtered_docs = []
@@ -117,7 +133,7 @@ def retrieve_drills(state: CoachAgentState) -> dict:
         if required_equipment.issubset(user_equipment):
             filtered_docs.append(doc)
 
-    print(f"---Filtered down to {len(filtered_docs)} drills based on equipment.---")
+    logger.info("Filtered down to %d drills based on equipment", len(filtered_docs))
     return {"context": filtered_docs}
 
 
@@ -142,7 +158,7 @@ def generate_routine(state: CoachAgentState) -> dict:
     Generates the final "Daily Routine Card" by synthesizing the user's
     preferences and the retrieved drills using an LLM.
     """
-    print("---NODE: Generating Routine---")
+    logger.info("NODE: Generating Routine")
     user_info = state["user_info"]
     context_docs = state["context"]
 
@@ -208,19 +224,19 @@ def generate_routine(state: CoachAgentState) -> dict:
             # Validate the data with the Pydantic model
             validated_routine = DailyRoutineCard.model_validate(extracted_data)
             final_response_str = validated_routine.model_dump_json(indent=2)
-            print(f"---Generated Response: {final_response_str}---")
+            logger.debug("Generated Response: %s", final_response_str)
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logging.error(f"Failed to parse or validate LLM response for routine: {e}")
+            logger.error("Failed to parse or validate LLM response for routine: %s", e)
             raise ValueError(
                 f"LLM returned an invalid routine object: {content}"
             ) from e
 
     except openai.APIError as e:
-        logging.error(f"OpenAI API error during routine generation: {e}")
+        logger.error("OpenAI API error during routine generation: %s", e)
         raise ValueError("Failed to generate routine due to an API error.") from e
     except Exception as e:
-        logging.error(f"An unexpected error occurred during routine generation: {e}")
+        logger.error("An unexpected error occurred during routine generation: %s", e)
         raise
 
 
