@@ -3,7 +3,11 @@ from typing import Any, Dict, List, Optional
 import chromadb
 
 from src.core.config import settings
-from src.core.constants import DRILLS_COLLECTION_NAME
+from src.core.constants import (
+    DRILLS_COLLECTION_NAME,
+    PLAYERS_COLLECTION_NAME,
+    SHOES_COLLECTION_NAME,
+)
 from src.services.rag.utils import format_drill_document
 
 
@@ -11,10 +15,16 @@ class ChromaDBManager:
     """Manages interactions with the ChromaDB vector store."""
 
     def __init__(self) -> None:
-        """Initializes the ChromaDB client and collection."""
+        """Initializes the ChromaDB client and collections."""
         self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
         self.collection = self.client.get_or_create_collection(
             name=DRILLS_COLLECTION_NAME
+        )
+        self.shoes_collection = self.client.get_or_create_collection(
+            name=SHOES_COLLECTION_NAME
+        )
+        self.players_collection = self.client.get_or_create_collection(
+            name=PLAYERS_COLLECTION_NAME
         )
 
     def add_drills(
@@ -77,6 +87,146 @@ class ChromaDBManager:
             A dictionary containing the query results.
         """
         results = self.collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_shoes(
+        self, shoes: List[Dict[str, Any]], embeddings: List[List[float]]
+    ) -> None:
+        """
+        Adds shoe documents and their embeddings to the ChromaDB collection.
+
+        Args:
+            shoes: A list of shoe documents (dictionaries).
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of shoes and embeddings do not match.
+        """
+        if len(shoes) != len(embeddings):
+            raise ValueError(
+                f"The number of shoes ({len(shoes)}) must match the number of "
+                f"embeddings ({len(embeddings)})."
+            )
+
+        if not shoes:
+            return
+
+        ids = [shoe["id"] for shoe in shoes]
+
+        # Import here to avoid circular dependency
+        from src.services.rag.utils import format_shoe_document
+        documents = [format_shoe_document(shoe) for shoe in shoes]
+
+        # Prepare metadata, ensuring all values are simple types for ChromaDB.
+        metadatas = []
+        for shoe in shoes:
+            metadata = {
+                "brand": shoe["brand"],
+                "model_name": shoe["model_name"],
+                "price_krw": shoe["price_krw"],
+                "weight_g": shoe["weight_g"],
+                "cushion_type": shoe["cushion_type"],
+                "support_level": shoe["support_level"],
+                "player_signature": shoe.get("player_signature") or "None",
+                # Join list into a comma-separated string for metadata compatibility
+                "sensory_tags": ",".join(shoe.get("sensory_tags", [])),
+                "tags": ",".join(shoe.get("tags", [])),
+            }
+            metadatas.append(metadata)
+
+        self.shoes_collection.add(
+            ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
+        )
+
+    def query_shoes(
+        self,
+        query_texts: List[str],
+        n_results: int = 5,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the shoes collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        results = self.shoes_collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_players(
+        self, players: List[Dict[str, Any]], embeddings: List[List[float]]
+    ) -> None:
+        """
+        Adds player archetype documents and their embeddings to the ChromaDB collection.
+
+        Args:
+            players: A list of player documents (dictionaries).
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of players and embeddings do not match.
+        """
+        if len(players) != len(embeddings):
+            raise ValueError(
+                f"The number of players ({len(players)}) must match the number of "
+                f"embeddings ({len(embeddings)})."
+            )
+
+        if not players:
+            return
+
+        ids = [player["id"] for player in players]
+
+        # Import here to avoid circular dependency
+        from src.services.rag.utils import format_player_document
+        documents = [format_player_document(player) for player in players]
+
+        # Prepare metadata, ensuring all values are simple types for ChromaDB.
+        metadatas = []
+        for player in players:
+            metadata = {
+                "name": player["name"],
+                "position": player["position"],
+                # Join lists into comma-separated strings for metadata compatibility
+                "play_style": ",".join(player.get("play_style", [])),
+                "signature_shoes": ",".join(player.get("signature_shoes", [])),
+                "cushion": player["preferred_features"]["cushion"],
+                "support": player["preferred_features"]["support"],
+                "traction": player["preferred_features"]["traction"],
+            }
+            metadatas.append(metadata)
+
+        self.players_collection.add(
+            ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
+        )
+
+    def query_players(
+        self,
+        query_texts: List[str],
+        n_results: int = 3,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the players collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        results = self.players_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
         return results
