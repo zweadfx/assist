@@ -63,7 +63,7 @@ def router_node(state: AgentState) -> dict:
         raise ValueError("No messages found in state for routing.")
 
     # Get the latest user message
-    latest_message = messages[-1].content if messages else ""
+    latest_message = messages[-1].content
 
     # Prepare routing prompt
     routing_prompt = f"""
