@@ -87,9 +87,10 @@ def retrieve_drills(state: CoachAgentState) -> dict:
     user_equipment = set(user_info.get("equipment", []))
 
     # Build enriched query with user context for better semantic matching
-    equipment_str = ", ".join(user_equipment) if user_equipment else "no equipment"
+    level_phrase = f"{skill_level} " if skill_level else ""
+    equipment_str = ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
     query_text = (
-        f"A {skill_level} basketball drill focusing on improving "
+        f"A {level_phrase}basketball drill focusing on improving "
         f"{focus_area} skills using {equipment_str}."
     )
     logger.info("Querying for drills related to: %s", focus_area)
