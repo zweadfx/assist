@@ -10,13 +10,15 @@ from src.services.agents.gear_agent import gear_agent_graph
 router = APIRouter()
 
 
-@router.post("/", response_model=SuccessResponse[GearAdvisorResponse])
+@router.post("/recommend", response_model=SuccessResponse[GearAdvisorResponse])
 async def recommend_gear(
     request: GearAdvisorRequest,
 ) -> SuccessResponse[GearAdvisorResponse]:
     """
     Receives user's gear preferences and returns personalized shoe recommendations
     by invoking the GearAgent.
+
+    Endpoint: POST /api/v1/gear/recommend
     """
     try:
         # The agent expects a list of messages, but our primary input is the
