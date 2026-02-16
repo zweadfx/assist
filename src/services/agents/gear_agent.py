@@ -12,6 +12,8 @@ from src.models.gear_schema import GearAdvisorResponse
 from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
 
+logger = logging.getLogger(__name__)
+
 
 class GearAgentState(TypedDict):
     """
@@ -39,7 +41,7 @@ def analyze_preferences(state: GearAgentState) -> dict:
     sensory preferences. This node ensures we have the minimum required
     information to proceed with recommendations.
     """
-    print("---NODE: Analyzing User Preferences---")
+    logger.info("NODE: Analyzing User Preferences")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
@@ -47,7 +49,7 @@ def analyze_preferences(state: GearAgentState) -> dict:
     if not user_info.get("sensory_preferences"):
         raise ValueError("Sensory preferences are required for gear recommendations.")
 
-    print(f"---User Info: {user_info}---")
+    logger.debug(f"User Info: {user_info}")
     # Pass the user_info along to the next node
     return {"user_info": state["user_info"]}
 
@@ -57,16 +59,16 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
     Retrieves relevant shoes and player archetypes using the ShoeRetriever.
     Uses cross-analysis search combining sensory preferences and player archetype.
     """
-    print("---NODE: Retrieving Shoes and Players---")
+    logger.info("NODE: Retrieving Shoes and Players")
     user_info = state["user_info"]
     sensory_preferences = user_info.get("sensory_preferences", [])
     player_archetype = user_info.get("player_archetype")
     budget_max_krw = user_info.get("budget_max_krw")
     position = user_info.get("position")
 
-    print(
-        f"---Search params: sensory={sensory_preferences}, "
-        f"player={player_archetype}, budget={budget_max_krw}, position={position}---"
+    logger.debug(
+        f"Search params: sensory={sensory_preferences}, "
+        f"player={player_archetype}, budget={budget_max_krw}, position={position}"
     )
 
     try:
@@ -82,15 +84,14 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
         # Combine shoes and players into context
         context_docs = search_results["players"] + search_results["shoes"]
 
-        print(
-            f"---Retrieved {len(search_results['shoes'])} shoes, "
-            f"{len(search_results['players'])} players---"
+        logger.info(
+            f"Retrieved {len(search_results['shoes'])} shoes, "
+            f"{len(search_results['players'])} players"
         )
         return {"context": context_docs}
 
     except Exception as e:
-        logging.exception("Failed to retrieve shoes and players from RAG")
-        print(f"---Error during retrieval: {e}---")
+        logger.exception("Failed to retrieve shoes and players from RAG")
         # Re-raise the exception to prevent hallucinations with empty context
         raise ValueError(
             "Failed to retrieve shoe recommendations from database"
@@ -102,7 +103,7 @@ def generate_recommendations(state: GearAgentState) -> dict:
     Generates the final shoe recommendations by synthesizing the user's
     preferences and the retrieved shoes/players using an LLM.
     """
-    print("---NODE: Generating Recommendations---")
+    logger.info("NODE: Generating Recommendations")
     user_info = state["user_info"]
     context_docs = state["context"]
 
@@ -141,6 +142,11 @@ def generate_recommendations(state: GearAgentState) -> dict:
     # Prepare the JSON schema for the prompt
     schema_json = json.dumps(GearAdvisorResponse.model_json_schema(), indent=2)
 
+    # Build player section separately to avoid nested f-string
+    player_section = ""
+    if players_context_str:
+        player_section = f"**Player Archetype Information:**\n{players_context_str}\n\n"
+
     prompt = f"""
 You are an expert basketball gear advisor. Your task is to generate personalized
 shoe recommendations based on the user's preferences and the available shoe data.
@@ -151,9 +157,7 @@ shoe recommendations based on the user's preferences and the available shoe data
 - Position: {user_info.get('position', 'Not specified')}
 - Budget: {user_info.get('budget_max_krw', 'No limit')} KRW
 
-{f"**Player Archetype Information:**\\n{players_context_str}\\n" if players_context_str else ""}
-
-**Available Shoes Data:**
+{player_section}**Available Shoes Data:**
 {shoes_context_str}
 
 **Instructions:**
@@ -193,10 +197,10 @@ JSON Output:
             # Validate the data with the Pydantic model
             validated_response = GearAdvisorResponse.model_validate(extracted_data)
             final_response_str = validated_response.model_dump_json(indent=2)
-            print(f"---Generated Response: {final_response_str}---")
+            logger.debug(f"Generated Response: {final_response_str}")
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logging.error(
+            logger.error(
                 f"Failed to parse or validate LLM response for recommendations: {e}"
             )
             raise ValueError(
@@ -204,12 +208,12 @@ JSON Output:
             ) from e
 
     except openai.APIError as e:
-        logging.error(f"OpenAI API error during recommendations generation: {e}")
+        logger.error(f"OpenAI API error during recommendations generation: {e}")
         raise ValueError(
             "Failed to generate recommendations due to an API error."
         ) from e
     except Exception as e:
-        logging.error(
+        logger.error(
             f"An unexpected error occurred during recommendations generation: {e}"
         )
         raise
