@@ -56,4 +56,4 @@ async def recommend_gear(
         logger.exception("An unexpected error occurred during gear recommendation")
         raise HTTPException(
             status_code=500, detail="Internal server error"
-        )
+        ) from e
