@@ -83,8 +83,15 @@ def retrieve_drills(state: CoachAgentState) -> dict:
     logger.info("NODE: Retrieving Drills")
     user_info = state["user_info"]
     focus_area = user_info.get("focus_area", "")
+    skill_level = user_info.get("skill_level", "")
     user_equipment = set(user_info.get("equipment", []))
-    query_text = f"A basketball drill focusing on improving {focus_area} skills."
+
+    # Build enriched query with user context for better semantic matching
+    equipment_str = ", ".join(user_equipment) if user_equipment else "no equipment"
+    query_text = (
+        f"A {skill_level} basketball drill focusing on improving "
+        f"{focus_area} skills using {equipment_str}."
+    )
     logger.info("Querying for drills related to: %s", focus_area)
 
     unfiltered_docs = []
