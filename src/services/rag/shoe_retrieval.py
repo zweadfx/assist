@@ -128,8 +128,10 @@ class ShoeRetriever:
             return filtered_docs
 
         except Exception as e:
-            logger.error(f"Error during sensory-based shoe search: {e}")
-            return []
+            logger.exception("Failed to search shoes by sensory preferences")
+            raise ValueError(
+                "Failed to retrieve shoes from database"
+            ) from e
 
     def search_by_player_archetype(
         self, player_name: str, n_results: int = 3
@@ -173,8 +175,10 @@ class ShoeRetriever:
             return player_docs
 
         except Exception as e:
-            logger.error(f"Error during player archetype search: {e}")
-            return []
+            logger.exception("Failed to search player archetypes")
+            raise ValueError(
+                "Failed to retrieve player archetypes from database"
+            ) from e
 
     def cross_analysis_search(
         self,
