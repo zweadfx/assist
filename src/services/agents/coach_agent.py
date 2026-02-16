@@ -101,8 +101,10 @@ def retrieve_drills(state: CoachAgentState) -> dict:
         else:
             logger.warning("No drills retrieved from DB")
     except Exception as e:
-        logger.error("An error occurred during drill retrieval: %s", e)
-        return {"context": []}
+        logger.exception("Failed to retrieve drills from RAG")
+        raise ValueError(
+            "Failed to retrieve drills from database"
+        ) from e
 
     # Post-filter the results based on available equipment
     filtered_docs = []
