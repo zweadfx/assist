@@ -89,8 +89,13 @@ def retrieve_drills(state: CoachAgentState) -> dict:
 
     unfiltered_docs = []
     try:
-        # Retrieve a larger pool of candidates for filtering
-        results = chroma_manager.query_drills(query_texts=[query_text], n_results=10)
+        # Build metadata filter for DB-level pre-filtering
+        where_filter = {"category": focus_area} if focus_area else None
+
+        # Retrieve candidates with DB-level category filtering
+        results = chroma_manager.query_drills(
+            query_texts=[query_text], n_results=10, where=where_filter
+        )
         if results and results.get("documents"):
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
