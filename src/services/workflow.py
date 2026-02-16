@@ -134,11 +134,13 @@ def skill_lab_node(state: AgentState) -> dict:
         }
 
     except Exception as e:
-        logger.error(f"Error in skill_lab_node: {e}")
+        # Log full exception details server-side for debugging
+        logger.exception("Error in skill_lab_node")
+        # Return generic error message without exposing internal details
         return {
             "final_response": json.dumps({
                 "error": "Failed to generate training routine",
-                "detail": str(e)
+                "message": "An internal error occurred while processing your request. Please try again later."
             })
         }
 
@@ -165,11 +167,13 @@ def shoe_recommendation_node(state: AgentState) -> dict:
         }
 
     except Exception as e:
-        logger.error(f"Error in shoe_recommendation_node: {e}")
+        # Log full exception details server-side for debugging
+        logger.exception("Error in shoe_recommendation_node")
+        # Return generic error message without exposing internal details
         return {
             "final_response": json.dumps({
                 "error": "Failed to generate shoe recommendations",
-                "detail": str(e)
+                "message": "An internal error occurred while processing your request. Please try again later."
             })
         }
 
