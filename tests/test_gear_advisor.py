@@ -149,10 +149,17 @@ class TestShoeRetrieval:
             ), f"Shoe price {price} exceeds budget {budget}"
 
         # Verify position matching (if applicable)
+        # At least some shoes should match the guard position
+        guard_shoes = []
         for shoe in results["shoes"]:
             tags = shoe.metadata.get("tags", "").split(",")
-            # At least some shoes should match the guard position
-            # (this is a soft check as not all results need to match)
+            # Clean up tags (strip whitespace)
+            tags = [tag.strip() for tag in tags if tag.strip()]
+            if "가드" in tags or "guard" in [t.lower() for t in tags]:
+                guard_shoes.append(shoe)
+
+        # Soft check: at least one shoe should be suitable for guards
+        assert len(guard_shoes) > 0, "Expected at least one guard-suitable shoe in results"
 
     def test_tc05_exception_handling(self, shoe_retriever_instance):
         """
