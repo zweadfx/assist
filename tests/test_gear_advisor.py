@@ -175,10 +175,11 @@ class TestShoeRetrieval:
         # Test Case 2: Invalid budget (negative)
         results = shoe_retriever_instance.cross_analysis_search(
             sensory_keywords=["쫀득한 접지"],
-            budget_max_krw=-1000,  # Invalid budget
+            budget_max_krw=-1000,  # Negative budget should filter out all shoes
             n_shoes=5,
         )
-        assert "shoes" in results  # Should handle gracefully
+        assert "shoes" in results, "Results should contain 'shoes' key"
+        assert results["shoes"] == [], "Negative budget should result in empty shoe list (all shoes filtered out)"
 
         # Test Case 3: Non-existent player
         results = shoe_retriever_instance.search_by_player_archetype(
