@@ -1,3 +1,4 @@
+import threading
 from typing import Any, Dict, List, Optional
 
 import chromadb
@@ -21,6 +22,7 @@ class ChromaDBManager:
         Actual initialization is deferred until first use to avoid import-time failures.
         """
         self._initialized = False
+        self._init_lock = threading.Lock()  # Protects initialization from race conditions
         self.client = None
         self.collection = None
         self.shoes_collection = None
@@ -30,44 +32,53 @@ class ChromaDBManager:
         """
         Ensures ChromaDB client and collections are initialized.
         Called lazily on first access to avoid import-time side effects.
+        Uses double-check locking to prevent race conditions in multi-threaded environments.
 
         Raises:
             ValueError: If OPENAI_API_KEY is not configured in settings.
         """
+        # First check (without lock) - fast path for already initialized case
         if self._initialized:
             return
 
-        # Validate API key before attempting to create embedding function
-        if not settings.OPENAI_API_KEY:
-            raise ValueError(
-                "OPENAI_API_KEY is not configured. Please set it in your environment "
-                "or configuration file before using ChromaDBManager."
+        # Acquire lock for initialization
+        with self._init_lock:
+            # Second check (with lock) - prevents race condition
+            if self._initialized:
+                return
+
+            # Validate API key before attempting to create embedding function
+            if not settings.OPENAI_API_KEY:
+                raise ValueError(
+                    "OPENAI_API_KEY is not configured. Please set it in your environment "
+                    "or configuration file before using ChromaDBManager."
+                )
+
+            # Initialize ChromaDB client
+            self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+
+            # Use OpenAI embedding function for consistency
+            embedding_function = OpenAIEmbeddingFunction(
+                api_key=settings.OPENAI_API_KEY,
+                model_name="text-embedding-3-small"
             )
 
-        # Initialize ChromaDB client
-        self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+            # Create or get collections
+            self.collection = self.client.get_or_create_collection(
+                name=DRILLS_COLLECTION_NAME,
+                embedding_function=embedding_function
+            )
+            self.shoes_collection = self.client.get_or_create_collection(
+                name=SHOES_COLLECTION_NAME,
+                embedding_function=embedding_function
+            )
+            self.players_collection = self.client.get_or_create_collection(
+                name=PLAYERS_COLLECTION_NAME,
+                embedding_function=embedding_function
+            )
 
-        # Use OpenAI embedding function for consistency
-        embedding_function = OpenAIEmbeddingFunction(
-            api_key=settings.OPENAI_API_KEY,
-            model_name="text-embedding-3-small"
-        )
-
-        # Create or get collections
-        self.collection = self.client.get_or_create_collection(
-            name=DRILLS_COLLECTION_NAME,
-            embedding_function=embedding_function
-        )
-        self.shoes_collection = self.client.get_or_create_collection(
-            name=SHOES_COLLECTION_NAME,
-            embedding_function=embedding_function
-        )
-        self.players_collection = self.client.get_or_create_collection(
-            name=PLAYERS_COLLECTION_NAME,
-            embedding_function=embedding_function
-        )
-
-        self._initialized = True
+            # Set initialized flag (must be last, acts as memory barrier)
+            self._initialized = True
 
     def add_drills(
         self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
