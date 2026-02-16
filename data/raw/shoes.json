@@ -27,74 +27,204 @@
   },
   {
     "id": "shoe_002",
-    "brand": "Under Armour",
-    "model_name": "Curry 10",
-    "release_year": 2023,
-    "price_krw": 209000,
-    "weight_g": 358,
+    "brand": "Nike",
+    "model_name": "Kobe 4 Protro",
+    "release_year": 2024,
+    "price_krw": 199000,
+    "weight_g": 332,
     "sensory_tags": [
+      "초경량",
       "정교한 접지",
-      "민첩한 무브",
-      "빠른 릴리즈",
-      "반응성 쿠션"
+      "빠른 반응성",
+      "민첩한 무브"
     ],
-    "cushion_type": "flow",
+    "cushion_type": "zoom",
     "support_level": "low",
-    "traction_pattern": "멀티 디렉션 패턴",
-    "player_signature": "Stephen Curry",
-    "description": "스테픈 커리의 플레이 스타일을 반영한 농구화. 오프볼 무브와 빠른 3점 슈팅을 위한 정교한 그립감과 민첩성을 제공합니다.",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Kobe Bryant",
+    "description": "코비 브라이언트의 대표 모델 중 하나. 초경량 디자인으로 빠른 풋워크와 민첩한 움직임에 최적화되었습니다.",
     "tags": [
       "로우컷",
       "가드",
-      "슈터",
-      "빠른 릴리즈",
-      "오프볼 무브"
+      "초경량",
+      "스피드",
+      "민첩성"
     ]
   },
   {
     "id": "shoe_003",
-    "brand": "Adidas",
-    "model_name": "Harden Vol. 7",
-    "release_year": 2022,
-    "price_krw": 169000,
-    "weight_g": 395,
+    "brand": "Nike",
+    "model_name": "Kobe 5 Protro",
+    "release_year": 2023,
+    "price_krw": 189000,
+    "weight_g": 338,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "안정적인 지지",
-      "편안한 착화감",
-      "구름 같은 쿠션"
+      "쫀득한 접지",
+      "반발성 쿠션",
+      "가벼운 무게",
+      "코트 감각"
     ],
-    "cushion_type": "boost",
-    "support_level": "mid",
-    "traction_pattern": "와이드 헤링본",
-    "player_signature": "James Harden",
-    "description": "제임스 하든의 유로스텝과 스텝백을 위한 안정성과 쿠셔닝을 제공. 장시간 플레이에도 편안함을 유지합니다.",
+    "cushion_type": "zoom",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Kobe Bryant",
+    "description": "NBA 챔피언십을 차지한 역사적 모델. 뛰어난 접지력과 코트 감각으로 가드 포지션에 이상적입니다.",
     "tags": [
-      "미드컷",
+      "로우컷",
       "가드",
-      "유로스텝",
-      "쿠셔닝",
-      "안정성"
+      "접지력",
+      "챔피언십",
+      "민첩성"
     ]
   },
   {
     "id": "shoe_004",
     "brand": "Nike",
-    "model_name": "LeBron 21",
+    "model_name": "Kobe 8 Protro",
+    "release_year": 2024,
+    "price_krw": 209000,
+    "weight_g": 348,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "유연한 착화감",
+      "쫀득한 접지",
+      "가벼운 무게"
+    ],
+    "cushion_type": "zoom",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Kobe Bryant",
+    "description": "플라이니트 소재로 제작된 혁신적 모델. 부드러운 착화감과 유연성이 특징입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "유연성",
+      "플라이니트",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_005",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Cut 2",
     "release_year": 2023,
-    "price_krw": 259000,
-    "weight_g": 425,
+    "price_krw": 229000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "최상급 접지",
+      "폭발적인 반발력",
+      "aggressive 그립",
+      "빠른 커팅"
+    ],
+    "cushion_type": "zoom strobel",
+    "support_level": "low",
+    "traction_pattern": "독립형 포드",
+    "player_signature": null,
+    "description": "코트 그립에 특화된 모델. 공격적인 커팅 동작과 빠른 방향 전환에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "커팅",
+      "접지력",
+      "폭발력"
+    ]
+  },
+  {
+    "id": "shoe_006",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Cut 3",
+    "release_year": 2024,
+    "price_krw": 239000,
+    "weight_g": 358,
+    "sensory_tags": [
+      "정교한 접지",
+      "즉각적인 반응성",
+      "쫀득한 그립",
+      "민첩한 무브"
+    ],
+    "cushion_type": "zoom strobel",
+    "support_level": "low",
+    "traction_pattern": "독립형 포드 v2",
+    "player_signature": null,
+    "description": "G.T. Cut 시리즈의 최신 버전. 향상된 접지력과 반응성으로 엘리트 가드를 위한 선택입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "엘리트",
+      "접지력",
+      "반응성"
+    ]
+  },
+  {
+    "id": "shoe_007",
+    "brand": "Nike",
+    "model_name": "Sabrina 1",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 352,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "경쾌한 착화감"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Sabrina Ionescu",
+    "description": "사브리나 이오네스쿠의 첫 시그니처 모델. 균형잡힌 성능으로 다양한 포지션에 적합합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "균형",
+      "만능형",
+      "여성농구"
+    ]
+  },
+  {
+    "id": "shoe_008",
+    "brand": "Nike",
+    "model_name": "Sabrina 2",
+    "release_year": 2025,
+    "price_krw": 169000,
+    "weight_g": 348,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "반응성 쿠션",
+      "안정적인 지지",
+      "유연한 착화감"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Sabrina Ionescu",
+    "description": "향상된 쿠셔닝과 지지력을 갖춘 두 번째 시그니처 모델. 올라운드 플레이에 최적화되었습니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "올라운드",
+      "쿠셔닝",
+      "지지력"
+    ]
+  },
+  {
+    "id": "shoe_009",
+    "brand": "Nike",
+    "model_name": "LeBron XX",
+    "release_year": 2023,
+    "price_krw": 249000,
+    "weight_g": 418,
     "sensory_tags": [
       "강력한 지지력",
       "파워풀한 쿠션",
-      "단단한 발목 지지",
-      "안정적인 착지"
+      "안정적인 착지",
+      "단단한 발목 지지"
     ],
-    "cushion_type": "zoom",
+    "cushion_type": "zoom + air max",
     "support_level": "high",
     "traction_pattern": "멀티 코트 패턴",
     "player_signature": "LeBron James",
-    "description": "르브론 제임스의 파워풀한 플레이를 위한 최고 수준의 지지력과 쿠셔닝. 림 어택과 강력한 착지를 위한 안정성을 제공합니다.",
+    "description": "르브론 제임스의 20번째 시그니처 모델. 파워 플레이어를 위한 최고 수준의 지지력과 쿠셔닝을 제공합니다.",
     "tags": [
       "하이컷",
       "포워드",
@@ -104,7 +234,33 @@
     ]
   },
   {
-    "id": "shoe_005",
+    "id": "shoe_010",
+    "brand": "Nike",
+    "model_name": "KD 15",
+    "release_year": 2022,
+    "price_krw": 179000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "가벼운 무게",
+      "반응성 쿠션",
+      "균형잡힌 지지",
+      "부드러운 착지"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Kevin Durant",
+    "description": "케빈 듀란트의 만능 플레이스타일을 반영한 모델. 슈팅과 드라이브 모두에 최적화되었습니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "만능형",
+      "슈팅",
+      "균형"
+    ]
+  },
+  {
+    "id": "shoe_011",
     "brand": "Nike",
     "model_name": "KD 16",
     "release_year": 2023,
@@ -130,7 +286,423 @@
     ]
   },
   {
-    "id": "shoe_006",
+    "id": "shoe_012",
+    "brand": "Nike",
+    "model_name": "KD 17",
+    "release_year": 2024,
+    "price_krw": 209000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "초경량",
+      "즉각적인 반응성",
+      "부드러운 쿠션",
+      "민첩한 무브"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Kevin Durant",
+    "description": "최신 KD 시리즈. 경량화와 반응성을 극대화하여 빠른 플레이에 적합합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "경량",
+      "반응성",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_013",
+    "brand": "Nike",
+    "model_name": "Book 1",
+    "release_year": 2023,
+    "price_krw": 169000,
+    "weight_g": 358,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "반응성 쿠션"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Devin Booker",
+    "description": "데빈 부커의 첫 시그니처 모델. 미드레인지 슈팅과 스무스한 플레이에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "슈팅",
+      "미드레인지",
+      "스무스"
+    ]
+  },
+  {
+    "id": "shoe_014",
+    "brand": "Nike",
+    "model_name": "Ja 2",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 342,
+    "sensory_tags": [
+      "초경량",
+      "폭발적인 점프",
+      "민첩한 무브",
+      "유연한 착화감"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Ja Morant",
+    "description": "자 모란트의 두 번째 시그니처 모델. 폭발적인 점프력과 빠른 전환 플레이에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "점프력",
+      "폭발력",
+      "초경량"
+    ]
+  },
+  {
+    "id": "shoe_015",
+    "brand": "Nike",
+    "model_name": "Zoom Freak 5",
+    "release_year": 2023,
+    "price_krw": 149000,
+    "weight_g": 405,
+    "sensory_tags": [
+      "강력한 지지력",
+      "파워풀한 쿠션",
+      "안정적인 착지",
+      "내구성"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": "Giannis Antetokounmpo",
+    "description": "야니스 아데토쿤보의 상위 시그니처 라인. 유로스텝과 림 돌파를 위한 강력한 지지력과 내구성을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "유로스텝",
+      "파워",
+      "내구성"
+    ]
+  },
+  {
+    "id": "shoe_016",
+    "brand": "Nike",
+    "model_name": "G.T. Hustle 3",
+    "release_year": 2024,
+    "price_krw": 139000,
+    "weight_g": 368,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "편안한 착화감"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": null,
+    "description": "가성비 뛰어난 팀 농구화 라인. 실용적인 성능으로 입문자부터 중급자까지 적합합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "가성비",
+      "입문용",
+      "실용성"
+    ]
+  },
+  {
+    "id": "shoe_017",
+    "brand": "Nike",
+    "model_name": "PG 6",
+    "release_year": 2022,
+    "price_krw": 149000,
+    "weight_g": 378,
+    "sensory_tags": [
+      "균형잡힌 성능",
+      "쫀득한 접지",
+      "반응성 쿠션",
+      "안정적인 지지"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Paul George",
+    "description": "폴 조지의 양방향 플레이를 위한 균형잡힌 성능. 공수 모두에 안정적인 지지력을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "양방향",
+      "균형",
+      "디펜스"
+    ]
+  },
+  {
+    "id": "shoe_018",
+    "brand": "Nike",
+    "model_name": "Luka 4",
+    "release_year": 2025,
+    "price_krw": 189000,
+    "weight_g": 388,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "파워풀한 착지"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": "Luka Doncic",
+    "description": "루카 돈치치의 스텝백과 픽앤롤에 최적화된 모델. 안정적인 지지력과 부드러운 쿠셔닝이 특징입니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "스텝백",
+      "픽앤롤",
+      "쿠셔닝"
+    ]
+  },
+  {
+    "id": "shoe_019",
+    "brand": "Jordan",
+    "model_name": "Air Jordan 39",
+    "release_year": 2024,
+    "price_krw": 259000,
+    "weight_g": 375,
+    "sensory_tags": [
+      "즉각적인 반응성",
+      "강력한 지지력",
+      "쫀득한 접지",
+      "프리미엄 착화감"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "mid",
+    "traction_pattern": "트랙션 패턴",
+    "player_signature": "Michael Jordan",
+    "description": "에어 조던 넘버드 시리즈의 최신작. 프리미엄 소재와 혁신적 기술의 결합으로 최상의 성능을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "프리미엄",
+      "반응성",
+      "지지력"
+    ]
+  },
+  {
+    "id": "shoe_020",
+    "brand": "Jordan",
+    "model_name": "Air Jordan 38 Low",
+    "release_year": 2023,
+    "price_krw": 229000,
+    "weight_g": 358,
+    "sensory_tags": [
+      "가벼운 무게",
+      "반응성 쿠션",
+      "쫀득한 접지",
+      "민첩한 무브"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "low",
+    "traction_pattern": "트랙션 패턴",
+    "player_signature": "Michael Jordan",
+    "description": "AJ38의 로우컷 버전. 경량화와 민첩성을 원하는 가드 포지션에 이상적입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "경량",
+      "민첩성",
+      "프리미엄"
+    ]
+  },
+  {
+    "id": "shoe_021",
+    "brand": "Jordan",
+    "model_name": "Tatum 3",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "만능형 성능"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Jayson Tatum",
+    "description": "제이슨 테이텀의 만능 플레이스타일을 반영한 모델. 슈팅, 드라이브, 디펜스 모두에 균형잡힌 성능을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "만능형",
+      "균형",
+      "슈팅"
+    ]
+  },
+  {
+    "id": "shoe_022",
+    "brand": "Jordan",
+    "model_name": "Luka 5",
+    "release_year": 2025,
+    "price_krw": 199000,
+    "weight_g": 392,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "강력한 지지력",
+      "안정적인 착지",
+      "쫀득한 접지"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": "Luka Doncic",
+    "description": "루카 돈치치의 최신 시그니처 모델. 스텝백 점퍼와 유로스텝을 위한 안정성과 쿠셔닝을 강화했습니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "스텝백",
+      "쿠셔닝",
+      "안정성"
+    ]
+  },
+  {
+    "id": "shoe_023",
+    "brand": "Adidas",
+    "model_name": "Harden Vol. 7",
+    "release_year": 2022,
+    "price_krw": 169000,
+    "weight_g": 395,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "안정적인 지지",
+      "편안한 착화감",
+      "구름 같은 쿠션"
+    ],
+    "cushion_type": "boost",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": "James Harden",
+    "description": "제임스 하든의 유로스텝과 스텝백을 위한 안정성과 쿠셔닝을 제공. 장시간 플레이에도 편안함을 유지합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "유로스텝",
+      "쿠셔닝",
+      "안정성"
+    ]
+  },
+  {
+    "id": "shoe_024",
+    "brand": "Adidas",
+    "model_name": "Harden Vol. 8",
+    "release_year": 2024,
+    "price_krw": 179000,
+    "weight_g": 388,
+    "sensory_tags": [
+      "구름 같은 쿠션",
+      "안정적인 지지",
+      "부드러운 착화감",
+      "편안한 쿠션"
+    ],
+    "cushion_type": "boost",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "James Harden",
+    "description": "하든 시리즈의 최신 모델. 향상된 부스트 쿠셔닝으로 더욱 편안한 플레이를 제공합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "부스트",
+      "쿠셔닝",
+      "편안함"
+    ]
+  },
+  {
+    "id": "shoe_025",
+    "brand": "Adidas",
+    "model_name": "D.O.N. Issue 6",
+    "release_year": 2024,
+    "price_krw": 129000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "가성비 쿠션",
+      "경쾌한 착화감",
+      "쫀득한 접지",
+      "반응성 쿠션"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Donovan Mitchell",
+    "description": "도노반 미첼의 가성비 시그니처 라인. 경제적 가격에 우수한 성능을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "가성비",
+      "폭발력",
+      "실용성"
+    ]
+  },
+  {
+    "id": "shoe_026",
+    "brand": "Adidas",
+    "model_name": "D.O.N. Issue 7",
+    "release_year": 2025,
+    "price_krw": 139000,
+    "weight_g": 362,
+    "sensory_tags": [
+      "폭발적인 반발력",
+      "쫀득한 접지",
+      "경쾌한 무게감",
+      "가성비 성능"
+    ],
+    "cushion_type": "bounce pro",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Donovan Mitchell",
+    "description": "D.O.N. 시리즈의 최신작. 향상된 반발력과 접지력으로 가성비를 극대화했습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "가성비",
+      "반발력",
+      "접지력"
+    ]
+  },
+  {
+    "id": "shoe_027",
+    "brand": "Adidas",
+    "model_name": "AE 1",
+    "release_year": 2023,
+    "price_krw": 149000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "폭발적인 출발",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "즉각적인 반응성"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "low",
+    "traction_pattern": "헤링본 풀 렝스",
+    "player_signature": "Anthony Edwards",
+    "description": "앤서니 에드워즈의 첫 시그니처 모델. 폭발적인 첫 걸음과 공격적인 플레이에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "폭발력",
+      "뉴스쿨",
+      "공격형"
+    ]
+  },
+  {
+    "id": "shoe_028",
     "brand": "Adidas",
     "model_name": "Dame 8",
     "release_year": 2022,
@@ -156,107 +728,627 @@
     ]
   },
   {
-    "id": "shoe_007",
-    "brand": "Nike",
-    "model_name": "Ja 1",
-    "release_year": 2023,
-    "price_krw": 149000,
-    "weight_g": 345,
+    "id": "shoe_029",
+    "brand": "Adidas",
+    "model_name": "Dame 9",
+    "release_year": 2024,
+    "price_krw": 169000,
+    "weight_g": 368,
     "sensory_tags": [
-      "초경량",
-      "민첩한 무브",
-      "유연한 착화감",
-      "폭발적인 점프"
+      "즉각적인 반응성",
+      "쫀득한 접지",
+      "경쾌한 무게감",
+      "폭발적인 스타트"
     ],
-    "cushion_type": "zoom",
+    "cushion_type": "bounce pro",
     "support_level": "low",
-    "traction_pattern": "멀티 디렉션",
-    "player_signature": "Ja Morant",
-    "description": "자 모란트의 폭발적인 수직 점프와 민첩한 움직임을 위한 초경량 설계. 공중 플레이와 빠른 전환에 최적화되었습니다.",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Damian Lillard",
+    "description": "Dame 시리즈의 최신 모델. 향상된 반응성과 경량화로 더 빠른 플레이가 가능합니다.",
     "tags": [
       "로우컷",
       "가드",
-      "점프력",
-      "민첩성",
-      "초경량"
+      "스피드",
+      "반응성",
+      "딥 3"
     ]
   },
   {
-    "id": "shoe_008",
-    "brand": "New Balance",
-    "model_name": "TWO WXY v4",
+    "id": "shoe_030",
+    "brand": "Adidas",
+    "model_name": "Adizero Select 2.0",
+    "release_year": 2024,
+    "price_krw": 189000,
+    "weight_g": 335,
+    "sensory_tags": [
+      "초경량",
+      "즉각적인 반응성",
+      "쫀득한 접지",
+      "민첩한 무브"
+    ],
+    "cushion_type": "lightstrike pro",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "초경량 엘리트 모델. 최고의 민첩성과 스피드를 원하는 가드 포지션에 이상적입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "초경량",
+      "엘리트",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_031",
+    "brand": "Under Armour",
+    "model_name": "Curry 12",
+    "release_year": 2024,
+    "price_krw": 219000,
+    "weight_g": 355,
+    "sensory_tags": [
+      "정교한 접지",
+      "민첩한 무브",
+      "빠른 릴리즈",
+      "반응성 쿠션"
+    ],
+    "cushion_type": "flow",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션 패턴",
+    "player_signature": "Stephen Curry",
+    "description": "스테픈 커리의 최신 시그니처 모델. 오프볼 무브와 빠른 3점 슈팅을 위한 정교한 그립감과 민첩성을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "슈터",
+      "빠른 릴리즈",
+      "오프볼 무브"
+    ]
+  },
+  {
+    "id": "shoe_032",
+    "brand": "Under Armour",
+    "model_name": "Lockdown 6",
     "release_year": 2023,
-    "price_krw": 179000,
+    "price_krw": 99000,
     "weight_g": 385,
     "sensory_tags": [
-      "편안한 쿠션",
-      "안정적인 착지",
-      "부드러운 롤링",
+      "가성비 쿠션",
+      "안정적인 지지",
+      "내구성",
+      "편안한 착화감"
+    ],
+    "cushion_type": "charged",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": null,
+    "description": "가성비 뛰어난 입문용 농구화. 실용적인 성능과 내구성으로 입문자에게 적합합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "가성비",
+      "입문용",
+      "내구성"
+    ]
+  },
+  {
+    "id": "shoe_033",
+    "brand": "Puma",
+    "model_name": "All Pro Nitro",
+    "release_year": 2023,
+    "price_krw": 149000,
+    "weight_g": 368,
+    "sensory_tags": [
+      "반응성 쿠션",
+      "쫀득한 접지",
+      "경쾌한 착화감",
       "균형잡힌 성능"
+    ],
+    "cushion_type": "nitro",
+    "support_level": "low",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": null,
+    "description": "퓨마의 올라운드 농구화. 균형잡힌 성능으로 다양한 포지션에 적합합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "올라운드",
+      "균형",
+      "가성비"
+    ]
+  },
+  {
+    "id": "shoe_034",
+    "brand": "Puma",
+    "model_name": "All-Pro NITRO 2",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "반응성 쿠션",
+      "쫀득한 접지",
+      "경쾌한 무게감",
+      "향상된 지지력"
+    ],
+    "cushion_type": "nitro foam",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "All Pro의 업그레이드 버전. 향상된 쿠셔닝과 지지력을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "올라운드",
+      "반응성",
+      "향상"
+    ]
+  },
+  {
+    "id": "shoe_035",
+    "brand": "Puma",
+    "model_name": "All Pro Nitro Elite",
+    "release_year": 2024,
+    "price_krw": 179000,
+    "weight_g": 358,
+    "sensory_tags": [
+      "프리미엄 쿠션",
+      "최상급 접지",
+      "가벼운 무게",
+      "엘리트 성능"
+    ],
+    "cushion_type": "nitro elite",
+    "support_level": "low",
+    "traction_pattern": "독립형 포드",
+    "player_signature": null,
+    "description": "All Pro 시리즈의 프리미엄 버전. 엘리트 플레이어를 위한 최상급 성능을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "엘리트",
+      "프리미엄",
+      "성능"
+    ]
+  },
+  {
+    "id": "shoe_036",
+    "brand": "Puma",
+    "model_name": "Stewie 2",
+    "release_year": 2024,
+    "price_krw": 139000,
+    "weight_g": 355,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "만능형 성능"
+    ],
+    "cushion_type": "nitro",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Breanna Stewart",
+    "description": "브리아나 스튜어트의 시그니처 모델. 여성 농구 선수를 위한 균형잡힌 성능을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "포워드",
+      "여성농구",
+      "만능형",
+      "균형"
+    ]
+  },
+  {
+    "id": "shoe_037",
+    "brand": "Li-Ning",
+    "model_name": "Way of Wade 11",
+    "release_year": 2023,
+    "price_krw": 189000,
+    "weight_g": 378,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "프리미엄 착화감"
+    ],
+    "cushion_type": "carbon fiber",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Dwyane Wade",
+    "description": "드웨인 웨이드의 시그니처 라인. 프리미엄 소재와 우수한 쿠셔닝으로 높은 평가를 받고 있습니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "프리미엄",
+      "쿠셔닝",
+      "시그니처"
+    ]
+  },
+  {
+    "id": "shoe_038",
+    "brand": "Li-Ning",
+    "model_name": "Way of Wade 12",
+    "release_year": 2024,
+    "price_krw": 199000,
+    "weight_g": 375,
+    "sensory_tags": [
+      "구름 같은 쿠션",
+      "강력한 지지력",
+      "쫀득한 접지",
+      "프리미엄 성능"
+    ],
+    "cushion_type": "carbon fiber",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Dwyane Wade",
+    "description": "Wade 시리즈의 최신 모델. 더욱 향상된 쿠셔닝과 지지력을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "프리미엄",
+      "향상",
+      "시그니처"
+    ]
+  },
+  {
+    "id": "shoe_039",
+    "brand": "Li-Ning",
+    "model_name": "Way of Wade All City 12",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "반응성 쿠션",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "가성비 성능"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Dwyane Wade",
+    "description": "Wade의 가성비 라인. 합리적인 가격에 우수한 성능을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "가성비",
+      "올라운드",
+      "실용성"
+    ]
+  },
+  {
+    "id": "shoe_040",
+    "brand": "Li-Ning",
+    "model_name": "Way of Wade All City 13",
+    "release_year": 2025,
+    "price_krw": 169000,
+    "weight_g": 362,
+    "sensory_tags": [
+      "폭발적인 반발력",
+      "쫀득한 접지",
+      "경쾌한 무게감",
+      "향상된 성능"
+    ],
+    "cushion_type": "lightfoam",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Dwyane Wade",
+    "description": "All City 시리즈의 최신작. 향상된 반발력과 접지력으로 가성비를 극대화했습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "가성비",
+      "반발력",
+      "향상"
+    ]
+  },
+  {
+    "id": "shoe_041",
+    "brand": "Li-Ning",
+    "model_name": "Way of Wade All City 13 Encore",
+    "release_year": 2025,
+    "price_krw": 149000,
+    "weight_g": 368,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "편안한 착화감"
+    ],
+    "cushion_type": "lightfoam",
+    "support_level": "low",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Dwyane Wade",
+    "description": "All City 13의 특별 에디션. 향상된 편안함과 스타일을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "편안함",
+      "스타일",
+      "가성비"
+    ]
+  },
+  {
+    "id": "shoe_042",
+    "brand": "Li-Ning",
+    "model_name": "JB 2",
+    "release_year": 2024,
+    "price_krw": 139000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "가성비 쿠션",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "실용적 성능"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": "Jimmy Butler",
+    "description": "지미 버틀러의 시그니처 라인. 실용적인 성능으로 가성비가 뛰어납니다.",
+    "tags": [
+      "로우컷",
+      "포워드",
+      "가성비",
+      "실용성",
+      "올라운드"
+    ]
+  },
+  {
+    "id": "shoe_043",
+    "brand": "Li-Ning",
+    "model_name": "JB 3",
+    "release_year": 2025,
+    "price_krw": 149000,
+    "weight_g": 368,
+    "sensory_tags": [
+      "반응성 쿠션",
+      "쫀득한 접지",
+      "경쾌한 무게감",
+      "향상된 성능"
+    ],
+    "cushion_type": "lightfoam",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Jimmy Butler",
+    "description": "JB 시리즈의 최신 모델. 향상된 반응성과 접지력을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "포워드",
+      "반응성",
+      "향상",
+      "가성비"
+    ]
+  },
+  {
+    "id": "shoe_044",
+    "brand": "Anta",
+    "model_name": "Kai 1",
+    "release_year": 2024,
+    "price_krw": 149000,
+    "weight_g": 358,
+    "sensory_tags": [
+      "폭발적인 출발",
+      "쫀득한 접지",
+      "경쾌한 착화감",
+      "민첩한 무브"
+    ],
+    "cushion_type": "nitro speed",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Kyrie Irving",
+    "description": "카이리 어빙의 안타 시그니처 모델. 민첩한 핸들링과 빠른 방향 전환에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "핸들링",
+      "민첩성",
+      "폭발력"
+    ]
+  },
+  {
+    "id": "shoe_045",
+    "brand": "Anta",
+    "model_name": "KAI 2",
+    "release_year": 2025,
+    "price_krw": 159000,
+    "weight_g": 355,
+    "sensory_tags": [
+      "즉각적인 반응성",
+      "최상급 접지",
+      "민첩한 무브",
+      "경쾌한 무게감"
+    ],
+    "cushion_type": "nitro speed pro",
+    "support_level": "low",
+    "traction_pattern": "독립형 포드",
+    "player_signature": "Kyrie Irving",
+    "description": "카이리 시리즈의 두 번째 모델. 향상된 접지력과 반응성으로 더 빠른 플레이가 가능합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "핸들링",
+      "반응성",
+      "접지력"
+    ]
+  },
+  {
+    "id": "shoe_046",
+    "brand": "Anta",
+    "model_name": "KT 10",
+    "release_year": 2024,
+    "price_krw": 169000,
+    "weight_g": 365,
+    "sensory_tags": [
+      "안정적인 지지",
+      "쫀득한 접지",
+      "균형잡힌 쿠션",
+      "슈팅 특화"
+    ],
+    "cushion_type": "a-flashfoam",
+    "support_level": "low",
+    "traction_pattern": "헤링본 풀 렝스",
+    "player_signature": "Klay Thompson",
+    "description": "클레이 톰슨의 시그니처 모델. 슈터를 위한 안정적인 지지력과 접지력을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "슈터",
+      "안정성",
+      "접지력"
+    ]
+  },
+  {
+    "id": "shoe_047",
+    "brand": "New Balance",
+    "model_name": "Fresh Foam BB v2",
+    "release_year": 2023,
+    "price_krw": 159000,
+    "weight_g": 388,
+    "sensory_tags": [
+      "부드러운 쿠션",
+      "편안한 착화감",
+      "안정적인 지지",
+      "균형잡힌 성능"
+    ],
+    "cushion_type": "fresh foam",
+    "support_level": "mid",
+    "traction_pattern": "컴파운드 패턴",
+    "player_signature": null,
+    "description": "뉴발란스의 편안한 농구화. 부드러운 쿠셔닝으로 장시간 플레이에 적합합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "편안함",
+      "쿠셔닝",
+      "올라운드"
+    ]
+  },
+  {
+    "id": "shoe_048",
+    "brand": "New Balance",
+    "model_name": "Kawhi 4",
+    "release_year": 2024,
+    "price_krw": 189000,
+    "weight_g": 382,
+    "sensory_tags": [
+      "강력한 지지력",
+      "안정적인 착지",
+      "쫀득한 접지",
+      "프리미엄 성능"
     ],
     "cushion_type": "fuelcell",
     "support_level": "mid",
     "traction_pattern": "컴파운드 패턴",
     "player_signature": "Kawhi Leonard",
-    "description": "카와이 레너드의 양발 플레이와 디펜스 무브를 위한 안정성. 측면 이동과 방향 전환에 강한 지지력을 제공합니다.",
+    "description": "카와이 레너드의 최신 시그니처 모델. 양방향 플레이와 디펜스 무브를 위한 강력한 지지력을 제공합니다.",
     "tags": [
       "미드컷",
       "포워드",
-      "양발 플레이",
+      "양방향",
       "디펜스",
-      "안정성"
+      "지지력"
     ]
   },
   {
-    "id": "shoe_009",
-    "brand": "Puma",
-    "model_name": "MB.02",
-    "release_year": 2023,
-    "price_krw": 169000,
-    "weight_g": 362,
+    "id": "shoe_049",
+    "brand": "Rigorer",
+    "model_name": "AR2",
+    "release_year": 2024,
+    "price_krw": 129000,
+    "weight_g": 375,
     "sensory_tags": [
-      "독특한 디자인",
-      "반응성 쿠션",
+      "가성비 쿠션",
       "쫀득한 접지",
-      "경쾌한 무게감"
+      "경쾌한 착화감",
+      "실용적 성능"
     ],
-    "cushion_type": "nitro",
+    "cushion_type": "mono tech",
     "support_level": "low",
-    "traction_pattern": "유니크 패턴",
-    "player_signature": "LaMelo Ball",
-    "description": "라멜로 볼의 크리에이티브한 플레이메이킹을 위한 독특한 설계. 화려한 패스와 빠른 전환 공격에 최적화되었습니다.",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Austin Reaves",
+    "description": "오스틴 리브스의 시그니처 모델. 신생 브랜드의 가성비 뛰어난 농구화입니다.",
     "tags": [
       "로우컷",
       "가드",
-      "플레이메이킹",
-      "크리에이티브",
-      "스타일"
+      "가성비",
+      "실용성",
+      "올라운드"
     ]
   },
   {
-    "id": "shoe_010",
-    "brand": "Nike",
-    "model_name": "Giannis Immortality 3",
-    "release_year": 2023,
-    "price_krw": 119000,
-    "weight_g": 398,
+    "id": "shoe_050",
+    "brand": "Skechers",
+    "model_name": "SKX Reigns",
+    "release_year": 2024,
+    "price_krw": 79000,
+    "weight_g": 395,
     "sensory_tags": [
-      "강력한 지지력",
+      "저가 쿠션",
+      "안정적인 지지",
       "내구성",
-      "안정적인 착지",
-      "파워풀한 쿠션"
+      "입문용 성능"
     ],
-    "cushion_type": "zoom",
+    "cushion_type": "air cooled",
     "support_level": "mid",
-    "traction_pattern": "와이드 헤링본",
-    "player_signature": "Giannis Antetokounmpo",
-    "description": "야니스 아데토쿤보의 유로스텝과 림 돌파를 위한 강력한 지지력. 파워풀한 플레이를 위한 내구성과 안정성을 제공합니다.",
+    "traction_pattern": "기본 패턴",
+    "player_signature": null,
+    "description": "스케쳐스의 입문용 농구화. 합리적인 가격으로 기본적인 성능을 제공합니다.",
     "tags": [
       "미드컷",
-      "포워드",
-      "유로스텝",
-      "파워",
+      "가드",
+      "입문용",
+      "저가",
       "내구성"
+    ]
+  },
+  {
+    "id": "shoe_051",
+    "brand": "361°",
+    "model_name": "Big3 5.0 Quick Pro",
+    "release_year": 2024,
+    "price_krw": 119000,
+    "weight_g": 368,
+    "sensory_tags": [
+      "가성비 쿠션",
+      "경쾌한 착화감",
+      "쫀득한 접지",
+      "빠른 무브"
+    ],
+    "cushion_type": "quk foam",
+    "support_level": "low",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": null,
+    "description": "361도의 가성비 농구화. 빠른 움직임에 최적화된 경쾌한 착화감을 제공합니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "가성비",
+      "스피드",
+      "중국브랜드"
+    ]
+  },
+  {
+    "id": "shoe_052",
+    "brand": "361°",
+    "model_name": "Joker 1",
+    "release_year": 2024,
+    "price_krw": 149000,
+    "weight_g": 378,
+    "sensory_tags": [
+      "균형잡힌 쿠션",
+      "안정적인 지지",
+      "쫀득한 접지",
+      "만능형 성능"
+    ],
+    "cushion_type": "quk foam pro",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Nikola Jokic",
+    "description": "니콜라 요키치의 시그니처 모델. 빅맨을 위한 균형잡힌 성능과 안정성을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "센터",
+      "빅맨",
+      "안정성",
+      "균형"
     ]
   }
 ]
