@@ -253,6 +253,9 @@ class ChromaDBManager:
         # Prepare metadata, ensuring all values are simple types for ChromaDB.
         metadatas = []
         for player in players:
+            # Safely extract preferred_features with defaults to handle malformed data
+            preferred = player.get("preferred_features", {})
+
             metadata = {
                 "doc_type": "player",
                 "name": player["name"],
@@ -260,9 +263,10 @@ class ChromaDBManager:
                 # Join lists into comma-separated strings for metadata compatibility
                 "play_style": ",".join(player.get("play_style", [])),
                 "signature_shoes": ",".join(player.get("signature_shoes", [])),
-                "cushion": player["preferred_features"]["cushion"],
-                "support": player["preferred_features"]["support"],
-                "traction": player["preferred_features"]["traction"],
+                # Safely access nested preferred_features with string defaults
+                "cushion": str(preferred.get("cushion", "")),
+                "support": str(preferred.get("support", "")),
+                "traction": str(preferred.get("traction", "")),
             }
             metadatas.append(metadata)
 
