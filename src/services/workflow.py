@@ -86,7 +86,9 @@ Respond with ONLY the category name (skill_lab, shoe_recommendation, or rule_que
             temperature=0.0,  # Deterministic routing
         )
 
-        intent = response.choices[0].message.content.strip().lower()
+        # Safely extract content with null-safety check
+        msg = response.choices[0].message.content
+        intent = msg.strip().lower() if msg else ""
 
         # Validate intent
         valid_intents = ["skill_lab", "shoe_recommendation", "rule_query"]
