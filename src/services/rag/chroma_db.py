@@ -7,12 +7,16 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from src.core.config import settings
 from src.core.constants import (
     DRILLS_COLLECTION_NAME,
+    GLOSSARY_COLLECTION_NAME,
     PLAYERS_COLLECTION_NAME,
+    RULES_COLLECTION_NAME,
     SHOES_COLLECTION_NAME,
 )
 from src.services.rag.formatters import (
     format_drill_document,
+    format_glossary_document,
     format_player_document,
+    format_rule_document,
     format_shoe_document,
 )
 
@@ -31,6 +35,8 @@ class ChromaDBManager:
         self.collection = None
         self.shoes_collection = None
         self.players_collection = None
+        self.rules_collection = None
+        self.glossary_collection = None
 
     def _ensure_initialized(self) -> None:
         """
@@ -78,6 +84,14 @@ class ChromaDBManager:
             )
             self.players_collection = self.client.get_or_create_collection(
                 name=PLAYERS_COLLECTION_NAME,
+                embedding_function=embedding_function
+            )
+            self.rules_collection = self.client.get_or_create_collection(
+                name=RULES_COLLECTION_NAME,
+                embedding_function=embedding_function
+            )
+            self.glossary_collection = self.client.get_or_create_collection(
+                name=GLOSSARY_COLLECTION_NAME,
                 embedding_function=embedding_function
             )
 
@@ -291,6 +305,144 @@ class ChromaDBManager:
         """
         self._ensure_initialized()
         results = self.players_collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_rules(
+        self,
+        rule_chunks: List[Dict[str, Any]],
+        embeddings: List[List[float]],
+    ) -> None:
+        """
+        Adds rule document chunks and their embeddings to the ChromaDB collection.
+
+        Args:
+            rule_chunks: A list of rule chunk dictionaries from PDF parsing.
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of chunks and embeddings do not match.
+        """
+        self._ensure_initialized()
+        if len(rule_chunks) != len(embeddings):
+            raise ValueError(
+                f"The number of rule chunks ({len(rule_chunks)}) must match "
+                f"the number of embeddings ({len(embeddings)})."
+            )
+
+        if not rule_chunks:
+            return
+
+        ids = [chunk["chunk_id"] for chunk in rule_chunks]
+        documents = [format_rule_document(chunk) for chunk in rule_chunks]
+
+        metadatas = []
+        for chunk in rule_chunks:
+            metadata = {
+                "doc_type": "rule",
+                "rule_type": chunk["rule_type"],
+                "page_number": chunk["page_number"],
+                "article": chunk.get("article", "N/A"),
+                "clause": chunk.get("clause", "N/A"),
+            }
+            metadatas.append(metadata)
+
+        self.rules_collection.add(
+            ids=ids,
+            embeddings=embeddings,
+            documents=documents,
+            metadatas=metadatas,
+        )
+
+    def query_rules(
+        self,
+        query_texts: List[str],
+        n_results: int = 5,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the rules collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        self._ensure_initialized()
+        results = self.rules_collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_glossary(
+        self,
+        terms: List[Dict[str, Any]],
+        embeddings: List[List[float]],
+    ) -> None:
+        """
+        Adds glossary term documents and their embeddings to the ChromaDB collection.
+
+        Args:
+            terms: A list of glossary term dictionaries.
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of terms and embeddings do not match.
+        """
+        self._ensure_initialized()
+        if len(terms) != len(embeddings):
+            raise ValueError(
+                f"The number of terms ({len(terms)}) must match "
+                f"the number of embeddings ({len(embeddings)})."
+            )
+
+        if not terms:
+            return
+
+        ids = [term["id"] for term in terms]
+        documents = [format_glossary_document(term) for term in terms]
+
+        metadatas = []
+        for term in terms:
+            metadata = {
+                "doc_type": "glossary",
+                "term": term["term"],
+                "category": term["category"],
+                "related_rules": ",".join(term.get("related_rules", [])),
+                "tags": ",".join(term.get("tags", [])),
+            }
+            metadatas.append(metadata)
+
+        self.glossary_collection.add(
+            ids=ids,
+            embeddings=embeddings,
+            documents=documents,
+            metadatas=metadatas,
+        )
+
+    def query_glossary(
+        self,
+        query_texts: List[str],
+        n_results: int = 3,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the glossary collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        self._ensure_initialized()
+        results = self.glossary_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
         return results
