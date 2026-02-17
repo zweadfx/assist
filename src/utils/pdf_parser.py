@@ -199,6 +199,20 @@ class RulesPDFParser:
                 chunk_id += 1
                 continue
 
+            # Capture text before the first article header
+            first_match_start = matches[0].start()
+            if first_match_start > 0:
+                pre_text = text[:first_match_start].strip()
+                if pre_text:
+                    chunks.append(
+                        self._create_chunk_metadata(
+                            chunk_id=f"{self.rule_type.lower()}_pre_{chunk_id}",
+                            content=pre_text,
+                            page_number=page_num + 1,
+                        )
+                    )
+                    chunk_id += 1
+
             # Split text by article boundaries
             for i, match in enumerate(matches):
                 article_num = match.group(1)
