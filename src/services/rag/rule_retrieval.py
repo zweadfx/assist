@@ -157,7 +157,7 @@ class RuleRetriever:
             Dictionary with 'rules' and 'glossary' lists of Documents
         """
         logger.info(
-            f"Hybrid search: situation={situation[:80]}..., rule_type={rule_type}"
+            f"Hybrid search: situation={(situation or '')[:80]}..., rule_type={rule_type}"
         )
 
         result = {"rules": [], "glossary": []}

@@ -61,7 +61,9 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
     situation = user_info.get("situation_description", "")
     rule_type = user_info.get("rule_type")
 
-    logger.debug(f"Search params: situation={situation[:80]}..., rule_type={rule_type}")
+    logger.debug(
+        f"Search params: situation={(situation or '')[:80]}..., rule_type={rule_type}"
+    )
 
     try:
         search_results = rule_retriever.hybrid_search(
