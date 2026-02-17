@@ -4,8 +4,8 @@ import logging
 from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
 
-from src.models.response_schema import SuccessResponse
 from src.models.gear_schema import GearAdvisorRequest, GearAdvisorResponse
+from src.models.response_schema import SuccessResponse
 from src.services.agents.gear_agent import gear_agent_graph
 
 logger = logging.getLogger(__name__)

@@ -9,15 +9,11 @@ Test Cases:
 - TC-05: Exception handling validation
 """
 
-import json
-from typing import Dict, List
-
 import pytest
 from fastapi.testclient import TestClient
-from langchain_core.documents import Document
 
 from src.main import app
-from src.services.rag.shoe_retrieval import ShoeRetriever, shoe_retriever
+from src.services.rag.shoe_retrieval import ShoeRetriever
 
 
 @pytest.fixture

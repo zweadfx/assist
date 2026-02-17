@@ -156,7 +156,8 @@ class RulesPDFParser:
         Create chunks based on article/rule numbers (advanced parsing).
 
         This attempts to identify article headers and create chunks per article.
-        Pattern matching is simplified and may need adjustment based on actual PDF format.
+        Pattern matching is simplified and may need adjustment
+        based on actual PDF format.
 
         Returns:
             List of chunks organized by articles

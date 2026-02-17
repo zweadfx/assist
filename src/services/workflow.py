@@ -8,7 +8,7 @@ import logging
 from typing import List, TypedDict
 
 from langchain_core.documents import Document
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 
 from src.services.agents.coach_agent import coach_agent_graph
@@ -126,7 +126,7 @@ def skill_lab_node(state: AgentState) -> dict:
 
         return {"final_response": final_state.get("final_response", "")}
 
-    except Exception as e:
+    except Exception:
         # Log full exception details server-side for debugging
         logger.exception("Error in skill_lab_node")
         # Return generic error message without exposing internal details
@@ -159,7 +159,7 @@ def shoe_recommendation_node(state: AgentState) -> dict:
 
         return {"final_response": final_state.get("final_response", "")}
 
-    except Exception as e:
+    except Exception:
         # Log full exception details server-side for debugging
         logger.exception("Error in shoe_recommendation_node")
         # Return generic error message without exposing internal details
