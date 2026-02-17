@@ -126,14 +126,21 @@ class RulesPDFParser:
                     )
                     chunk_id += 1
 
-                    # Start new chunk with overlap (last few sentences)
-                    overlap_sentences = (
-                        current_chunk_sentences[-2:]
-                        if len(current_chunk_sentences) >= 2
-                        else []
-                    )
-                    current_chunk = " ".join(overlap_sentences) + " "
-                    current_chunk_sentences = overlap_sentences.copy()
+                    # Start new chunk with overlap from previous sentences
+                    if overlap > 0:
+                        overlap_sents = []
+                        char_count = 0
+                        for s in reversed(current_chunk_sentences):
+                            char_count += len(s)
+                            overlap_sents.append(s)
+                            if char_count >= overlap:
+                                break
+                        overlap_sents.reverse()
+                        current_chunk = " ".join(overlap_sents) + " "
+                        current_chunk_sentences = overlap_sents
+                    else:
+                        current_chunk = ""
+                        current_chunk_sentences = []
 
                 current_chunk += sentence + " "
                 current_chunk_sentences.append(sentence)
