@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from typing import List, TypedDict
 
 import openai
@@ -13,6 +14,22 @@ from src.services.rag.embedding import client as openai_client
 from src.services.rag.rule_retrieval import rule_retriever
 
 logger = logging.getLogger(__name__)
+
+MAX_SITUATION_LENGTH = 1000
+_BLOCKED_PATTERNS = re.compile(
+    r"ignore\s+(all\s+)?previous\s+instructions"
+    r"|forget\s+(all\s+)?above"
+    r"|you\s+are\s+now"
+    r"|disregard\s+(all\s+)?prior",
+    re.IGNORECASE,
+)
+
+
+def _sanitize_situation(text: str) -> str:
+    """Sanitize user situation input: enforce length and strip injection patterns."""
+    text = text[:MAX_SITUATION_LENGTH]
+    text = _BLOCKED_PATTERNS.sub("", text)
+    return text.strip()
 
 
 class JudgeAgentState(TypedDict):
@@ -143,13 +160,9 @@ def generate_judgment(state: JudgeAgentState) -> dict:
             f"Focus primarily on {rule_type} rules for this judgment.\n"
         )
 
-    prompt = f"""
-You are an expert basketball referee and rules analyst. Your task is to analyze
-a basketball game situation and provide a clear, authoritative judgment based on
-official basketball rules.
-
-**User's Situation:**
-{user_info.get("situation_description")}
+    system_prompt = f"""You are an expert basketball referee and rules analyst. \
+Your task is to analyze a basketball game situation and provide a clear, \
+authoritative judgment based on official basketball rules.
 
 {rule_type_instruction}
 {glossary_section}**Retrieved Rules from Database:**
@@ -175,10 +188,15 @@ official basketball rules.
 JSON Output:
 """
 
+    situation = _sanitize_situation(user_info.get("situation_description") or "")
+
     try:
         response = openai_client.chat.completions.create(
             model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": situation},
+            ],
             response_format={"type": "json_object"},
         )
 
