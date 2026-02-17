@@ -88,7 +88,9 @@ def retrieve_drills(state: CoachAgentState) -> dict:
 
     # Build enriched query with user context for better semantic matching
     level_phrase = f"{skill_level} " if skill_level else ""
-    equipment_str = ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
+    equipment_str = (
+        ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
+    )
     query_text = (
         f"A {level_phrase}basketball drill focusing on improving "
         f"{focus_area} skills using {equipment_str}."
@@ -115,9 +117,7 @@ def retrieve_drills(state: CoachAgentState) -> dict:
             logger.warning("No drills retrieved from DB")
     except Exception as e:
         logger.exception("Failed to retrieve drills from RAG")
-        raise ValueError(
-            "Failed to retrieve drills from database"
-        ) from e
+        raise ValueError("Failed to retrieve drills from database") from e
 
     # Post-filter the results based on available equipment
     filtered_docs = []

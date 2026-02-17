@@ -30,7 +30,9 @@ class ChromaDBManager:
         Actual initialization is deferred until first use to avoid import-time failures.
         """
         self._initialized = False
-        self._init_lock = threading.Lock()  # Protects initialization from race conditions
+        self._init_lock = (
+            threading.Lock()
+        )  # Protects initialization from race conditions
         self.client = None
         self.collection = None
         self.shoes_collection = None
@@ -69,30 +71,24 @@ class ChromaDBManager:
 
             # Use OpenAI embedding function for consistency
             embedding_function = OpenAIEmbeddingFunction(
-                api_key=settings.OPENAI_API_KEY,
-                model_name="text-embedding-3-small"
+                api_key=settings.OPENAI_API_KEY, model_name="text-embedding-3-small"
             )
 
             # Create or get collections
             self.collection = self.client.get_or_create_collection(
-                name=DRILLS_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=DRILLS_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.shoes_collection = self.client.get_or_create_collection(
-                name=SHOES_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=SHOES_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.players_collection = self.client.get_or_create_collection(
-                name=PLAYERS_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=PLAYERS_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.rules_collection = self.client.get_or_create_collection(
-                name=RULES_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=RULES_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.glossary_collection = self.client.get_or_create_collection(
-                name=GLOSSARY_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=GLOSSARY_COLLECTION_NAME, embedding_function=embedding_function
             )
 
             # Set initialized flag (must be last, acts as memory barrier)

@@ -2,6 +2,7 @@
 PDF parsing utilities for basketball rules documents.
 Extracts text and creates structured chunks with metadata.
 """
+
 import re
 from pathlib import Path
 from typing import Any, Dict, List
@@ -71,10 +72,12 @@ class RulesPDFParser:
         for page_num, page in enumerate(self.reader.pages):
             text = page.extract_text()
             if text.strip():  # Only include non-empty pages
-                pages_data.append({
-                    "page_number": page_num + 1,  # 1-indexed for user display
-                    "text": text,
-                })
+                pages_data.append(
+                    {
+                        "page_number": page_num + 1,  # 1-indexed for user display
+                        "text": text,
+                    }
+                )
 
         return pages_data
 
@@ -103,23 +106,32 @@ class RulesPDFParser:
                 continue
 
             # Split text into sentences for better chunk boundaries
-            sentences = re.split(r'(?<=[.!?])\s+', text)
+            sentences = re.split(r"(?<=[.!?])\s+", text)
             current_chunk = ""
             current_chunk_sentences = []
 
             for sentence in sentences:
                 # Check if adding this sentence would exceed max size
-                if len(current_chunk) + len(sentence) > max_chunk_size and current_chunk:
+                if (
+                    len(current_chunk) + len(sentence) > max_chunk_size
+                    and current_chunk
+                ):
                     # Save current chunk
-                    chunks.append(self._create_chunk_metadata(
-                        chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
-                        content=current_chunk.strip(),
-                        page_number=page_num + 1,
-                    ))
+                    chunks.append(
+                        self._create_chunk_metadata(
+                            chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
+                            content=current_chunk.strip(),
+                            page_number=page_num + 1,
+                        )
+                    )
                     chunk_id += 1
 
                     # Start new chunk with overlap (last few sentences)
-                    overlap_sentences = current_chunk_sentences[-2:] if len(current_chunk_sentences) >= 2 else []
+                    overlap_sentences = (
+                        current_chunk_sentences[-2:]
+                        if len(current_chunk_sentences) >= 2
+                        else []
+                    )
                     current_chunk = " ".join(overlap_sentences) + " "
                     current_chunk_sentences = overlap_sentences.copy()
 
@@ -128,11 +140,13 @@ class RulesPDFParser:
 
             # Add remaining chunk if any
             if current_chunk.strip():
-                chunks.append(self._create_chunk_metadata(
-                    chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
-                    content=current_chunk.strip(),
-                    page_number=page_num + 1,
-                ))
+                chunks.append(
+                    self._create_chunk_metadata(
+                        chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
+                        content=current_chunk.strip(),
+                        page_number=page_num + 1,
+                    )
+                )
                 chunk_id += 1
 
         return chunks
@@ -155,9 +169,7 @@ class RulesPDFParser:
 
         # Common patterns for article headers in basketball rules
         # Example: "Article 25", "Art. 33", "Rule 4", etc.
-        article_pattern = re.compile(
-            r'(?:Article|Art\.?|Rule)\s+(\d+)', re.IGNORECASE
-        )
+        article_pattern = re.compile(r"(?:Article|Art\.?|Rule)\s+(\d+)", re.IGNORECASE)
 
         for page_num, page in enumerate(self.reader.pages):
             text = page.extract_text()
@@ -169,11 +181,13 @@ class RulesPDFParser:
 
             if not matches:
                 # No article headers found, treat as regular chunk
-                chunks.append(self._create_chunk_metadata(
-                    chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
-                    content=text.strip(),
-                    page_number=page_num + 1,
-                ))
+                chunks.append(
+                    self._create_chunk_metadata(
+                        chunk_id=f"{self.rule_type.lower()}_chunk_{chunk_id}",
+                        content=text.strip(),
+                        page_number=page_num + 1,
+                    )
+                )
                 chunk_id += 1
                 continue
 
@@ -185,12 +199,14 @@ class RulesPDFParser:
 
                 article_text = text[start_pos:end_pos].strip()
 
-                chunks.append(self._create_chunk_metadata(
-                    chunk_id=f"{self.rule_type.lower()}_art{article_num}_{chunk_id}",
-                    content=article_text,
-                    page_number=page_num + 1,
-                    article=f"Art {article_num}",
-                ))
+                chunks.append(
+                    self._create_chunk_metadata(
+                        chunk_id=f"{self.rule_type.lower()}_art{article_num}_{chunk_id}",
+                        content=article_text,
+                        page_number=page_num + 1,
+                        article=f"Art {article_num}",
+                    )
+                )
                 chunk_id += 1
 
         return chunks
@@ -227,9 +243,7 @@ class RulesPDFParser:
 
 
 def parse_rules_pdf(
-    pdf_path: Path,
-    rule_type: str,
-    chunk_method: str = "sliding_window"
+    pdf_path: Path, rule_type: str, chunk_method: str = "sliding_window"
 ) -> List[Dict[str, Any]]:
     """
     Convenience function to parse a rules PDF file.

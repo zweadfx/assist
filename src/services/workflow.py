@@ -2,6 +2,7 @@
 Unified workflow integrating all agent functionalities.
 Routes user requests to appropriate agents (Skill Lab, Gear Advisor, Rule Expert).
 """
+
 import json
 import logging
 from typing import List, TypedDict
@@ -98,18 +99,12 @@ Respond with ONLY the category name (skill_lab, shoe_recommendation, or rule_que
 
         print(f"---Detected Intent: {intent}---")
 
-        return {
-            "routing_decision": intent,
-            "intent": intent
-        }
+        return {"routing_decision": intent, "intent": intent}
 
     except Exception as e:
         logger.error(f"Error in router_node: {e}")
         # Default to skill_lab on error
-        return {
-            "routing_decision": "skill_lab",
-            "intent": "skill_lab"
-        }
+        return {"routing_decision": "skill_lab", "intent": "skill_lab"}
 
 
 def skill_lab_node(state: AgentState) -> dict:
@@ -129,19 +124,19 @@ def skill_lab_node(state: AgentState) -> dict:
         # Invoke coach agent
         final_state = coach_agent_graph.invoke(coach_state)
 
-        return {
-            "final_response": final_state.get("final_response", "")
-        }
+        return {"final_response": final_state.get("final_response", "")}
 
     except Exception as e:
         # Log full exception details server-side for debugging
         logger.exception("Error in skill_lab_node")
         # Return generic error message without exposing internal details
         return {
-            "final_response": json.dumps({
-                "error": "Failed to generate training routine",
-                "message": "An internal error occurred while processing your request. Please try again later."
-            })
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to generate training routine",
+                    "message": "An internal error occurred while processing your request. Please try again later.",
+                }
+            )
         }
 
 
@@ -162,19 +157,19 @@ def shoe_recommendation_node(state: AgentState) -> dict:
         # Invoke gear agent
         final_state = gear_agent_graph.invoke(gear_state)
 
-        return {
-            "final_response": final_state.get("final_response", "")
-        }
+        return {"final_response": final_state.get("final_response", "")}
 
     except Exception as e:
         # Log full exception details server-side for debugging
         logger.exception("Error in shoe_recommendation_node")
         # Return generic error message without exposing internal details
         return {
-            "final_response": json.dumps({
-                "error": "Failed to generate shoe recommendations",
-                "message": "An internal error occurred while processing your request. Please try again later."
-            })
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to generate shoe recommendations",
+                    "message": "An internal error occurred while processing your request. Please try again later.",
+                }
+            )
         }
 
 
@@ -186,10 +181,12 @@ def rule_query_node(state: AgentState) -> dict:
     print("---NODE: Rule Query (Not Implemented)---")
 
     return {
-        "final_response": json.dumps({
-            "message": "Rule query feature is not yet implemented.",
-            "intent": "rule_query"
-        })
+        "final_response": json.dumps(
+            {
+                "message": "Rule query feature is not yet implemented.",
+                "intent": "rule_query",
+            }
+        )
     }
 
 
@@ -237,7 +234,7 @@ workflow.add_conditional_edges(
         "skill_lab": "skill_lab",
         "shoe_recommendation": "shoe_recommendation",
         "rule_query": "rule_query",
-    }
+    },
 )
 
 # All agent nodes lead to END

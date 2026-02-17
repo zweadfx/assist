@@ -3,6 +3,7 @@ Shoe retrieval module for Gear Advisor.
 Handles sensory keyword-based vector similarity search, player archetype matching,
 and multi-filtering with post-processing.
 """
+
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -56,7 +57,9 @@ class ShoeRetriever:
 
         # Additional safety check for empty query after joining
         if not query_text:
-            logger.info("Sensory keywords resulted in empty query, returning empty results")
+            logger.info(
+                "Sensory keywords resulted in empty query, returning empty results"
+            )
             return []
 
         logger.info(f"Searching shoes by sensory preferences: {sensory_keywords}")
@@ -129,9 +132,7 @@ class ShoeRetriever:
 
         except Exception as e:
             logger.exception("Failed to search shoes by sensory preferences")
-            raise ValueError(
-                "Failed to retrieve shoes from database"
-            ) from e
+            raise ValueError("Failed to retrieve shoes from database") from e
 
     def search_by_player_archetype(
         self, player_name: str, n_results: int = 3
@@ -263,7 +264,9 @@ class ShoeRetriever:
             return shoes
 
         # Clean signature model names
-        signature_models = [model.strip() for model in signature_models if model.strip()]
+        signature_models = [
+            model.strip() for model in signature_models if model.strip()
+        ]
 
         signature_shoes = []
         other_shoes = []

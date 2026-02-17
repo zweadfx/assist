@@ -101,9 +101,7 @@ async def lifespan(app: FastAPI):
 
             # Parse FIBA rules PDF
             if FIBA_RULES_PDF_PATH.exists():
-                fiba_chunks = parse_rules_pdf(
-                    FIBA_RULES_PDF_PATH, rule_type="FIBA"
-                )
+                fiba_chunks = parse_rules_pdf(FIBA_RULES_PDF_PATH, rule_type="FIBA")
                 all_chunks.extend(fiba_chunks)
                 logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
             else:
@@ -111,9 +109,7 @@ async def lifespan(app: FastAPI):
 
             # Parse NBA rules PDF
             if NBA_RULES_PDF_PATH.exists():
-                nba_chunks = parse_rules_pdf(
-                    NBA_RULES_PDF_PATH, rule_type="NBA"
-                )
+                nba_chunks = parse_rules_pdf(NBA_RULES_PDF_PATH, rule_type="NBA")
                 all_chunks.extend(nba_chunks)
                 logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
             else:
@@ -141,9 +137,7 @@ async def lifespan(app: FastAPI):
                 glossary = load_json_data(GLOSSARY_FILE_PATH)
                 logger.info(f"Loaded {len(glossary)} glossary terms from file.")
 
-                glossary_texts = [
-                    format_glossary_document(term) for term in glossary
-                ]
+                glossary_texts = [format_glossary_document(term) for term in glossary]
                 glossary_embeddings = generate_embeddings(glossary_texts)
                 logger.info(
                     f"Generated {len(glossary_embeddings)} glossary embeddings."

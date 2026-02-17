@@ -10,6 +10,7 @@ Test Cases:
 - TC-06: Endpoint integration test
 - TC-07: Endpoint validation error test
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from langchain_core.documents import Document
@@ -184,18 +185,14 @@ class TestWhistleEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
-        assert data["data"]["decision"] in [
-            "violation", "foul", "legal", "other"
-        ]
+        assert data["data"]["decision"] in ["violation", "foul", "legal", "other"]
 
     def test_tc07_judge_endpoint_empty_input(self, test_client):
         """
         TC-07: 엔드포인트 유효성 검증 - 빈 입력
         기대: 422 Validation Error
         """
-        payload = {
-            "situation_description": ""
-        }
+        payload = {"situation_description": ""}
 
         response = test_client.post("/api/v1/whistle/judge", json=payload)
 

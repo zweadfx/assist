@@ -54,6 +54,4 @@ async def recommend_gear(
         # For any other unexpected errors from the agent workflow, log the full
         # exception details internally and return a generic error message.
         logger.exception("An unexpected error occurred during gear recommendation")
-        raise HTTPException(
-            status_code=500, detail="Internal server error"
-        ) from e
+        raise HTTPException(status_code=500, detail="Internal server error") from e

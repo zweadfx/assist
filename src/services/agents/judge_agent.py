@@ -61,9 +61,7 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
     situation = user_info.get("situation_description", "")
     rule_type = user_info.get("rule_type")
 
-    logger.debug(
-        f"Search params: situation={situation[:80]}..., rule_type={rule_type}"
-    )
+    logger.debug(f"Search params: situation={situation[:80]}..., rule_type={rule_type}")
 
     try:
         search_results = rule_retriever.hybrid_search(
@@ -84,9 +82,7 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
 
     except Exception as e:
         logger.exception("Failed to retrieve rules and glossary from RAG")
-        raise ValueError(
-            "Failed to retrieve rules from database"
-        ) from e
+        raise ValueError("Failed to retrieve rules from database") from e
 
 
 def generate_judgment(state: JudgeAgentState) -> dict:
@@ -99,13 +95,9 @@ def generate_judgment(state: JudgeAgentState) -> dict:
     context_docs = state["context"]
 
     # Separate rules and glossary from context
-    rule_docs = [
-        doc for doc in context_docs
-        if doc.metadata.get("doc_type") == "rule"
-    ]
+    rule_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "rule"]
     glossary_docs = [
-        doc for doc in context_docs
-        if doc.metadata.get("doc_type") == "glossary"
+        doc for doc in context_docs if doc.metadata.get("doc_type") == "glossary"
     ]
 
     # Prepare rules context string
@@ -139,9 +131,7 @@ def generate_judgment(state: JudgeAgentState) -> dict:
     # Build glossary section
     glossary_section = ""
     if glossary_context_str:
-        glossary_section = (
-            f"**Related Basketball Terms:**\n{glossary_context_str}\n\n"
-        )
+        glossary_section = f"**Related Basketball Terms:**\n{glossary_context_str}\n\n"
 
     # Build rule type instruction
     rule_type = user_info.get("rule_type")
@@ -157,7 +147,7 @@ a basketball game situation and provide a clear, authoritative judgment based on
 official basketball rules.
 
 **User's Situation:**
-{user_info.get('situation_description')}
+{user_info.get("situation_description")}
 
 {rule_type_instruction}
 {glossary_section}**Retrieved Rules from Database:**
@@ -191,9 +181,7 @@ JSON Output:
         )
 
         if not response.choices or not response.choices[0].message.content:
-            raise ValueError(
-                "Received an invalid or empty response from OpenAI API."
-            )
+            raise ValueError("Received an invalid or empty response from OpenAI API.")
 
         content = response.choices[0].message.content
 
@@ -204,22 +192,16 @@ JSON Output:
             logger.debug(f"Generated Response: {final_response_str}")
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logger.error(
-                f"Failed to parse or validate LLM response for judgment: {e}"
-            )
+            logger.error(f"Failed to parse or validate LLM response for judgment: {e}")
             raise ValueError(
                 f"LLM returned an invalid judgment object: {content}"
             ) from e
 
     except openai.APIError as e:
         logger.error(f"OpenAI API error during judgment generation: {e}")
-        raise ValueError(
-            "Failed to generate judgment due to an API error."
-        ) from e
+        raise ValueError("Failed to generate judgment due to an API error.") from e
     except Exception as e:
-        logger.error(
-            f"An unexpected error occurred during judgment generation: {e}"
-        )
+        logger.error(f"An unexpected error occurred during judgment generation: {e}")
         raise
 
 

@@ -93,9 +93,7 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
     except Exception as e:
         logger.exception("Failed to retrieve shoes and players from RAG")
         # Re-raise the exception to prevent hallucinations with empty context
-        raise ValueError(
-            "Failed to retrieve shoe recommendations from database"
-        ) from e
+        raise ValueError("Failed to retrieve shoe recommendations from database") from e
 
 
 def generate_recommendations(state: GearAgentState) -> dict:
@@ -109,7 +107,9 @@ def generate_recommendations(state: GearAgentState) -> dict:
 
     # Separate shoes and players from context using explicit doc_type
     shoe_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "shoe"]
-    player_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "player"]
+    player_docs = [
+        doc for doc in context_docs if doc.metadata.get("doc_type") == "player"
+    ]
 
     # Prepare shoes context string
     shoes_context_str = "\n\n".join(
@@ -152,10 +152,10 @@ You are an expert basketball gear advisor. Your task is to generate personalized
 shoe recommendations based on the user's preferences and the available shoe data.
 
 **User Preferences:**
-- Sensory Preferences: {user_info.get('sensory_preferences')}
-- Player Archetype: {user_info.get('player_archetype', 'Not specified')}
-- Position: {user_info.get('position', 'Not specified')}
-- Budget: {user_info.get('budget_max_krw', 'No limit')} KRW
+- Sensory Preferences: {user_info.get("sensory_preferences")}
+- Player Archetype: {user_info.get("player_archetype", "Not specified")}
+- Position: {user_info.get("position", "Not specified")}
+- Budget: {user_info.get("budget_max_krw", "No limit")} KRW
 
 {player_section}**Available Shoes Data:**
 {shoes_context_str}

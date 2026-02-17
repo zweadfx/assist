@@ -25,21 +25,15 @@ async def judge_situation(
     """
     try:
         initial_state = {
-            "messages": [
-                HumanMessage(content=request.situation_description)
-            ],
+            "messages": [HumanMessage(content=request.situation_description)],
             "user_info": request.model_dump(),
         }
 
-        final_state = await asyncio.to_thread(
-            judge_agent_graph.invoke, initial_state
-        )
+        final_state = await asyncio.to_thread(judge_agent_graph.invoke, initial_state)
 
         if final_response_str := final_state.get("final_response"):
             try:
-                response_data = WhistleResponse.model_validate_json(
-                    final_response_str
-                )
+                response_data = WhistleResponse.model_validate_json(final_response_str)
             except ValidationError as e:
                 logger.error(
                     "LLM returned invalid JSON for WhistleResponse: %s\n"
@@ -61,9 +55,5 @@ async def judge_situation(
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
-        logger.exception(
-            "An unexpected error occurred during rule judgment"
-        )
-        raise HTTPException(
-            status_code=500, detail="Internal server error"
-        ) from e
+        logger.exception("An unexpected error occurred during rule judgment")
+        raise HTTPException(status_code=500, detail="Internal server error") from e

@@ -3,6 +3,7 @@ Rule retrieval module for The Whistle.
 Handles situation-based rule search, glossary term lookup,
 and hybrid search combining both data sources.
 """
+
 import logging
 from typing import Dict, List, Optional
 
@@ -70,9 +71,7 @@ class RuleRetriever:
 
             rule_docs = []
             for i, doc_content in enumerate(documents):
-                doc = Document(
-                    page_content=doc_content, metadata=metadatas[i]
-                )
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
                 rule_docs.append(doc)
 
             logger.info(f"Retrieved {len(rule_docs)} rule documents")
@@ -80,9 +79,7 @@ class RuleRetriever:
 
         except Exception as e:
             logger.exception("Failed to search rules by situation")
-            raise ValueError(
-                "Failed to retrieve rules from database"
-            ) from e
+            raise ValueError("Failed to retrieve rules from database") from e
 
     def search_glossary_terms(
         self,
@@ -127,9 +124,7 @@ class RuleRetriever:
 
             glossary_docs = []
             for i, doc_content in enumerate(documents):
-                doc = Document(
-                    page_content=doc_content, metadata=metadatas[i]
-                )
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
                 glossary_docs.append(doc)
 
             logger.info(f"Retrieved {len(glossary_docs)} glossary terms")
@@ -137,9 +132,7 @@ class RuleRetriever:
 
         except Exception as e:
             logger.exception("Failed to search glossary terms")
-            raise ValueError(
-                "Failed to retrieve glossary terms from database"
-            ) from e
+            raise ValueError("Failed to retrieve glossary terms from database") from e
 
     def hybrid_search(
         self,
@@ -164,8 +157,7 @@ class RuleRetriever:
             Dictionary with 'rules' and 'glossary' lists of Documents
         """
         logger.info(
-            f"Hybrid search: situation={situation[:80]}..., "
-            f"rule_type={rule_type}"
+            f"Hybrid search: situation={situation[:80]}..., rule_type={rule_type}"
         )
 
         result = {"rules": [], "glossary": []}

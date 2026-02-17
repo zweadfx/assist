@@ -43,9 +43,7 @@ class ShoeRecommendation(BaseModel):
     sensory_tags: List[str] = Field(
         ..., description="Sensory characteristics of the shoe"
     )
-    match_score: int = Field(
-        ..., ge=0, le=100, description="Match percentage (0-100)"
-    )
+    match_score: int = Field(..., ge=0, le=100, description="Match percentage (0-100)")
     recommendation_reason: str = Field(
         ..., description="AI-generated reasoning for this recommendation"
     )

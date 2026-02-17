@@ -2,6 +2,7 @@
 Document formatters for RAG embeddings.
 Formats raw data dictionaries into consistent text for vector storage.
 """
+
 from typing import Any, Dict
 
 

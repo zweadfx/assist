@@ -8,6 +8,7 @@ Test Cases:
 - TC-04: Complex condition search validation
 - TC-05: Exception handling validation
 """
+
 import json
 from typing import Dict, List
 
@@ -59,9 +60,9 @@ class TestShoeRetrieval:
         # Verify player found
         if results["players"]:
             player_names = [p.metadata.get("name", "") for p in results["players"]]
-            assert any(
-                "curry" in name.lower() for name in player_names
-            ), "Should find Stephen Curry archetype"
+            assert any("curry" in name.lower() for name in player_names), (
+                "Should find Stephen Curry archetype"
+            )
 
         # Verify shoes have required metadata
         for shoe in results["shoes"]:
@@ -144,9 +145,7 @@ class TestShoeRetrieval:
         # Verify budget constraint
         for shoe in results["shoes"]:
             price = int(shoe.metadata.get("price_krw", 0))
-            assert (
-                price <= budget
-            ), f"Shoe price {price} exceeds budget {budget}"
+            assert price <= budget, f"Shoe price {price} exceeds budget {budget}"
 
         # Verify position matching (if applicable)
         # At least some shoes should match the guard position
@@ -159,7 +158,9 @@ class TestShoeRetrieval:
                 guard_shoes.append(shoe)
 
         # Soft check: at least one shoe should be suitable for guards
-        assert len(guard_shoes) > 0, "Expected at least one guard-suitable shoe in results"
+        assert len(guard_shoes) > 0, (
+            "Expected at least one guard-suitable shoe in results"
+        )
 
     def test_tc05_exception_handling(self, shoe_retriever_instance):
         """
@@ -179,7 +180,9 @@ class TestShoeRetrieval:
             n_shoes=5,
         )
         assert "shoes" in results, "Results should contain 'shoes' key"
-        assert results["shoes"] == [], "Negative budget should result in empty shoe list (all shoes filtered out)"
+        assert results["shoes"] == [], (
+            "Negative budget should result in empty shoe list (all shoes filtered out)"
+        )
 
         # Test Case 3: Non-existent player
         results = shoe_retriever_instance.search_by_player_archetype(
@@ -335,9 +338,7 @@ class TestGearAdvisorAPI:
 
         # Verify budget constraint in response
         for shoe in gear_response["shoes"]:
-            assert (
-                shoe["price_krw"] <= 200000
-            ), "All shoes should be within budget"
+            assert shoe["price_krw"] <= 200000, "All shoes should be within budget"
 
 
 class TestRAGSearchQuality:
@@ -373,9 +374,9 @@ class TestRAGSearchQuality:
 
         # At least 60% of results should have some keyword overlap
         relevance_ratio = relevant_count / len(results)
-        assert (
-            relevance_ratio >= 0.6
-        ), f"Relevance ratio {relevance_ratio:.2f} below 60% threshold"
+        assert relevance_ratio >= 0.6, (
+            f"Relevance ratio {relevance_ratio:.2f} below 60% threshold"
+        )
 
     def test_player_search_accuracy(self, shoe_retriever_instance):
         """
@@ -397,6 +398,6 @@ class TestRAGSearchQuality:
                 query_name = player_name.lower()
 
                 # Top result should contain the queried player name
-                assert (
-                    query_name in result_name or result_name in query_name
-                ), f"Expected {player_name}, got {result_name}"
+                assert query_name in result_name or result_name in query_name, (
+                    f"Expected {player_name}, got {result_name}"
+                )

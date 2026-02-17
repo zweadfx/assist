@@ -2,6 +2,7 @@
 Utility functions for RAG services.
 Re-exports formatters for backward compatibility.
 """
+
 # Re-export formatters for backward compatibility
 from src.services.rag.formatters import (
     format_drill_document,

@@ -25,21 +25,13 @@ class WhistleRequest(BaseModel):
 class RuleReference(BaseModel):
     """Represents a reference to a specific rule article."""
 
-    rule_type: str = Field(
-        ..., description="Type of rules (FIBA or NBA)"
+    rule_type: str = Field(..., description="Type of rules (FIBA or NBA)")
+    article: str = Field(..., description="Article number or identifier")
+    clause: str = Field("N/A", description="Specific clause within the article")
+    page_number: Optional[int] = Field(
+        None, description="Page number in the rules document, if available"
     )
-    article: str = Field(
-        ..., description="Article number or identifier"
-    )
-    clause: str = Field(
-        "N/A", description="Specific clause within the article"
-    )
-    page_number: int = Field(
-        ..., description="Page number in the rules document"
-    )
-    excerpt: str = Field(
-        ..., description="Relevant excerpt from the rule"
-    )
+    excerpt: str = Field(..., description="Relevant excerpt from the rule")
 
 
 class RelatedTerm(BaseModel):
@@ -55,18 +47,14 @@ class WhistleResponse(BaseModel):
     Provides an AI-generated judgment with rule references.
     """
 
-    judgment_title: str = Field(
-        ..., description="A concise title for the judgment"
-    )
+    judgment_title: str = Field(..., description="A concise title for the judgment")
     situation_summary: str = Field(
         ..., description="Summary of the situation described by the user"
     )
     decision: Literal["violation", "foul", "legal", "other"] = Field(
         ..., description="The judgment decision type"
     )
-    reasoning: str = Field(
-        ..., description="Detailed reasoning for the judgment"
-    )
+    reasoning: str = Field(..., description="Detailed reasoning for the judgment")
     rule_references: List[RuleReference] = Field(
         ...,
         min_length=1,
