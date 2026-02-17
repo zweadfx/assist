@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from typing import List, TypedDict
 
 import openai
@@ -13,6 +14,24 @@ from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
 
 logger = logging.getLogger(__name__)
+
+_MAX_PREF_LENGTH = 100
+_MAX_PLAYER_LENGTH = 100
+_BLOCKED_PATTERNS = re.compile(
+    r"ignore\s+(all\s+)?previous\s+instructions"
+    r"|forget\s+(all\s+)?above"
+    r"|you\s+are\s+now"
+    r"|disregard\s+(all\s+)?prior",
+    re.IGNORECASE,
+)
+
+
+def _sanitize_gear_text(text: str, max_length: int) -> str:
+    """Strip control characters, injection patterns, and enforce max length."""
+    text = text[:max_length]
+    text = re.sub(r"[\r\n\t\x00-\x1f\x7f]", " ", text)
+    text = _BLOCKED_PATTERNS.sub("", text)
+    return text.strip()
 
 
 class GearAgentState(TypedDict):
@@ -37,21 +56,44 @@ class GearAgentState(TypedDict):
 
 def analyze_preferences(state: GearAgentState) -> dict:
     """
-    Validates that the user_info is present in the state and contains
-    sensory preferences. This node ensures we have the minimum required
-    information to proceed with recommendations.
+    Validates that the user_info is present and sanitizes all user-controlled
+    string fields before they reach the prompt builder.
     """
     logger.info("NODE: Analyzing User Preferences")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
     user_info = state["user_info"]
-    if not user_info.get("sensory_preferences"):
+    raw_prefs = user_info.get("sensory_preferences")
+    if not raw_prefs:
         raise ValueError("Sensory preferences are required for gear recommendations.")
 
-    logger.debug(f"User Info: {user_info}")
-    # Pass the user_info along to the next node
-    return {"user_info": state["user_info"]}
+    # Sanitize each sensory preference item
+    sanitized_prefs = [
+        _sanitize_gear_text(p, _MAX_PREF_LENGTH)
+        for p in raw_prefs
+        if isinstance(p, str)
+    ]
+    sanitized_prefs = [p for p in sanitized_prefs if p]
+    if not sanitized_prefs:
+        raise ValueError("All sensory preferences were empty after sanitization.")
+
+    # Sanitize optional free-text fields
+    raw_player = user_info.get("player_archetype")
+    sanitized_player = (
+        _sanitize_gear_text(raw_player, _MAX_PLAYER_LENGTH)
+        if isinstance(raw_player, str)
+        else None
+    )
+
+    sanitized_info = {
+        **user_info,
+        "sensory_preferences": sanitized_prefs,
+        "player_archetype": sanitized_player or None,
+    }
+
+    logger.debug(f"User Info (sanitized): {sanitized_info}")
+    return {"user_info": sanitized_info}
 
 
 def retrieve_shoes_and_players(state: GearAgentState) -> dict:

@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class GearAdvisorRequest(BaseModel):
@@ -9,20 +9,24 @@ class GearAdvisorRequest(BaseModel):
     Defines the user's input for generating personalized shoe recommendations.
     """
 
-    sensory_preferences: List[str] = Field(
-        ...,
-        min_length=1,
-        description=(
-            "User's sensory preferences (e.g., 'sticky traction', 'cloud cushion')"
-        ),
-        examples=[["쫀득한 접지", "가벼운 무게"]],
+    sensory_preferences: List[Annotated[str, StringConstraints(max_length=100)]] = (
+        Field(
+            ...,
+            min_length=1,
+            description=(
+                "User's sensory preferences (e.g., 'sticky traction', 'cloud cushion')"
+            ),
+            examples=[["쫀득한 접지", "가벼운 무게"]],
+        )
     )
-    player_archetype: Optional[str] = Field(
-        None,
-        description="Preferred player's name to match playstyle",
-        examples=["Stephen Curry"],
+    player_archetype: Optional[Annotated[str, StringConstraints(max_length=100)]] = (
+        Field(
+            None,
+            description="Preferred player's name to match playstyle",
+            examples=["Stephen Curry"],
+        )
     )
-    position: Optional[str] = Field(
+    position: Optional[Literal["guard", "forward", "center"]] = Field(
         None,
         description="User's playing position",
         examples=["guard"],
