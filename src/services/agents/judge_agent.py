@@ -220,16 +220,20 @@ JSON Output:
             logger.debug(f"Generated Response: {final_response_str}")
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logger.error(f"Failed to parse or validate LLM response for judgment: {e}")
+            logger.exception(
+                "Failed to parse or validate LLM response for judgment: %s", e
+            )
             raise ValueError(
                 f"LLM returned an invalid judgment object: {content}"
             ) from e
 
     except openai.APIError as e:
-        logger.error(f"OpenAI API error during judgment generation: {e}")
+        logger.exception("OpenAI API error during judgment generation: %s", e)
         raise ValueError("Failed to generate judgment due to an API error.") from e
-    except Exception as e:
-        logger.error(f"An unexpected error occurred during judgment generation: {e}")
+    except ValueError:
+        raise
+    except Exception:
+        logger.exception("An unexpected error occurred during judgment generation")
         raise
 
 

@@ -75,11 +75,12 @@ class RuleRetriever:
                 rule_docs.append(doc)
 
             logger.info(f"Retrieved {len(rule_docs)} rule documents")
-            return rule_docs
 
         except Exception as e:
             logger.exception("Failed to search rules by situation")
             raise ValueError("Failed to retrieve rules from database") from e
+        else:
+            return rule_docs
 
     def search_glossary_terms(
         self,
@@ -128,11 +129,12 @@ class RuleRetriever:
                 glossary_docs.append(doc)
 
             logger.info(f"Retrieved {len(glossary_docs)} glossary terms")
-            return glossary_docs
 
         except Exception as e:
             logger.exception("Failed to search glossary terms")
             raise ValueError("Failed to retrieve glossary terms from database") from e
+        else:
+            return glossary_docs
 
     def hybrid_search(
         self,

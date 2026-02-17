@@ -15,6 +15,9 @@ Test Cases:
 - TC-11: Endpoint validation error (missing field)
 """
 
+import json
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
 from langchain_core.documents import Document
@@ -22,12 +25,41 @@ from langchain_core.documents import Document
 from src.main import app
 from src.services.rag.rule_retrieval import RuleRetriever
 
+_FAKE_WHISTLE_RESPONSE = {
+    "judgment_title": "트래블링 바이얼레이션",
+    "situation_summary": "공을 들고 세 발자국 이상 걸은 상황입니다.",
+    "decision": "violation",
+    "reasoning": "트래블링 규정에 따라 바이얼레이션입니다.",
+    "rule_references": [
+        {
+            "rule_type": "FIBA",
+            "article": "Article 25",
+            "clause": "25.1",
+            "page_number": 42,
+            "excerpt": (
+                "A player who catches the ball may not take more than two steps."
+            ),
+        }
+    ],
+    "related_terms": [],
+}
+
 
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def mock_judge():
+    """Patch judge_agent_graph.invoke to return a canned response."""
+    with patch(
+        "src.api.v1.endpoints.whistle.judge_agent_graph.invoke",
+        return_value={"final_response": json.dumps(_FAKE_WHISTLE_RESPONSE)},
+    ) as mock:
+        yield mock
 
 
 class TestRuleRetrieval:
@@ -152,7 +184,7 @@ class TestRuleRetrieval:
 class TestWhistleEndpoint:
     """Integration tests for the whistle API endpoint."""
 
-    def test_tc08_judge_endpoint_success(self, test_client):
+    def test_tc08_judge_endpoint_success(self, test_client, mock_judge):
         """
         TC-08: 엔드포인트 통합 테스트
         POST /api/v1/whistle/judge 정상 요청
@@ -174,7 +206,7 @@ class TestWhistleEndpoint:
         assert "rule_references" in data["data"]
         assert len(data["data"]["rule_references"]) >= 1
 
-    def test_tc09_judge_endpoint_with_rule_type(self, test_client):
+    def test_tc09_judge_endpoint_with_rule_type(self, test_client, mock_judge):
         """
         TC-09: 엔드포인트 통합 테스트 (rule_type 지정)
         POST /api/v1/whistle/judge + rule_type="FIBA"

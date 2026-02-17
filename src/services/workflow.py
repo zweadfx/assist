@@ -106,8 +106,8 @@ Respond with ONLY the category name (skill_lab, shoe_recommendation, or rule_que
 
         return {"routing_decision": intent, "intent": intent}
 
-    except Exception as e:
-        logger.error(f"Error in router_node: {e}")
+    except Exception:
+        logger.exception("Error in router_node")
         # Default to skill_lab on error
         return {"routing_decision": "skill_lab", "intent": "skill_lab"}
 

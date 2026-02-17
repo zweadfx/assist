@@ -25,7 +25,9 @@ class WhistleRequest(BaseModel):
 class RuleReference(BaseModel):
     """Represents a reference to a specific rule article."""
 
-    rule_type: str = Field(..., description="Type of rules (FIBA or NBA)")
+    rule_type: Literal["FIBA", "NBA"] = Field(
+        ..., description="Type of rules (FIBA or NBA)"
+    )
     article: str = Field(..., description="Article number or identifier")
     clause: str = Field("N/A", description="Specific clause within the article")
     page_number: Optional[int] = Field(

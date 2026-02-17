@@ -19,7 +19,8 @@ from src.services.rag.shoe_retrieval import ShoeRetriever
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
-    return TestClient(app)
+    with TestClient(app) as client:
+        yield client
 
 
 @pytest.fixture

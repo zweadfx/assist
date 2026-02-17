@@ -5,7 +5,7 @@ Extracts text and creates structured chunks with metadata.
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pypdf import PdfReader
 
@@ -238,8 +238,8 @@ class RulesPDFParser:
         chunk_id: str,
         content: str,
         page_number: int,
-        article: str = None,
-        clause: str = None,
+        article: Optional[str] = None,
+        clause: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Create a chunk dictionary with metadata.

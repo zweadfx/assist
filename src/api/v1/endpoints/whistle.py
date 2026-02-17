@@ -35,7 +35,7 @@ async def judge_situation(
             try:
                 response_data = WhistleResponse.model_validate_json(final_response_str)
             except ValidationError as e:
-                logger.error(
+                logger.exception(
                     "LLM returned invalid JSON for WhistleResponse: %s\n"
                     "Raw response: %s",
                     e,
