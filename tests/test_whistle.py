@@ -133,7 +133,7 @@ class TestRuleRetrieval:
 
     def test_hybrid_search_returns_both(self):
         """
-        하이브리드 검색이 rules와 glossary 모두 반환하는지 확인
+        TC-07: 하이브리드 검색이 rules와 glossary 모두 반환하는지 확인
         """
         retriever = RuleRetriever()
 
