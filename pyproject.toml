@@ -17,6 +17,7 @@ dependencies = [
     "chromadb~=1.5",
     "python-dotenv~=1.2",
     "pydantic-settings>=2.12.0",
+    "pypdf>=5.1.0",
 ]
 
 [project.optional-dependencies]
