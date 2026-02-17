@@ -7,8 +7,12 @@ Test Cases:
 - TC-03: Glossary term search
 - TC-04: FIBA/NBA rule type filtering
 - TC-05: Exception handling (empty input)
-- TC-06: Endpoint integration test
-- TC-07: Endpoint validation error test
+- TC-06: Exception handling (whitespace input)
+- TC-07: Hybrid search returns both rules and glossary
+- TC-08: Endpoint integration test (basic)
+- TC-09: Endpoint integration test (rule_type filter)
+- TC-10: Endpoint validation error (empty input)
+- TC-11: Endpoint validation error (missing field)
 """
 
 import pytest
@@ -113,9 +117,9 @@ class TestRuleRetrieval:
         assert rules == []
         assert glossary == []
 
-    def test_tc05_whitespace_input_handling(self):
+    def test_tc06_whitespace_input_handling(self):
         """
-        TC-05: 예외 처리 - 공백만 입력
+        TC-06: 예외 처리 - 공백만 입력
         입력: 공백 문자열
         기대: 빈 리스트 반환 (에러 없음)
         """
@@ -148,9 +152,9 @@ class TestRuleRetrieval:
 class TestWhistleEndpoint:
     """Integration tests for the whistle API endpoint."""
 
-    def test_tc06_judge_endpoint_success(self, test_client):
+    def test_tc08_judge_endpoint_success(self, test_client):
         """
-        TC-06: 엔드포인트 통합 테스트
+        TC-08: 엔드포인트 통합 테스트
         POST /api/v1/whistle/judge 정상 요청
         기대: 200 OK + 판정 결과 반환
         """
@@ -170,9 +174,9 @@ class TestWhistleEndpoint:
         assert "rule_references" in data["data"]
         assert len(data["data"]["rule_references"]) >= 1
 
-    def test_tc06_judge_endpoint_with_rule_type(self, test_client):
+    def test_tc09_judge_endpoint_with_rule_type(self, test_client):
         """
-        TC-06: 엔드포인트 통합 테스트 (rule_type 지정)
+        TC-09: 엔드포인트 통합 테스트 (rule_type 지정)
         POST /api/v1/whistle/judge + rule_type="FIBA"
         기대: 200 OK + FIBA 기반 판정 반환
         """
@@ -188,9 +192,9 @@ class TestWhistleEndpoint:
         assert data["success"] is True
         assert data["data"]["decision"] in ["violation", "foul", "legal", "other"]
 
-    def test_tc07_judge_endpoint_empty_input(self, test_client):
+    def test_tc10_judge_endpoint_empty_input(self, test_client):
         """
-        TC-07: 엔드포인트 유효성 검증 - 빈 입력
+        TC-10: 엔드포인트 유효성 검증 - 빈 입력
         기대: 422 Validation Error
         """
         payload = {"situation_description": ""}
@@ -199,9 +203,9 @@ class TestWhistleEndpoint:
 
         assert response.status_code == 422
 
-    def test_tc07_judge_endpoint_missing_field(self, test_client):
+    def test_tc11_judge_endpoint_missing_field(self, test_client):
         """
-        TC-07: 엔드포인트 유효성 검증 - 필수 필드 누락
+        TC-11: 엔드포인트 유효성 검증 - 필수 필드 누락
         기대: 422 Validation Error
         """
         payload = {}
