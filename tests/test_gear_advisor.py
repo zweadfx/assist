@@ -169,15 +169,15 @@ class TestShoeRetrieval:
         )
         assert isinstance(results, list)  # Should return empty list, not crash
 
-        # Test Case 2: Invalid budget (negative)
+        # Test Case 2: Extremely low budget (filters out all shoes)
         results = shoe_retriever_instance.cross_analysis_search(
             sensory_keywords=["쫀득한 접지"],
-            budget_max_krw=-1000,  # Negative budget should filter out all shoes
+            budget_max_krw=1,  # 1 KRW budget should filter out all shoes
             n_shoes=5,
         )
         assert "shoes" in results, "Results should contain 'shoes' key"
         assert results["shoes"] == [], (
-            "Negative budget should result in empty shoe list (all shoes filtered out)"
+            "Extremely low budget should result in empty shoe list"
         )
 
         # Test Case 3: Non-existent player
