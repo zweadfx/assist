@@ -3,6 +3,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
+from pydantic import ValidationError
 
 from src.models.response_schema import SuccessResponse
 from src.models.rule_schema import WhistleRequest, WhistleResponse
@@ -35,9 +36,21 @@ async def judge_situation(
         )
 
         if final_response_str := final_state.get("final_response"):
-            response_data = WhistleResponse.model_validate_json(
-                final_response_str
-            )
+            try:
+                response_data = WhistleResponse.model_validate_json(
+                    final_response_str
+                )
+            except ValidationError as e:
+                logger.error(
+                    "LLM returned invalid JSON for WhistleResponse: %s\n"
+                    "Raw response: %s",
+                    e,
+                    final_response_str,
+                )
+                raise HTTPException(
+                    status_code=422,
+                    detail="LLM returned invalid judgment response",
+                ) from e
             return SuccessResponse(data=response_data)
         else:
             raise HTTPException(
