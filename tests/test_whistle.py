@@ -7,10 +7,21 @@ Test Cases:
 - TC-03: Glossary term search
 - TC-04: FIBA/NBA rule type filtering
 - TC-05: Exception handling (empty input)
+- TC-06: Endpoint integration test
+- TC-07: Endpoint validation error test
 """
+import pytest
+from fastapi.testclient import TestClient
 from langchain_core.documents import Document
 
+from src.main import app
 from src.services.rag.rule_retrieval import RuleRetriever
+
+
+@pytest.fixture
+def test_client():
+    """FastAPI test client fixture."""
+    return TestClient(app)
 
 
 class TestRuleRetrieval:
@@ -130,3 +141,73 @@ class TestRuleRetrieval:
         assert "glossary" in results
         assert isinstance(results["rules"], list)
         assert isinstance(results["glossary"], list)
+
+
+class TestWhistleEndpoint:
+    """Integration tests for the whistle API endpoint."""
+
+    def test_tc06_judge_endpoint_success(self, test_client):
+        """
+        TC-06: 엔드포인트 통합 테스트
+        POST /api/v1/whistle/judge 정상 요청
+        기대: 200 OK + 판정 결과 반환
+        """
+        payload = {
+            "situation_description": "공을 들고 세 발자국 걸으면 어떤 판정인가요?"
+        }
+
+        response = test_client.post("/api/v1/whistle/judge", json=payload)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["data"] is not None
+        assert "judgment_title" in data["data"]
+        assert "decision" in data["data"]
+        assert "reasoning" in data["data"]
+        assert "rule_references" in data["data"]
+        assert len(data["data"]["rule_references"]) >= 1
+
+    def test_tc06_judge_endpoint_with_rule_type(self, test_client):
+        """
+        TC-06: 엔드포인트 통합 테스트 (rule_type 지정)
+        POST /api/v1/whistle/judge + rule_type="FIBA"
+        기대: 200 OK + FIBA 기반 판정 반환
+        """
+        payload = {
+            "situation_description": "수비수가 실린더를 침범하면?",
+            "rule_type": "FIBA",
+        }
+
+        response = test_client.post("/api/v1/whistle/judge", json=payload)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["data"]["decision"] in [
+            "violation", "foul", "legal", "other"
+        ]
+
+    def test_tc07_judge_endpoint_empty_input(self, test_client):
+        """
+        TC-07: 엔드포인트 유효성 검증 - 빈 입력
+        기대: 422 Validation Error
+        """
+        payload = {
+            "situation_description": ""
+        }
+
+        response = test_client.post("/api/v1/whistle/judge", json=payload)
+
+        assert response.status_code == 422
+
+    def test_tc07_judge_endpoint_missing_field(self, test_client):
+        """
+        TC-07: 엔드포인트 유효성 검증 - 필수 필드 누락
+        기대: 422 Validation Error
+        """
+        payload = {}
+
+        response = test_client.post("/api/v1/whistle/judge", json=payload)
+
+        assert response.status_code == 422
