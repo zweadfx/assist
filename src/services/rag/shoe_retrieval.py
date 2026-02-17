@@ -3,8 +3,9 @@ Shoe retrieval module for Gear Advisor.
 Handles sensory keyword-based vector similarity search, player archetype matching,
 and multi-filtering with post-processing.
 """
+
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from langchain_core.documents import Document
 
@@ -38,7 +39,8 @@ class ShoeRetriever:
         Search shoes by sensory preferences using vector similarity.
 
         Args:
-            sensory_keywords: List of sensory descriptors (e.g., ["쫀득한 접지", "가벼운 무게"])
+            sensory_keywords: List of sensory descriptors
+                (e.g., ["쫀득한 접지", "가벼운 무게"])
             budget_max_krw: Maximum budget in KRW (optional filter)
             position: Player position (guard/forward/center) for filtering (optional)
             n_results: Number of candidate results to retrieve
@@ -56,7 +58,9 @@ class ShoeRetriever:
 
         # Additional safety check for empty query after joining
         if not query_text:
-            logger.info("Sensory keywords resulted in empty query, returning empty results")
+            logger.info(
+                "Sensory keywords resulted in empty query, returning empty results"
+            )
             return []
 
         logger.info(f"Searching shoes by sensory preferences: {sensory_keywords}")
@@ -87,7 +91,8 @@ class ShoeRetriever:
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
 
-            # Post-filtering for position (tags are comma-separated, not suitable for DB filter)
+            # Post-filtering for position (tags are comma-separated, not suitable for DB
+            # filter)
             filtered_docs = []
             for i, doc_content in enumerate(documents):
                 metadata = metadatas[i]
@@ -129,9 +134,7 @@ class ShoeRetriever:
 
         except Exception as e:
             logger.exception("Failed to search shoes by sensory preferences")
-            raise ValueError(
-                "Failed to retrieve shoes from database"
-            ) from e
+            raise ValueError("Failed to retrieve shoes from database") from e
 
     def search_by_player_archetype(
         self, player_name: str, n_results: int = 3
@@ -263,7 +266,9 @@ class ShoeRetriever:
             return shoes
 
         # Clean signature model names
-        signature_models = [model.strip() for model in signature_models if model.strip()]
+        signature_models = [
+            model.strip() for model in signature_models if model.strip()
+        ]
 
         signature_shoes = []
         other_shoes = []

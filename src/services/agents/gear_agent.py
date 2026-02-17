@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from typing import List, TypedDict
 
 import openai
@@ -13,6 +14,24 @@ from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
 
 logger = logging.getLogger(__name__)
+
+_MAX_PREF_LENGTH = 100
+_MAX_PLAYER_LENGTH = 100
+_BLOCKED_PATTERNS = re.compile(
+    r"ignore\s+(all\s+)?previous\s+instructions"
+    r"|forget\s+(all\s+)?above"
+    r"|you\s+are\s+now"
+    r"|disregard\s+(all\s+)?prior",
+    re.IGNORECASE,
+)
+
+
+def _sanitize_gear_text(text: str, max_length: int) -> str:
+    """Strip control characters, injection patterns, and enforce max length."""
+    text = text[:max_length]
+    text = re.sub(r"[\r\n\t\x00-\x1f\x7f]", " ", text)
+    text = _BLOCKED_PATTERNS.sub("", text)
+    return text.strip()
 
 
 class GearAgentState(TypedDict):
@@ -37,21 +56,44 @@ class GearAgentState(TypedDict):
 
 def analyze_preferences(state: GearAgentState) -> dict:
     """
-    Validates that the user_info is present in the state and contains
-    sensory preferences. This node ensures we have the minimum required
-    information to proceed with recommendations.
+    Validates that the user_info is present and sanitizes all user-controlled
+    string fields before they reach the prompt builder.
     """
     logger.info("NODE: Analyzing User Preferences")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
     user_info = state["user_info"]
-    if not user_info.get("sensory_preferences"):
+    raw_prefs = user_info.get("sensory_preferences")
+    if not raw_prefs:
         raise ValueError("Sensory preferences are required for gear recommendations.")
 
-    logger.debug(f"User Info: {user_info}")
-    # Pass the user_info along to the next node
-    return {"user_info": state["user_info"]}
+    # Sanitize each sensory preference item
+    sanitized_prefs = [
+        _sanitize_gear_text(p, _MAX_PREF_LENGTH)
+        for p in raw_prefs
+        if isinstance(p, str)
+    ]
+    sanitized_prefs = [p for p in sanitized_prefs if p]
+    if not sanitized_prefs:
+        raise ValueError("All sensory preferences were empty after sanitization.")
+
+    # Sanitize optional free-text fields
+    raw_player = user_info.get("player_archetype")
+    sanitized_player = (
+        _sanitize_gear_text(raw_player, _MAX_PLAYER_LENGTH)
+        if isinstance(raw_player, str)
+        else None
+    )
+
+    sanitized_info = {
+        **user_info,
+        "sensory_preferences": sanitized_prefs,
+        "player_archetype": sanitized_player or None,
+    }
+
+    logger.debug(f"User Info (sanitized): {sanitized_info}")
+    return {"user_info": sanitized_info}
 
 
 def retrieve_shoes_and_players(state: GearAgentState) -> dict:
@@ -93,9 +135,7 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
     except Exception as e:
         logger.exception("Failed to retrieve shoes and players from RAG")
         # Re-raise the exception to prevent hallucinations with empty context
-        raise ValueError(
-            "Failed to retrieve shoe recommendations from database"
-        ) from e
+        raise ValueError("Failed to retrieve shoe recommendations from database") from e
 
 
 def generate_recommendations(state: GearAgentState) -> dict:
@@ -109,7 +149,9 @@ def generate_recommendations(state: GearAgentState) -> dict:
 
     # Separate shoes and players from context using explicit doc_type
     shoe_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "shoe"]
-    player_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "player"]
+    player_docs = [
+        doc for doc in context_docs if doc.metadata.get("doc_type") == "player"
+    ]
 
     # Prepare shoes context string
     shoes_context_str = "\n\n".join(
@@ -152,10 +194,10 @@ You are an expert basketball gear advisor. Your task is to generate personalized
 shoe recommendations based on the user's preferences and the available shoe data.
 
 **User Preferences:**
-- Sensory Preferences: {user_info.get('sensory_preferences')}
-- Player Archetype: {user_info.get('player_archetype', 'Not specified')}
-- Position: {user_info.get('position', 'Not specified')}
-- Budget: {user_info.get('budget_max_krw', 'No limit')} KRW
+- Sensory Preferences: {user_info.get("sensory_preferences")}
+- Player Archetype: {user_info.get("player_archetype", "Not specified")}
+- Position: {user_info.get("position", "Not specified")}
+- Budget: {user_info.get("budget_max_krw", "No limit")} KRW
 
 {player_section}**Available Shoes Data:**
 {shoes_context_str}
@@ -167,11 +209,13 @@ shoe recommendations based on the user's preferences and the available shoe data
    - Player archetype compatibility (if specified)
    - Position suitability (if specified)
    - Budget fit (if specified)
-3. Write a compelling recommendation_reason for each shoe explaining why it's a good match.
+3. Write a compelling recommendation_reason for each shoe explaining why it's a good
+   match.
 4. Provide an overall ai_reasoning explaining your recommendation strategy.
 5. Create a catchy recommendation_title for the set.
 6. Summarize the user's profile in user_profile_summary.
-7. Your final output **must** be a JSON object that strictly follows this Pydantic schema:
+7. Your final output **must** be a JSON object that strictly follows this Pydantic
+   schema:
 
 ```json
 {schema_json}

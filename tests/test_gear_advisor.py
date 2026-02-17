@@ -8,21 +8,19 @@ Test Cases:
 - TC-04: Complex condition search validation
 - TC-05: Exception handling validation
 """
-import json
-from typing import Dict, List
 
 import pytest
 from fastapi.testclient import TestClient
-from langchain_core.documents import Document
 
 from src.main import app
-from src.services.rag.shoe_retrieval import ShoeRetriever, shoe_retriever
+from src.services.rag.shoe_retrieval import ShoeRetriever
 
 
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
-    return TestClient(app)
+    with TestClient(app) as client:
+        yield client
 
 
 @pytest.fixture
@@ -59,9 +57,9 @@ class TestShoeRetrieval:
         # Verify player found
         if results["players"]:
             player_names = [p.metadata.get("name", "") for p in results["players"]]
-            assert any(
-                "curry" in name.lower() for name in player_names
-            ), "Should find Stephen Curry archetype"
+            assert any("curry" in name.lower() for name in player_names), (
+                "Should find Stephen Curry archetype"
+            )
 
         # Verify shoes have required metadata
         for shoe in results["shoes"]:
@@ -144,9 +142,7 @@ class TestShoeRetrieval:
         # Verify budget constraint
         for shoe in results["shoes"]:
             price = int(shoe.metadata.get("price_krw", 0))
-            assert (
-                price <= budget
-            ), f"Shoe price {price} exceeds budget {budget}"
+            assert price <= budget, f"Shoe price {price} exceeds budget {budget}"
 
         # Verify position matching (if applicable)
         # At least some shoes should match the guard position
@@ -159,7 +155,9 @@ class TestShoeRetrieval:
                 guard_shoes.append(shoe)
 
         # Soft check: at least one shoe should be suitable for guards
-        assert len(guard_shoes) > 0, "Expected at least one guard-suitable shoe in results"
+        assert len(guard_shoes) > 0, (
+            "Expected at least one guard-suitable shoe in results"
+        )
 
     def test_tc05_exception_handling(self, shoe_retriever_instance):
         """
@@ -172,14 +170,16 @@ class TestShoeRetrieval:
         )
         assert isinstance(results, list)  # Should return empty list, not crash
 
-        # Test Case 2: Invalid budget (negative)
+        # Test Case 2: Extremely low budget (filters out all shoes)
         results = shoe_retriever_instance.cross_analysis_search(
             sensory_keywords=["쫀득한 접지"],
-            budget_max_krw=-1000,  # Negative budget should filter out all shoes
+            budget_max_krw=1,  # 1 KRW budget should filter out all shoes
             n_shoes=5,
         )
         assert "shoes" in results, "Results should contain 'shoes' key"
-        assert results["shoes"] == [], "Negative budget should result in empty shoe list (all shoes filtered out)"
+        assert results["shoes"] == [], (
+            "Extremely low budget should result in empty shoe list"
+        )
 
         # Test Case 3: Non-existent player
         results = shoe_retriever_instance.search_by_player_archetype(
@@ -233,8 +233,8 @@ class TestShoeRetrieval:
             # Verify signature shoe boosting behavior
             # Since we searched for "Stephen Curry", his signature shoes should appear
             assert has_curry_shoe, (
-                f"Expected Curry signature shoes in results when searching for '{player}', "
-                f"but found: {shoe_models}"
+                f"Expected Curry signature shoes in results when searching for "
+                f"'{player}', but found: {shoe_models}"
             )
 
 
@@ -335,9 +335,7 @@ class TestGearAdvisorAPI:
 
         # Verify budget constraint in response
         for shoe in gear_response["shoes"]:
-            assert (
-                shoe["price_krw"] <= 200000
-            ), "All shoes should be within budget"
+            assert shoe["price_krw"] <= 200000, "All shoes should be within budget"
 
 
 class TestRAGSearchQuality:
@@ -373,9 +371,9 @@ class TestRAGSearchQuality:
 
         # At least 60% of results should have some keyword overlap
         relevance_ratio = relevant_count / len(results)
-        assert (
-            relevance_ratio >= 0.6
-        ), f"Relevance ratio {relevance_ratio:.2f} below 60% threshold"
+        assert relevance_ratio >= 0.6, (
+            f"Relevance ratio {relevance_ratio:.2f} below 60% threshold"
+        )
 
     def test_player_search_accuracy(self, shoe_retriever_instance):
         """
@@ -397,6 +395,6 @@ class TestRAGSearchQuality:
                 query_name = player_name.lower()
 
                 # Top result should contain the queried player name
-                assert (
-                    query_name in result_name or result_name in query_name
-                ), f"Expected {player_name}, got {result_name}"
+                assert query_name in result_name or result_name in query_name, (
+                    f"Expected {player_name}, got {result_name}"
+                )

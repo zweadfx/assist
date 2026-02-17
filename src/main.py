@@ -4,15 +4,25 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.api.v1.router import api_router
-from src.core.constants import DRILLS_FILE_PATH, PLAYERS_FILE_PATH, SHOES_FILE_PATH
+from src.core.constants import (
+    DRILLS_FILE_PATH,
+    FIBA_RULES_PDF_PATH,
+    GLOSSARY_FILE_PATH,
+    NBA_RULES_PDF_PATH,
+    PLAYERS_FILE_PATH,
+    SHOES_FILE_PATH,
+)
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import generate_embeddings
 from src.services.rag.utils import (
     format_drill_document,
+    format_glossary_document,
     format_player_document,
+    format_rule_document,
     format_shoe_document,
 )
 from src.utils.file_loader import load_json_data
+from src.utils.pdf_parser import parse_rules_pdf
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -82,6 +92,68 @@ async def lifespan(app: FastAPI):
             logger.info("Successfully added players to ChromaDB.")
         else:
             logger.info("Players collection is already initialized.")
+
+        # Initialize rules collection
+        if chroma_manager.rules_collection.count() == 0:
+            logger.info("Rules collection is empty. Initializing...")
+
+            all_chunks = []
+
+            # Parse FIBA rules PDF
+            if FIBA_RULES_PDF_PATH.exists():
+                fiba_chunks = parse_rules_pdf(FIBA_RULES_PDF_PATH, rule_type="FIBA")
+                all_chunks.extend(fiba_chunks)
+                logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
+            else:
+                logger.warning(f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}")
+
+            # Parse NBA rules PDF
+            if NBA_RULES_PDF_PATH.exists():
+                nba_chunks = parse_rules_pdf(NBA_RULES_PDF_PATH, rule_type="NBA")
+                all_chunks.extend(nba_chunks)
+                logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
+            else:
+                logger.warning(f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}")
+
+            if all_chunks:
+                rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
+                rules_embeddings = generate_embeddings(rules_texts)
+                logger.info(f"Generated {len(rules_embeddings)} rule embeddings.")
+
+                chroma_manager.add_rules(
+                    rule_chunks=all_chunks, embeddings=rules_embeddings
+                )
+                logger.info("Successfully added rules to ChromaDB.")
+            else:
+                logger.warning("No rules PDF files found. Skipping rules init.")
+        else:
+            logger.info("Rules collection is already initialized.")
+
+        # Initialize glossary collection
+        if chroma_manager.glossary_collection.count() == 0:
+            logger.info("Glossary collection is empty. Initializing...")
+
+            if GLOSSARY_FILE_PATH.exists():
+                glossary = load_json_data(GLOSSARY_FILE_PATH)
+                logger.info(f"Loaded {len(glossary)} glossary terms from file.")
+
+                glossary_texts = [format_glossary_document(term) for term in glossary]
+                glossary_embeddings = generate_embeddings(glossary_texts)
+                logger.info(
+                    f"Generated {len(glossary_embeddings)} glossary embeddings."
+                )
+
+                chroma_manager.add_glossary(
+                    terms=glossary, embeddings=glossary_embeddings
+                )
+                logger.info("Successfully added glossary to ChromaDB.")
+            else:
+                logger.warning(
+                    f"Glossary file not found: {GLOSSARY_FILE_PATH}. "
+                    "Skipping glossary init."
+                )
+        else:
+            logger.info("Glossary collection is already initialized.")
 
     except Exception as e:
         logger.critical(

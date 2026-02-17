@@ -2,16 +2,18 @@
 Unified workflow integrating all agent functionalities.
 Routes user requests to appropriate agents (Skill Lab, Gear Advisor, Rule Expert).
 """
+
 import json
 import logging
 from typing import List, TypedDict
 
 from langchain_core.documents import Document
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 
 from src.services.agents.coach_agent import coach_agent_graph
 from src.services.agents.gear_agent import gear_agent_graph
+from src.services.agents.judge_agent import judge_agent_graph
 from src.services.rag.embedding import client as openai_client
 
 logger = logging.getLogger(__name__)
@@ -67,12 +69,16 @@ def router_node(state: AgentState) -> dict:
 
     # Prepare routing prompt
     routing_prompt = f"""
-You are a routing assistant for a basketball training app. Analyze the user's question and classify it into ONE of these categories:
+You are a routing assistant for a basketball training app. Analyze the user's question
+and classify it into ONE of these categories:
 
 Categories:
-1. "skill_lab" - User wants training drills, workout routines, or skill improvement plans
-2. "shoe_recommendation" - User wants basketball shoe recommendations based on preferences or playing style
-3. "rule_query" - User has questions about basketball rules, regulations, or game situations
+1. "skill_lab" - User wants training drills, workout routines, or skill improvement
+   plans
+2. "shoe_recommendation" - User wants basketball shoe recommendations based on
+   preferences or playing style
+3. "rule_query" - User has questions about basketball rules, regulations, or game
+   situations
 
 User's Question: "{latest_message}"
 
@@ -98,18 +104,12 @@ Respond with ONLY the category name (skill_lab, shoe_recommendation, or rule_que
 
         print(f"---Detected Intent: {intent}---")
 
-        return {
-            "routing_decision": intent,
-            "intent": intent
-        }
+        return {"routing_decision": intent, "intent": intent}
 
-    except Exception as e:
-        logger.error(f"Error in router_node: {e}")
+    except Exception:
+        logger.exception("Error in router_node")
         # Default to skill_lab on error
-        return {
-            "routing_decision": "skill_lab",
-            "intent": "skill_lab"
-        }
+        return {"routing_decision": "skill_lab", "intent": "skill_lab"}
 
 
 def skill_lab_node(state: AgentState) -> dict:
@@ -129,19 +129,22 @@ def skill_lab_node(state: AgentState) -> dict:
         # Invoke coach agent
         final_state = coach_agent_graph.invoke(coach_state)
 
-        return {
-            "final_response": final_state.get("final_response", "")
-        }
+        return {"final_response": final_state.get("final_response", "")}
 
-    except Exception as e:
+    except Exception:
         # Log full exception details server-side for debugging
         logger.exception("Error in skill_lab_node")
         # Return generic error message without exposing internal details
         return {
-            "final_response": json.dumps({
-                "error": "Failed to generate training routine",
-                "message": "An internal error occurred while processing your request. Please try again later."
-            })
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to generate training routine",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
+                }
+            )
         }
 
 
@@ -162,35 +165,57 @@ def shoe_recommendation_node(state: AgentState) -> dict:
         # Invoke gear agent
         final_state = gear_agent_graph.invoke(gear_state)
 
-        return {
-            "final_response": final_state.get("final_response", "")
-        }
+        return {"final_response": final_state.get("final_response", "")}
 
-    except Exception as e:
+    except Exception:
         # Log full exception details server-side for debugging
         logger.exception("Error in shoe_recommendation_node")
         # Return generic error message without exposing internal details
         return {
-            "final_response": json.dumps({
-                "error": "Failed to generate shoe recommendations",
-                "message": "An internal error occurred while processing your request. Please try again later."
-            })
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to generate shoe recommendations",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
+                }
+            )
         }
 
 
 def rule_query_node(state: AgentState) -> dict:
     """
     Rule Query Node: Answers basketball rules questions.
-    (Placeholder for future implementation)
+    Invokes the JudgeAgent graph.
     """
-    print("---NODE: Rule Query (Not Implemented)---")
+    print("---NODE: Rule Query (The Whistle)---")
 
-    return {
-        "final_response": json.dumps({
-            "message": "Rule query feature is not yet implemented.",
-            "intent": "rule_query"
-        })
-    }
+    try:
+        # Prepare initial state for judge agent
+        judge_state = {
+            "messages": state.get("messages", []),
+            "user_info": state.get("user_info", {}),
+        }
+
+        # Invoke judge agent
+        final_state = judge_agent_graph.invoke(judge_state)
+
+        return {"final_response": final_state.get("final_response", "")}
+
+    except Exception:
+        logger.exception("Error in rule_query_node")
+        return {
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to process rule query",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
+                }
+            )
+        }
 
 
 def should_continue(state: AgentState) -> str:
@@ -237,7 +262,7 @@ workflow.add_conditional_edges(
         "skill_lab": "skill_lab",
         "shoe_recommendation": "shoe_recommendation",
         "rule_query": "rule_query",
-    }
+    },
 )
 
 # All agent nodes lead to END

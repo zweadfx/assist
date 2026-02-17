@@ -7,12 +7,16 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from src.core.config import settings
 from src.core.constants import (
     DRILLS_COLLECTION_NAME,
+    GLOSSARY_COLLECTION_NAME,
     PLAYERS_COLLECTION_NAME,
+    RULES_COLLECTION_NAME,
     SHOES_COLLECTION_NAME,
 )
 from src.services.rag.formatters import (
     format_drill_document,
+    format_glossary_document,
     format_player_document,
+    format_rule_document,
     format_shoe_document,
 )
 
@@ -26,17 +30,22 @@ class ChromaDBManager:
         Actual initialization is deferred until first use to avoid import-time failures.
         """
         self._initialized = False
-        self._init_lock = threading.Lock()  # Protects initialization from race conditions
+        self._init_lock = (
+            threading.Lock()
+        )  # Protects initialization from race conditions
         self.client = None
         self.collection = None
         self.shoes_collection = None
         self.players_collection = None
+        self.rules_collection = None
+        self.glossary_collection = None
 
     def _ensure_initialized(self) -> None:
         """
         Ensures ChromaDB client and collections are initialized.
         Called lazily on first access to avoid import-time side effects.
-        Uses double-check locking to prevent race conditions in multi-threaded environments.
+        Uses double-check locking to prevent race conditions in multi-threaded
+        environments.
 
         Raises:
             ValueError: If OPENAI_API_KEY is not configured in settings.
@@ -54,8 +63,8 @@ class ChromaDBManager:
             # Validate API key before attempting to create embedding function
             if not settings.OPENAI_API_KEY:
                 raise ValueError(
-                    "OPENAI_API_KEY is not configured. Please set it in your environment "
-                    "or configuration file before using ChromaDBManager."
+                    "OPENAI_API_KEY is not configured. Please set it in your "
+                    "environment or configuration file before using ChromaDBManager."
                 )
 
             # Initialize ChromaDB client
@@ -63,22 +72,24 @@ class ChromaDBManager:
 
             # Use OpenAI embedding function for consistency
             embedding_function = OpenAIEmbeddingFunction(
-                api_key=settings.OPENAI_API_KEY,
-                model_name="text-embedding-3-small"
+                api_key=settings.OPENAI_API_KEY, model_name="text-embedding-3-small"
             )
 
             # Create or get collections
             self.collection = self.client.get_or_create_collection(
-                name=DRILLS_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=DRILLS_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.shoes_collection = self.client.get_or_create_collection(
-                name=SHOES_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=SHOES_COLLECTION_NAME, embedding_function=embedding_function
             )
             self.players_collection = self.client.get_or_create_collection(
-                name=PLAYERS_COLLECTION_NAME,
-                embedding_function=embedding_function
+                name=PLAYERS_COLLECTION_NAME, embedding_function=embedding_function
+            )
+            self.rules_collection = self.client.get_or_create_collection(
+                name=RULES_COLLECTION_NAME, embedding_function=embedding_function
+            )
+            self.glossary_collection = self.client.get_or_create_collection(
+                name=GLOSSARY_COLLECTION_NAME, embedding_function=embedding_function
             )
 
             # Set initialized flag (must be last, acts as memory barrier)
@@ -291,6 +302,144 @@ class ChromaDBManager:
         """
         self._ensure_initialized()
         results = self.players_collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_rules(
+        self,
+        rule_chunks: List[Dict[str, Any]],
+        embeddings: List[List[float]],
+    ) -> None:
+        """
+        Adds rule document chunks and their embeddings to the ChromaDB collection.
+
+        Args:
+            rule_chunks: A list of rule chunk dictionaries from PDF parsing.
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of chunks and embeddings do not match.
+        """
+        self._ensure_initialized()
+        if len(rule_chunks) != len(embeddings):
+            raise ValueError(
+                f"The number of rule chunks ({len(rule_chunks)}) must match "
+                f"the number of embeddings ({len(embeddings)})."
+            )
+
+        if not rule_chunks:
+            return
+
+        ids = [chunk["chunk_id"] for chunk in rule_chunks]
+        documents = [format_rule_document(chunk) for chunk in rule_chunks]
+
+        metadatas = []
+        for chunk in rule_chunks:
+            metadata = {
+                "doc_type": "rule",
+                "rule_type": chunk["rule_type"],
+                "page_number": chunk["page_number"],
+                "article": chunk.get("article", "N/A"),
+                "clause": chunk.get("clause", "N/A"),
+            }
+            metadatas.append(metadata)
+
+        self.rules_collection.add(
+            ids=ids,
+            embeddings=embeddings,
+            documents=documents,
+            metadatas=metadatas,
+        )
+
+    def query_rules(
+        self,
+        query_texts: List[str],
+        n_results: int = 5,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the rules collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        self._ensure_initialized()
+        results = self.rules_collection.query(
+            query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def add_glossary(
+        self,
+        terms: List[Dict[str, Any]],
+        embeddings: List[List[float]],
+    ) -> None:
+        """
+        Adds glossary term documents and their embeddings to the ChromaDB collection.
+
+        Args:
+            terms: A list of glossary term dictionaries.
+            embeddings: A list of corresponding embedding vectors.
+
+        Raises:
+            ValueError: If the number of terms and embeddings do not match.
+        """
+        self._ensure_initialized()
+        if len(terms) != len(embeddings):
+            raise ValueError(
+                f"The number of terms ({len(terms)}) must match "
+                f"the number of embeddings ({len(embeddings)})."
+            )
+
+        if not terms:
+            return
+
+        ids = [term["id"] for term in terms]
+        documents = [format_glossary_document(term) for term in terms]
+
+        metadatas = []
+        for term in terms:
+            metadata = {
+                "doc_type": "glossary",
+                "term": term["term"],
+                "category": term["category"],
+                "related_rules": ",".join(term.get("related_rules", [])),
+                "tags": ",".join(term.get("tags", [])),
+            }
+            metadatas.append(metadata)
+
+        self.glossary_collection.add(
+            ids=ids,
+            embeddings=embeddings,
+            documents=documents,
+            metadatas=metadatas,
+        )
+
+    def query_glossary(
+        self,
+        query_texts: List[str],
+        n_results: int = 3,
+        where: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, List[Any]]:
+        """
+        Queries the glossary collection for relevant documents.
+
+        Args:
+            query_texts: A list of query texts to search for.
+            n_results: The number of results to return per query.
+            where: An optional dictionary for metadata filtering.
+
+        Returns:
+            A dictionary containing the query results.
+        """
+        self._ensure_initialized()
+        results = self.glossary_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
         )
         return results
