@@ -22,7 +22,8 @@ from src.services.rag.rule_retrieval import RuleRetriever
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
-    return TestClient(app)
+    with TestClient(app) as client:
+        yield client
 
 
 class TestRuleRetrieval:
