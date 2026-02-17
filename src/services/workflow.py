@@ -13,6 +13,7 @@ from langgraph.graph import END, StateGraph
 
 from src.services.agents.coach_agent import coach_agent_graph
 from src.services.agents.gear_agent import gear_agent_graph
+from src.services.agents.judge_agent import judge_agent_graph
 from src.services.rag.embedding import client as openai_client
 
 logger = logging.getLogger(__name__)
@@ -176,18 +177,32 @@ def shoe_recommendation_node(state: AgentState) -> dict:
 def rule_query_node(state: AgentState) -> dict:
     """
     Rule Query Node: Answers basketball rules questions.
-    (Placeholder for future implementation)
+    Invokes the JudgeAgent graph.
     """
-    print("---NODE: Rule Query (Not Implemented)---")
+    print("---NODE: Rule Query (The Whistle)---")
 
-    return {
-        "final_response": json.dumps(
-            {
-                "message": "Rule query feature is not yet implemented.",
-                "intent": "rule_query",
-            }
-        )
-    }
+    try:
+        # Prepare initial state for judge agent
+        judge_state = {
+            "messages": state.get("messages", []),
+            "user_info": state.get("user_info", {}),
+        }
+
+        # Invoke judge agent
+        final_state = judge_agent_graph.invoke(judge_state)
+
+        return {"final_response": final_state.get("final_response", "")}
+
+    except Exception:
+        logger.exception("Error in rule_query_node")
+        return {
+            "final_response": json.dumps(
+                {
+                    "error": "Failed to process rule query",
+                    "message": "An internal error occurred while processing your request. Please try again later.",
+                }
+            )
+        }
 
 
 def should_continue(state: AgentState) -> str:
