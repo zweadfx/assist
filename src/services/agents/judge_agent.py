@@ -64,8 +64,16 @@ def parse_situation(state: JudgeAgentState) -> dict:
     if not user_info.get("situation_description"):
         raise ValueError("Situation description is required for judgment.")
 
-    logger.debug(f"User Info: {user_info}")
-    return {"user_info": state["user_info"]}
+    # Sanitize early so all downstream nodes receive clean input
+    sanitized_info = {
+        **user_info,
+        "situation_description": _sanitize_situation(
+            user_info["situation_description"]
+        ),
+    }
+
+    logger.debug(f"User Info: {sanitized_info}")
+    return {"user_info": sanitized_info}
 
 
 def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
@@ -188,7 +196,7 @@ authoritative judgment based on official basketball rules.
 JSON Output:
 """
 
-    situation = _sanitize_situation(user_info.get("situation_description") or "")
+    situation = user_info.get("situation_description") or ""
 
     try:
         response = openai_client.chat.completions.create(
