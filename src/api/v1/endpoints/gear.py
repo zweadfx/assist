@@ -28,7 +28,9 @@ async def recommend_gear(
         initial_state = {
             "messages": [
                 HumanMessage(
-                    content=f"Recommend shoes for: {', '.join(request.sensory_preferences)}"
+                    content=(
+                        f"Recommend shoes for: {', '.join(request.sensory_preferences)}"
+                    )
                 )
             ],
             "user_info": request.model_dump(),

@@ -167,11 +167,13 @@ shoe recommendations based on the user's preferences and the available shoe data
    - Player archetype compatibility (if specified)
    - Position suitability (if specified)
    - Budget fit (if specified)
-3. Write a compelling recommendation_reason for each shoe explaining why it's a good match.
+3. Write a compelling recommendation_reason for each shoe explaining why it's a good
+   match.
 4. Provide an overall ai_reasoning explaining your recommendation strategy.
 5. Create a catchy recommendation_title for the set.
 6. Summarize the user's profile in user_profile_summary.
-7. Your final output **must** be a JSON object that strictly follows this Pydantic schema:
+7. Your final output **must** be a JSON object that strictly follows this Pydantic
+   schema:
 
 ```json
 {schema_json}

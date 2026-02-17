@@ -44,7 +44,8 @@ class ChromaDBManager:
         """
         Ensures ChromaDB client and collections are initialized.
         Called lazily on first access to avoid import-time side effects.
-        Uses double-check locking to prevent race conditions in multi-threaded environments.
+        Uses double-check locking to prevent race conditions in multi-threaded
+        environments.
 
         Raises:
             ValueError: If OPENAI_API_KEY is not configured in settings.
@@ -62,8 +63,8 @@ class ChromaDBManager:
             # Validate API key before attempting to create embedding function
             if not settings.OPENAI_API_KEY:
                 raise ValueError(
-                    "OPENAI_API_KEY is not configured. Please set it in your environment "
-                    "or configuration file before using ChromaDBManager."
+                    "OPENAI_API_KEY is not configured. Please set it in your "
+                    "environment or configuration file before using ChromaDBManager."
                 )
 
             # Initialize ChromaDB client

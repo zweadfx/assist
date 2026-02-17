@@ -39,7 +39,8 @@ class ShoeRetriever:
         Search shoes by sensory preferences using vector similarity.
 
         Args:
-            sensory_keywords: List of sensory descriptors (e.g., ["쫀득한 접지", "가벼운 무게"])
+            sensory_keywords: List of sensory descriptors
+                (e.g., ["쫀득한 접지", "가벼운 무게"])
             budget_max_krw: Maximum budget in KRW (optional filter)
             position: Player position (guard/forward/center) for filtering (optional)
             n_results: Number of candidate results to retrieve
@@ -90,7 +91,8 @@ class ShoeRetriever:
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
 
-            # Post-filtering for position (tags are comma-separated, not suitable for DB filter)
+            # Post-filtering for position (tags are comma-separated, not suitable for DB
+            # filter)
             filtered_docs = []
             for i, doc_content in enumerate(documents):
                 metadata = metadatas[i]

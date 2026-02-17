@@ -232,8 +232,8 @@ class TestShoeRetrieval:
             # Verify signature shoe boosting behavior
             # Since we searched for "Stephen Curry", his signature shoes should appear
             assert has_curry_shoe, (
-                f"Expected Curry signature shoes in results when searching for '{player}', "
-                f"but found: {shoe_models}"
+                f"Expected Curry signature shoes in results when searching for "
+                f"'{player}', but found: {shoe_models}"
             )
 
 

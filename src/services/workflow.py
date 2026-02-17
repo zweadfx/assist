@@ -69,12 +69,16 @@ def router_node(state: AgentState) -> dict:
 
     # Prepare routing prompt
     routing_prompt = f"""
-You are a routing assistant for a basketball training app. Analyze the user's question and classify it into ONE of these categories:
+You are a routing assistant for a basketball training app. Analyze the user's question
+and classify it into ONE of these categories:
 
 Categories:
-1. "skill_lab" - User wants training drills, workout routines, or skill improvement plans
-2. "shoe_recommendation" - User wants basketball shoe recommendations based on preferences or playing style
-3. "rule_query" - User has questions about basketball rules, regulations, or game situations
+1. "skill_lab" - User wants training drills, workout routines, or skill improvement
+   plans
+2. "shoe_recommendation" - User wants basketball shoe recommendations based on
+   preferences or playing style
+3. "rule_query" - User has questions about basketball rules, regulations, or game
+   situations
 
 User's Question: "{latest_message}"
 
@@ -135,7 +139,10 @@ def skill_lab_node(state: AgentState) -> dict:
             "final_response": json.dumps(
                 {
                     "error": "Failed to generate training routine",
-                    "message": "An internal error occurred while processing your request. Please try again later.",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
                 }
             )
         }
@@ -168,7 +175,10 @@ def shoe_recommendation_node(state: AgentState) -> dict:
             "final_response": json.dumps(
                 {
                     "error": "Failed to generate shoe recommendations",
-                    "message": "An internal error occurred while processing your request. Please try again later.",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
                 }
             )
         }
@@ -199,7 +209,10 @@ def rule_query_node(state: AgentState) -> dict:
             "final_response": json.dumps(
                 {
                     "error": "Failed to process rule query",
-                    "message": "An internal error occurred while processing your request. Please try again later.",
+                    "message": (
+                        "An internal error occurred while processing your request. "
+                        "Please try again later."
+                    ),
                 }
             )
         }

@@ -29,7 +29,8 @@ def format_shoe_document(shoe: Dict[str, Any]) -> str:
 
 def format_player_document(player: Dict[str, Any]) -> str:
     """
-    Formats a player archetype dictionary into a consistent string for embedding and storage.
+    Formats a player archetype dictionary into a consistent string for embedding and
+    storage.
     Emphasizes play style for better semantic matching.
     """
     styles = ", ".join(player.get("play_style", []))
@@ -56,8 +57,9 @@ def format_rule_document(chunk: Dict[str, Any]) -> str:
 
 def format_glossary_document(term: Dict[str, Any]) -> str:
     """
-    Formats a glossary term dictionary into a consistent string for embedding and storage.
-    Combines term, definition, and explanation for comprehensive semantic matching.
+    Formats a glossary term dictionary into a consistent string for embedding and
+    storage. Combines term, definition, and explanation for comprehensive semantic
+    matching.
     """
     examples = ", ".join(term.get("examples", []))
     return (
