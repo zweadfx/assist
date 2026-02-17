@@ -132,6 +132,7 @@ class TestRuleRetrieval:
         )
 
         assert isinstance(results, list)
+        assert len(results) > 0, "Expected FIBA rules but got empty results"
         for doc in results:
             assert doc.metadata.get("rule_type") == "FIBA"
 
