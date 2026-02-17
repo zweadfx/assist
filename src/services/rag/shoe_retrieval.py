@@ -62,9 +62,22 @@ class ShoeRetriever:
         logger.info(f"Searching shoes by sensory preferences: {sensory_keywords}")
 
         try:
-            # Retrieve candidates from ChromaDB
+            # Build where filter for DB-level pre-filtering
+            where_conditions = []
+            if budget_max_krw and budget_max_krw > 0:
+                where_conditions.append({"price_krw": {"$lte": budget_max_krw}})
+
+            where_filter = None
+            if len(where_conditions) == 1:
+                where_filter = where_conditions[0]
+            elif len(where_conditions) > 1:
+                where_filter = {"$and": where_conditions}
+
+            # Retrieve candidates from ChromaDB with DB-level filtering
             results = self.chroma_manager.query_shoes(
-                query_texts=[query_text], n_results=n_results
+                query_texts=[query_text],
+                n_results=n_results,
+                where=where_filter,
             )
 
             if not results or not results.get("documents"):
@@ -74,24 +87,13 @@ class ShoeRetriever:
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
 
-            # Post-filtering
+            # Post-filtering for position (tags are comma-separated, not suitable for DB filter)
             filtered_docs = []
             for i, doc_content in enumerate(documents):
                 metadata = metadatas[i]
 
-                # Budget filter
-                if budget_max_krw:
-                    try:
-                        price = int(metadata.get("price_krw", 0))
-                        if price > budget_max_krw:
-                            continue
-                    except (ValueError, TypeError):
-                        continue
-
-                # Position filter (optional - based on tags)
                 if position:
                     tags = metadata.get("tags", "").split(",")
-                    # Simple position matching logic
                     position_match = False
                     if position.lower() == "guard" and any(
                         tag.strip() in ["가드", "로우컷"] for tag in tags
@@ -111,13 +113,11 @@ class ShoeRetriever:
                         "forward",
                         "center",
                     ]:
-                        # If position is specified but we can't verify match, include anyway
                         position_match = True
 
                     if not position_match:
                         continue
 
-                # Create Document
                 doc = Document(page_content=doc_content, metadata=metadata)
                 filtered_docs.append(doc)
 

@@ -10,7 +10,11 @@ from src.core.constants import (
     PLAYERS_COLLECTION_NAME,
     SHOES_COLLECTION_NAME,
 )
-from src.services.rag.utils import format_drill_document
+from src.services.rag.formatters import (
+    format_drill_document,
+    format_player_document,
+    format_shoe_document,
+)
 
 
 class ChromaDBManager:
@@ -170,9 +174,6 @@ class ChromaDBManager:
             return
 
         ids = [shoe["id"] for shoe in shoes]
-
-        # Import here to avoid circular dependency
-        from src.services.rag.utils import format_shoe_document
         documents = [format_shoe_document(shoe) for shoe in shoes]
 
         # Prepare metadata, ensuring all values are simple types for ChromaDB.
@@ -245,9 +246,6 @@ class ChromaDBManager:
             return
 
         ids = [player["id"] for player in players]
-
-        # Import here to avoid circular dependency
-        from src.services.rag.utils import format_player_document
         documents = [format_player_document(player) for player in players]
 
         # Prepare metadata, ensuring all values are simple types for ChromaDB.
