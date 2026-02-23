@@ -1,5 +1,10 @@
+import hashlib
+import logging
 import threading
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 import chromadb
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
@@ -94,6 +99,51 @@ class ChromaDBManager:
 
             # Set initialized flag (must be last, acts as memory barrier)
             self._initialized = True
+
+    @staticmethod
+    def _compute_pdf_hash(*pdf_paths: Path) -> str:
+        """Compute a combined SHA-256 hash of the given PDF files."""
+        hasher = hashlib.sha256()
+        for path in sorted(pdf_paths):
+            if path.exists():
+                hasher.update(path.read_bytes())
+        return hasher.hexdigest()
+
+    def reinitialize_rules_collection(self, *pdf_paths: Path) -> bool:
+        """
+        Delete and recreate the rules collection if PDF content has changed.
+
+        Compares a SHA-256 hash of the PDF files against the hash stored
+        in collection metadata. Skips re-initialization if hashes match.
+
+        Returns:
+            True if the collection was recreated, False if skipped.
+        """
+        self._ensure_initialized()
+
+        current_hash = self._compute_pdf_hash(*pdf_paths)
+
+        # Check stored hash in collection metadata
+        existing_meta = self.rules_collection.metadata or {}
+        if existing_meta.get("pdf_hash") == current_hash:
+            logger.info(
+                "Rules PDF hash unchanged, skipping re-initialization."
+            )
+            return False
+
+        # Hash differs or missing — delete and recreate
+        logger.info("Rules PDF content changed, recreating collection...")
+        self.client.delete_collection(RULES_COLLECTION_NAME)
+
+        embedding_function = OpenAIEmbeddingFunction(
+            api_key=settings.OPENAI_API_KEY, model_name="text-embedding-3-small"
+        )
+        self.rules_collection = self.client.create_collection(
+            name=RULES_COLLECTION_NAME,
+            embedding_function=embedding_function,
+            metadata={"pdf_hash": current_hash},
+        )
+        return True
 
     def add_drills(
         self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
