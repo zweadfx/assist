@@ -37,6 +37,7 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Application startup...")
     try:
+        chroma_manager._ensure_initialized()
         if chroma_manager.collection.count() == 0:
             logger.info("Drills collection is empty. Initializing...")
 
@@ -93,41 +94,59 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Players collection is already initialized.")
 
-        # Initialize rules collection
-        if chroma_manager.rules_collection.count() == 0:
-            logger.info("Rules collection is empty. Initializing...")
-
+        # Re-initialize rules collection only when PDF content changes
+        rules_changed = chroma_manager.reinitialize_rules_collection(
+            FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
+        )
+        if rules_changed:
             all_chunks = []
 
-            # Parse FIBA rules PDF
             if FIBA_RULES_PDF_PATH.exists():
-                fiba_chunks = parse_rules_pdf(FIBA_RULES_PDF_PATH, rule_type="FIBA")
+                fiba_chunks = parse_rules_pdf(
+                    FIBA_RULES_PDF_PATH,
+                    rule_type="FIBA",
+                    chunk_method="article_based",
+                )
                 all_chunks.extend(fiba_chunks)
                 logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
             else:
-                logger.warning(f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}")
+                logger.warning(
+                    f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}"
+                )
 
-            # Parse NBA rules PDF
             if NBA_RULES_PDF_PATH.exists():
-                nba_chunks = parse_rules_pdf(NBA_RULES_PDF_PATH, rule_type="NBA")
+                nba_chunks = parse_rules_pdf(
+                    NBA_RULES_PDF_PATH,
+                    rule_type="NBA",
+                    chunk_method="article_based",
+                )
                 all_chunks.extend(nba_chunks)
                 logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
             else:
-                logger.warning(f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}")
+                logger.warning(
+                    f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}"
+                )
 
             if all_chunks:
-                rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
+                rules_texts = [
+                    format_rule_document(chunk) for chunk in all_chunks
+                ]
                 rules_embeddings = generate_embeddings(rules_texts)
-                logger.info(f"Generated {len(rules_embeddings)} rule embeddings.")
+                logger.info(
+                    f"Generated {len(rules_embeddings)} rule embeddings."
+                )
 
                 chroma_manager.add_rules(
                     rule_chunks=all_chunks, embeddings=rules_embeddings
                 )
+                chroma_manager.commit_rules_hash(
+                    FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
+                )
                 logger.info("Successfully added rules to ChromaDB.")
             else:
-                logger.warning("No rules PDF files found. Skipping rules init.")
-        else:
-            logger.info("Rules collection is already initialized.")
+                logger.warning(
+                    "No rules PDF files found. Skipping rules init."
+                )
 
         # Initialize glossary collection
         if chroma_manager.glossary_collection.count() == 0:

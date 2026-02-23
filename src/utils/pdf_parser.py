@@ -177,11 +177,17 @@ class RulesPDFParser:
 
         # Common patterns for article headers in basketball rules
         # Example: "Article 25", "Art. 33", "Rule 4", etc.
-        article_pattern = re.compile(r"(?:Article|Art\.?|Rule)\s+(\d+)", re.IGNORECASE)
+        article_pattern = re.compile(
+            r"(?:(?:Article|Art\.?|Rule)\s+(\d+)|제(\d+)조)", re.IGNORECASE
+        )
 
         for page_num, page in enumerate(self.reader.pages):
             text = page.extract_text()
             if not text.strip():
+                continue
+
+            # Skip TOC pages
+            if self._is_toc_page(text):
                 continue
 
             # Find all article matches in this page
@@ -215,7 +221,7 @@ class RulesPDFParser:
 
             # Split text by article boundaries
             for i, match in enumerate(matches):
-                article_num = match.group(1)
+                article_num = match.group(1) or match.group(2)
                 start_pos = match.start()
                 end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(text)
 
@@ -232,6 +238,28 @@ class RulesPDFParser:
                 chunk_id += 1
 
         return chunks
+
+    @staticmethod
+    def _is_toc_page(text: str) -> bool:
+        """Detect if a page is a table of contents page."""
+        # Korean TOC header (whitespace-resilient)
+        if re.search(r"목\s*차", text):
+            return True
+
+        # English TOC header (whole-line / line-start match)
+        if re.search(r"(?mi)^\s*TABLE\s+OF\s+CONTENTS\s*$", text):
+            return True
+
+        # Dotted-line + page number patterns (e.g., "제1조 ........... 5")
+        # Require >= 5 matches AND > 30% of total lines to avoid false positives
+        dotted_line_pattern = re.compile(r"\.{4,}\s*\d+")
+        dotted_count = len(dotted_line_pattern.findall(text))
+        total_lines = len([l for l in text.splitlines() if l.strip()])
+        if total_lines > 0 and dotted_count >= 5:
+            if dotted_count / total_lines > 0.3:
+                return True
+
+        return False
 
     def _create_chunk_metadata(
         self,
