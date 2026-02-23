@@ -176,6 +176,9 @@ def generate_routine(state: CoachAgentState) -> dict:
     # Prepare the JSON schema for the prompt to ensure valid JSON output.
     schema_json = json.dumps(DailyRoutineCard.model_json_schema(), indent=2)
 
+    language = user_info.get("language", "en")
+    language_name = "Korean" if language == "ko" else "English"
+
     prompt = f"""
     You are an expert basketball coach. Your task is to create a personalized
     training routine for a user based on their preferences and a list of
@@ -188,6 +191,9 @@ def generate_routine(state: CoachAgentState) -> dict:
 
     **Retrieved Drills from Database:**
     {context_str}
+
+    **Language:**
+    Respond in {language_name}. All string fields (routine_title, coach_message, drill descriptions, coaching_tips) must be written in {language_name}.
 
     **Instructions:**
     1. Create a complete routine with 'warmup', 'main', and 'cooldown' phases.
