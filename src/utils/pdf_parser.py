@@ -177,7 +177,9 @@ class RulesPDFParser:
 
         # Common patterns for article headers in basketball rules
         # Example: "Article 25", "Art. 33", "Rule 4", etc.
-        article_pattern = re.compile(r"(?:Article|Art\.?|Rule)\s+(\d+)", re.IGNORECASE)
+        article_pattern = re.compile(
+            r"(?:(?:Article|Art\.?|Rule)\s+(\d+)|제(\d+)조)", re.IGNORECASE
+        )
 
         for page_num, page in enumerate(self.reader.pages):
             text = page.extract_text()
@@ -215,7 +217,7 @@ class RulesPDFParser:
 
             # Split text by article boundaries
             for i, match in enumerate(matches):
-                article_num = match.group(1)
+                article_num = match.group(1) or match.group(2)
                 start_pos = match.start()
                 end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(text)
 
