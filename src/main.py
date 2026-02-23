@@ -10,6 +10,7 @@ from src.core.constants import (
     GLOSSARY_FILE_PATH,
     NBA_RULES_PDF_PATH,
     PLAYERS_FILE_PATH,
+    RULES_COLLECTION_NAME,
     SHOES_FILE_PATH,
 )
 from src.services.rag.chroma_db import chroma_manager
@@ -93,7 +94,16 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Players collection is already initialized.")
 
-        # Initialize rules collection
+        # Re-initialize rules collection (delete stale data and re-parse)
+        if chroma_manager.rules_collection.count() > 0:
+            logger.info("Deleting existing rules collection for re-parsing...")
+            chroma_manager.client.delete_collection(RULES_COLLECTION_NAME)
+            chroma_manager.rules_collection = (
+                chroma_manager.client.get_or_create_collection(
+                    name=RULES_COLLECTION_NAME,
+                )
+            )
+
         if chroma_manager.rules_collection.count() == 0:
             logger.info("Rules collection is empty. Initializing...")
 
