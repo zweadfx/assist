@@ -242,16 +242,22 @@ class RulesPDFParser:
     @staticmethod
     def _is_toc_page(text: str) -> bool:
         """Detect if a page is a table of contents page."""
-        toc_headers = ["목 차", "목차", "TABLE OF CONTENTS", "CONTENTS"]
-        upper_text = text.upper()
-        for header in toc_headers:
-            if header.upper() in upper_text:
-                return True
-
-        # Detect dotted-line + page number patterns (e.g., "제1조 ........... 5")
-        dotted_line_pattern = re.compile(r"\.{4,}\s*\d+")
-        if len(dotted_line_pattern.findall(text)) >= 3:
+        # Korean TOC header (whitespace-resilient)
+        if re.search(r"목\s*차", text):
             return True
+
+        # English TOC header (whole-line / line-start match)
+        if re.search(r"(?mi)^\s*TABLE\s+OF\s+CONTENTS\s*$", text):
+            return True
+
+        # Dotted-line + page number patterns (e.g., "제1조 ........... 5")
+        # Require >= 5 matches AND > 30% of total lines to avoid false positives
+        dotted_line_pattern = re.compile(r"\.{4,}\s*\d+")
+        dotted_count = len(dotted_line_pattern.findall(text))
+        total_lines = len(text.splitlines())
+        if total_lines > 0 and dotted_count >= 5:
+            if dotted_count / total_lines > 0.3:
+                return True
 
         return False
 
