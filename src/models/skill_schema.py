@@ -30,6 +30,11 @@ class SkillLabRequest(BaseModel):
         description="List of available equipment for training.",
         examples=[["ball", "cones"]],
     )
+    language: Literal["en", "ko"] = Field(
+        default="en",
+        description="Language for the AI-generated response.",
+        examples=["en"],
+    )
 
 
 class Drill(BaseModel):
