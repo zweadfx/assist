@@ -184,6 +184,9 @@ def generate_recommendations(state: GearAgentState) -> dict:
     # Prepare the JSON schema for the prompt
     schema_json = json.dumps(GearAdvisorResponse.model_json_schema(), indent=2)
 
+    language = user_info.get("language", "en")
+    language_name = "Korean" if language == "ko" else "English"
+
     # Build player section separately to avoid nested f-string
     player_section = ""
     if players_context_str:
@@ -201,6 +204,9 @@ shoe recommendations based on the user's preferences and the available shoe data
 
 {player_section}**Available Shoes Data:**
 {shoes_context_str}
+
+**Language:**
+Respond in {language_name}. All string fields (recommendation_title, user_profile_summary, ai_reasoning, recommendation_reason) must be written in {language_name}.
 
 **Instructions:**
 1. Recommend 3-5 shoes from the provided data that best match the user's preferences.
