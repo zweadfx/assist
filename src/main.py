@@ -101,7 +101,11 @@ async def lifespan(app: FastAPI):
 
             # Parse FIBA rules PDF
             if FIBA_RULES_PDF_PATH.exists():
-                fiba_chunks = parse_rules_pdf(FIBA_RULES_PDF_PATH, rule_type="FIBA")
+                fiba_chunks = parse_rules_pdf(
+                    FIBA_RULES_PDF_PATH,
+                    rule_type="FIBA",
+                    chunk_method="article_based",
+                )
                 all_chunks.extend(fiba_chunks)
                 logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
             else:
@@ -109,7 +113,11 @@ async def lifespan(app: FastAPI):
 
             # Parse NBA rules PDF
             if NBA_RULES_PDF_PATH.exists():
-                nba_chunks = parse_rules_pdf(NBA_RULES_PDF_PATH, rule_type="NBA")
+                nba_chunks = parse_rules_pdf(
+                    NBA_RULES_PDF_PATH,
+                    rule_type="NBA",
+                    chunk_method="article_based",
+                )
                 all_chunks.extend(nba_chunks)
                 logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
             else:
