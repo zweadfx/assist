@@ -1,9 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
 
+import chromadb
 from fastapi import FastAPI
 
 from src.api.v1.router import api_router
+from src.core.config import settings
 from src.core.constants import (
     DRILLS_FILE_PATH,
     FIBA_RULES_PDF_PATH,
@@ -38,6 +40,17 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Application startup...")
     try:
+        # Delete stale rules collection before initialization to avoid
+        # embedding function conflicts when re-creating with OpenAI embeddings
+        _temp_client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+        if RULES_COLLECTION_NAME in [
+            c.name for c in _temp_client.list_collections()
+        ]:
+            logger.info("Deleting existing rules collection for re-parsing...")
+            _temp_client.delete_collection(RULES_COLLECTION_NAME)
+        del _temp_client
+
+        chroma_manager._ensure_initialized()
         if chroma_manager.collection.count() == 0:
             logger.info("Drills collection is empty. Initializing...")
 
@@ -94,16 +107,7 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Players collection is already initialized.")
 
-        # Re-initialize rules collection (delete stale data and re-parse)
-        if chroma_manager.rules_collection.count() > 0:
-            logger.info("Deleting existing rules collection for re-parsing...")
-            chroma_manager.client.delete_collection(RULES_COLLECTION_NAME)
-            chroma_manager.rules_collection = (
-                chroma_manager.client.get_or_create_collection(
-                    name=RULES_COLLECTION_NAME,
-                )
-            )
-
+        # Initialize rules collection (always empty after pre-init deletion)
         if chroma_manager.rules_collection.count() == 0:
             logger.info("Rules collection is empty. Initializing...")
 
