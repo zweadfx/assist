@@ -139,6 +139,9 @@ async def lifespan(app: FastAPI):
                 chroma_manager.add_rules(
                     rule_chunks=all_chunks, embeddings=rules_embeddings
                 )
+                chroma_manager.commit_rules_hash(
+                    FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
+                )
                 logger.info("Successfully added rules to ChromaDB.")
             else:
                 logger.warning(

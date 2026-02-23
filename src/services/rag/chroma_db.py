@@ -123,15 +123,19 @@ class ChromaDBManager:
 
         current_hash = self._compute_pdf_hash(*pdf_paths)
 
-        # Check stored hash in collection metadata
+        # Check stored hash and collection count — treat empty collection
+        # as a mismatch so reinitialization proceeds even if hash was stamped
         existing_meta = self.rules_collection.metadata or {}
-        if existing_meta.get("pdf_hash") == current_hash:
+        if (
+            existing_meta.get("pdf_hash") == current_hash
+            and self.rules_collection.count() > 0
+        ):
             logger.info(
                 "Rules PDF hash unchanged, skipping re-initialization."
             )
             return False
 
-        # Hash differs or missing — delete and recreate
+        # Hash differs, missing, or collection is empty — delete and recreate
         logger.info("Rules PDF content changed, recreating collection...")
         self.client.delete_collection(RULES_COLLECTION_NAME)
 
@@ -141,9 +145,14 @@ class ChromaDBManager:
         self.rules_collection = self.client.create_collection(
             name=RULES_COLLECTION_NAME,
             embedding_function=embedding_function,
-            metadata={"pdf_hash": current_hash},
         )
         return True
+
+    def commit_rules_hash(self, *pdf_paths: Path) -> None:
+        """Stamp the PDF content hash into rules collection metadata."""
+        self._ensure_initialized()
+        pdf_hash = self._compute_pdf_hash(*pdf_paths)
+        self.rules_collection.modify(metadata={"pdf_hash": pdf_hash})
 
     def add_drills(
         self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
