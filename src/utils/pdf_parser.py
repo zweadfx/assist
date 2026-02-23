@@ -254,7 +254,7 @@ class RulesPDFParser:
         # Require >= 5 matches AND > 30% of total lines to avoid false positives
         dotted_line_pattern = re.compile(r"\.{4,}\s*\d+")
         dotted_count = len(dotted_line_pattern.findall(text))
-        total_lines = len(text.splitlines())
+        total_lines = len([l for l in text.splitlines() if l.strip()])
         if total_lines > 0 and dotted_count >= 5:
             if dotted_count / total_lines > 0.3:
                 return True
