@@ -37,6 +37,11 @@ class GearAdvisorRequest(BaseModel):
         description="Maximum budget in KRW",
         examples=[200000],
     )
+    language: Literal["en", "ko"] = Field(
+        default="en",
+        description="Language for the AI-generated response.",
+        examples=["en"],
+    )
 
 
 class ShoeRecommendation(BaseModel):
