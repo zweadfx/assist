@@ -58,20 +58,98 @@ class UserDrillPreferences(BaseModel):
     )
 
 
+class ParsedFreeText(BaseModel):
+    """Structured output from parsing the user's free-text input."""
+
+    additional_focus: str = Field(
+        default="",
+        description="Specific sub-skill or technique the user wants to work on.",
+    )
+    additional_equipment: List[str] = Field(
+        default_factory=list,
+        description="Extra equipment mentioned in the free text.",
+    )
+    intensity_preference: str = Field(
+        default="",
+        description="Preferred intensity level (e.g., 'light', 'moderate', 'intense').",
+    )
+    special_notes: str = Field(
+        default="",
+        description="Any other relevant details from the user's request.",
+    )
+
+
+def _parse_free_text(free_text: str) -> dict:
+    """Parse free-text input using LLM to extract structured preferences."""
+    schema_json = json.dumps(ParsedFreeText.model_json_schema(), indent=2)
+
+    prompt = f"""Extract structured training preferences from the following user input.
+If a field is not mentioned, leave it as empty string or empty list.
+
+User input: "{free_text}"
+
+Output a JSON object following this schema:
+```json
+{schema_json}
+```
+
+JSON Output:"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+
+        if not response.choices or not response.choices[0].message.content:
+            logger.warning("Empty response from LLM for free_text parsing")
+            return {}
+
+        content = response.choices[0].message.content
+        parsed = ParsedFreeText.model_validate_json(content)
+        return parsed.model_dump(exclude_defaults=True)
+
+    except Exception as e:
+        logger.warning("Failed to parse free_text, skipping: %s", e)
+        return {}
+
+
 def diagnose_user_state(state: CoachAgentState) -> dict:
     """
-    Validates that the user_info is present in the state. In a more complex
-    scenario, this node could be used to further refine or validate the user
-    profile. For now, it's a pass-through and logging step.
+    Validates that the user_info is present in the state. If free_text is
+    provided, parses it with an LLM to enrich the user_info with additional
+    preferences.
     """
     logger.info("NODE: Diagnosing User State")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
-    logger.debug("User Info: %s", state["user_info"])
-    # The user_info is already structured and passed in the initial call
-    # so we just pass it along to the next node.
-    return {"user_info": state["user_info"]}
+    user_info = {**state["user_info"]}
+
+    # Parse free_text if provided
+    free_text = user_info.get("free_text")
+    if free_text and free_text.strip():
+        logger.info("Parsing free_text input: %s", free_text[:100])
+        parsed = _parse_free_text(free_text)
+
+        if parsed.get("additional_equipment"):
+            existing = set(user_info.get("equipment", []))
+            existing.update(parsed["additional_equipment"])
+            user_info["equipment"] = list(existing)
+
+        if parsed.get("additional_focus"):
+            user_info["additional_focus"] = parsed["additional_focus"]
+
+        if parsed.get("intensity_preference"):
+            user_info["intensity_preference"] = parsed["intensity_preference"]
+
+        if parsed.get("special_notes"):
+            user_info["special_notes"] = parsed["special_notes"]
+
+        logger.debug("Enriched User Info: %s", user_info)
+
+    return {"user_info": user_info}
 
 
 def retrieve_drills(state: CoachAgentState) -> dict:
@@ -162,10 +240,14 @@ def generate_routine(state: CoachAgentState) -> dict:
     user_info = state["user_info"]
     context_docs = state["context"]
 
-    # Prepare context string from retrieved documents
+    # Prepare context string from retrieved documents with full metadata
     context_str = "\n\n".join(
         [
             f"Drill Name: {doc.metadata.get('name', 'N/A')}\n"
+            f"Phase: {doc.metadata.get('phase', 'N/A')}\n"
+            f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
+            f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
+            f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
             f"Description: {doc.page_content}"
             for doc in context_docs
         ]
@@ -179,33 +261,60 @@ def generate_routine(state: CoachAgentState) -> dict:
     language = user_info.get("language", "en")
     language_name = "Korean" if language == "ko" else "English"
 
-    prompt = f"""
-    You are an expert basketball coach. Your task is to create a personalized
-    training routine for a user based on their preferences and a list of
-    retrieved drills.
+    available_time = user_info.get("available_time_min", 30)
 
-    **User Preferences:**
+    # Pre-compute phase durations to guarantee they sum to available_time
+    warmup_min = max(1, int(available_time * 0.15))
+    cooldown_min = max(1, int(available_time * 0.15))
+    main_min = max(1, available_time - warmup_min - cooldown_min)
+
+    prompt = f"""
+    You are an expert basketball coach with years of experience designing
+    effective training programs for players of all levels.
+
+    **User Profile:**
+    - Skill Level: {user_info.get("skill_level", "intermediate")}
     - Skill to Improve: {user_info.get("focus_area")}
-    - Available Time: {user_info.get("available_time_min")} minutes
+    - Available Time: {available_time} minutes
     - Available Equipment: {user_info.get("equipment")}
+    - Additional Focus: {user_info.get("additional_focus") or "None"}
+    - Intensity Preference: {user_info.get("intensity_preference") or "None"}
+    - Special Notes: {user_info.get("special_notes") or "None"}
+    - Additional Request (raw): {user_info.get("free_text") or "None"}
 
     **Retrieved Drills from Database:**
     {context_str}
 
     **Language:**
-    Respond in {language_name}. All string fields (routine_title, coach_message, drill descriptions, coaching_tips) must be written in {language_name}.
+    Respond in {language_name}. All string fields (routine_title, coach_message,
+    drill name, description, coaching_tip) must be written in {language_name}.
 
     **Instructions:**
-    1. Create a complete routine with 'warmup', 'main', and 'cooldown' phases.
-    2. For the 'main' phase, select the most relevant drill(s) from the
-       "Retrieved Drills". If none are relevant or available, create a
-       fundamental drill appropriate for the user's "Skill to Improve".
-    3. Allocate the user's "Available Time" intelligently across the drills.
-       The sum of drill durations should be close to this time.
-    4. For each drill, provide a specific, personalized "coaching_tip".
-    5. Write an overall encouraging "coach_message".
-    6. Your final output **must** be a JSON object that strictly follows this
-       Pydantic schema:
+    1. Design a realistic routine with exactly 3 phases:
+       - "warmup": {warmup_min} min.
+         Light movement, stretching, or low-intensity ball handling.
+       - "main": {main_min} min.
+         Core skill-building drills matching the user's focus area.
+         Include 2-4 drills with varied intensity.
+       - "cooldown": {cooldown_min} min.
+         Stretching, free throws, or light shooting to wind down.
+    2. Prioritize drills from "Retrieved Drills" that match the user's skill
+       level. For beginners, use simpler drills with clear steps. For advanced
+       players, add complexity and game-like scenarios.
+    3. The sum of all drill durations MUST equal exactly {available_time} minutes.
+    4. Each drill must have:
+       - A unique drill_id (e.g., "warmup-1", "main-1", "cooldown-1")
+       - A clear, actionable description (2-3 sentences explaining how to
+         perform the drill with specific reps, sets, or targets)
+       - A practical coaching_tip tailored to the user's skill level
+         (technique cue, common mistake to avoid, or progression suggestion)
+    5. If "Additional Request" is provided, incorporate the user's specific
+       preferences or goals into drill selection and coaching tips.
+    6. Write a motivating coach_message that references the user's specific
+       focus area and encourages consistent practice.
+    7. Create a descriptive routine_title that reflects the focus area and
+       intensity level.
+    8. Output a JSON object strictly following this schema:
 
     ```json
     {schema_json}
@@ -233,9 +342,14 @@ def generate_routine(state: CoachAgentState) -> dict:
             logger.debug("Generated Response: %s", final_response_str)
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logger.error("Failed to parse or validate LLM response for routine: %s", e)
+            logger.error(
+                "Failed to parse or validate LLM response for routine: %s "
+                "(raw content: %.500s)",
+                e,
+                content,
+            )
             raise ValueError(
-                f"LLM returned an invalid routine object: {content}"
+                "LLM returned an invalid routine object"
             ) from e
 
     except openai.APIError as e:

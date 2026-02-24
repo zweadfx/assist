@@ -7,7 +7,7 @@
     "duration_min": 5,
     "required_equipment": ["ball", "hoop"],
     "phase": "warmup",
-    "description": "A classic drill for practicing layups and touch around the rim.",
+    "description": "A classic drill for practicing layups and touch around the rim. Alternate left and right hand layups continuously.",
     "tags": ["finishing", "layups", "touch"]
   },
   {
@@ -18,7 +18,7 @@
     "duration_min": 10,
     "required_equipment": ["ball"],
     "phase": "main",
-    "description": "A series of stationary dribbling exercises: crossovers, between the legs, behind the back.",
+    "description": "A series of stationary dribbling exercises: crossovers, between the legs, behind the back. Focus on keeping eyes up and maintaining a low stance.",
     "tags": ["ball-handling", "control"]
   },
   {
@@ -29,7 +29,249 @@
     "duration_min": 15,
     "required_equipment": ["ball", "hoop"],
     "phase": "main",
-    "description": "Practice catching a pass and immediately going into a shooting motion.",
+    "description": "Practice catching a pass and immediately going into a shooting motion. Focus on footwork alignment and quick release.",
     "tags": ["shooting", "form", "off-ball"]
+  },
+  {
+    "id": "drill-004",
+    "name": "Form Shooting",
+    "category": "shooting",
+    "difficulty": "beginner",
+    "duration_min": 10,
+    "required_equipment": ["ball", "hoop"],
+    "phase": "main",
+    "description": "Shoot close-range shots focusing on proper form: elbow alignment, follow-through, and arc. Start 3 feet from the basket and gradually move back.",
+    "tags": ["shooting", "form", "fundamentals"]
+  },
+  {
+    "id": "drill-005",
+    "name": "Spot-Up Shooting",
+    "category": "shooting",
+    "difficulty": "intermediate",
+    "duration_min": 15,
+    "required_equipment": ["ball", "hoop", "cones"],
+    "phase": "main",
+    "description": "Place cones at 5 spots around the three-point line. Shoot 5 shots from each spot, tracking makes and misses. Focus on consistent footwork and release.",
+    "tags": ["shooting", "three-point", "consistency"]
+  },
+  {
+    "id": "drill-006",
+    "name": "Off-the-Dribble Pull-Up",
+    "category": "shooting",
+    "difficulty": "advanced",
+    "duration_min": 15,
+    "required_equipment": ["ball", "hoop", "cones"],
+    "phase": "main",
+    "description": "Dribble toward a cone, execute a pull-up jumper, then repeat from different angles. Simulate game-speed movement before each shot.",
+    "tags": ["shooting", "mid-range", "off-dribble"]
+  },
+  {
+    "id": "drill-007",
+    "name": "Free Throw Routine",
+    "category": "shooting",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["ball", "hoop"],
+    "phase": "cooldown",
+    "description": "Shoot 10-20 free throws with a consistent pre-shot routine. Focus on rhythm, breathing, and muscle memory.",
+    "tags": ["free-throw", "routine", "focus"]
+  },
+  {
+    "id": "drill-008",
+    "name": "Two-Ball Dribbling",
+    "category": "dribble",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": ["ball"],
+    "phase": "main",
+    "description": "Dribble two balls simultaneously while walking or jogging. Alternate between same-time and alternating bounces to build coordination.",
+    "tags": ["ball-handling", "coordination", "ambidexterity"]
+  },
+  {
+    "id": "drill-009",
+    "name": "Cone Weave Dribbling",
+    "category": "dribble",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": ["ball", "cones"],
+    "phase": "main",
+    "description": "Set up 8-10 cones in a line. Weave through them using crossovers, between-the-legs, and behind-the-back moves at increasing speed.",
+    "tags": ["ball-handling", "agility", "change-of-direction"]
+  },
+  {
+    "id": "drill-010",
+    "name": "Full-Court Attack Dribble",
+    "category": "dribble",
+    "difficulty": "advanced",
+    "duration_min": 10,
+    "required_equipment": ["ball", "cones"],
+    "phase": "main",
+    "description": "Sprint full court with the ball, executing a different combo move at each cone. Simulate game-speed transitions from backcourt to frontcourt.",
+    "tags": ["ball-handling", "speed", "transition"]
+  },
+  {
+    "id": "drill-011",
+    "name": "Ball Handling Warm-Up",
+    "category": "dribble",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["ball"],
+    "phase": "warmup",
+    "description": "Light ball-handling exercises: ball wraps around waist, figure-8 through legs, fingertip taps. Get comfortable with the ball before intense drills.",
+    "tags": ["ball-handling", "warm-up", "touch"]
+  },
+  {
+    "id": "drill-012",
+    "name": "Defensive Slide Drill",
+    "category": "defense",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": [],
+    "phase": "warmup",
+    "description": "Perform lateral defensive slides across the court. Stay low in a defensive stance, keep hands active, and focus on quick lateral movement without crossing feet.",
+    "tags": ["footwork", "lateral-movement", "stance"]
+  },
+  {
+    "id": "drill-013",
+    "name": "Closeout Drill",
+    "category": "defense",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": ["cones"],
+    "phase": "main",
+    "description": "Sprint to a cone simulating closing out on a shooter. Chop feet on approach, get low, and contest with a hand up. Rotate to the next cone and repeat.",
+    "tags": ["closeout", "contest", "recovery"]
+  },
+  {
+    "id": "drill-014",
+    "name": "1-on-1 Shell Drill",
+    "category": "defense",
+    "difficulty": "advanced",
+    "duration_min": 15,
+    "required_equipment": ["ball", "cones"],
+    "phase": "main",
+    "description": "Simulate 1-on-1 defensive scenarios using cones as offensive players. Practice help-side positioning, on-ball pressure, and recovery rotations.",
+    "tags": ["on-ball", "help-defense", "positioning"]
+  },
+  {
+    "id": "drill-015",
+    "name": "Zig-Zag Defensive Slide",
+    "category": "defense",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": ["cones"],
+    "phase": "main",
+    "description": "Set cones in a zig-zag pattern. Defensive slide to each cone, drop step and change direction. Maintain low stance and active hands throughout.",
+    "tags": ["footwork", "agility", "change-of-direction"]
+  },
+  {
+    "id": "drill-016",
+    "name": "Defensive Stance Hold",
+    "category": "defense",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": [],
+    "phase": "cooldown",
+    "description": "Hold a low defensive stance for 30-second intervals with 15-second rest. Focus on proper form: wide base, bent knees, straight back, and active hands.",
+    "tags": ["stance", "endurance", "fundamentals"]
+  },
+  {
+    "id": "drill-017",
+    "name": "Jump Rope",
+    "category": "conditioning",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["jump-rope"],
+    "phase": "warmup",
+    "description": "Jump rope at a moderate pace to elevate heart rate. Alternate between two-foot jumps, single-leg hops, and high knees every 30 seconds.",
+    "tags": ["cardio", "warm-up", "footwork"]
+  },
+  {
+    "id": "drill-018",
+    "name": "Suicide Sprints",
+    "category": "conditioning",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": [],
+    "phase": "main",
+    "description": "Sprint to the free-throw line, half-court, far free-throw line, and full court, touching the line each time. Rest 30 seconds between sets. Complete 4-6 sets.",
+    "tags": ["cardio", "speed", "endurance"]
+  },
+  {
+    "id": "drill-019",
+    "name": "Ladder Agility Drill",
+    "category": "conditioning",
+    "difficulty": "intermediate",
+    "duration_min": 10,
+    "required_equipment": ["agility-ladder"],
+    "phase": "main",
+    "description": "Perform various footwork patterns through an agility ladder: in-out, lateral shuffle, icky shuffle, and single-leg hops. Focus on speed and precision.",
+    "tags": ["agility", "footwork", "speed"]
+  },
+  {
+    "id": "drill-020",
+    "name": "Court Sprint Intervals",
+    "category": "conditioning",
+    "difficulty": "advanced",
+    "duration_min": 15,
+    "required_equipment": [],
+    "phase": "main",
+    "description": "Alternate between 20-second all-out sprints and 40-second jog recovery for 10-15 rounds. Simulate the stop-and-go intensity of a real basketball game.",
+    "tags": ["HIIT", "endurance", "game-simulation"]
+  },
+  {
+    "id": "drill-021",
+    "name": "Dynamic Stretching",
+    "category": "conditioning",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": [],
+    "phase": "warmup",
+    "description": "Perform leg swings, arm circles, hip openers, high knees, and butt kicks. Prepare the body for intense activity with full range of motion movements.",
+    "tags": ["warm-up", "flexibility", "mobility"]
+  },
+  {
+    "id": "drill-022",
+    "name": "Cool-Down Stretching",
+    "category": "conditioning",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": [],
+    "phase": "cooldown",
+    "description": "Static stretches for major muscle groups: hamstrings, quads, calves, hip flexors, and shoulders. Hold each stretch for 20-30 seconds to aid recovery.",
+    "tags": ["stretching", "recovery", "flexibility"]
+  },
+  {
+    "id": "drill-023",
+    "name": "Resistance Band Lateral Walk",
+    "category": "conditioning",
+    "difficulty": "intermediate",
+    "duration_min": 5,
+    "required_equipment": ["resistance-band"],
+    "phase": "warmup",
+    "description": "Place a resistance band around your ankles. Walk laterally in a defensive stance for 10 steps each direction. Strengthens hip abductors for lateral quickness.",
+    "tags": ["strength", "lateral-movement", "warm-up"]
+  },
+  {
+    "id": "drill-024",
+    "name": "Pound Dribble Warm-Up",
+    "category": "dribble",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["ball"],
+    "phase": "warmup",
+    "description": "Pound the ball hard into the ground alternating hands. Focus on keeping the dribble below knee height and maintaining a strong, controlled bounce.",
+    "tags": ["ball-handling", "warm-up", "control"]
+  },
+  {
+    "id": "drill-025",
+    "name": "Shooting Cool-Down",
+    "category": "shooting",
+    "difficulty": "beginner",
+    "duration_min": 5,
+    "required_equipment": ["ball", "hoop"],
+    "phase": "cooldown",
+    "description": "Take relaxed mid-range shots while walking around the court. No pressure, just feel the ball and focus on smooth shooting motion to cool down.",
+    "tags": ["shooting", "cool-down", "relaxation"]
   }
 ]
