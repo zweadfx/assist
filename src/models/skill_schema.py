@@ -1,6 +1,6 @@
-from typing import List, Literal
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class SkillLabRequest(BaseModel):
@@ -34,6 +34,14 @@ class SkillLabRequest(BaseModel):
         default="en",
         description="Language for the AI-generated response.",
         examples=["en"],
+    )
+    free_text: Optional[Annotated[str, StringConstraints(max_length=500)]] = Field(
+        default=None,
+        description=(
+            "Optional free-text input describing additional training preferences "
+            "or goals in natural language."
+        ),
+        examples=["I want to improve my weak hand dribbling and work on crossovers"],
     )
 
 

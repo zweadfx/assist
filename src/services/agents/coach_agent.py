@@ -194,6 +194,7 @@ def generate_routine(state: CoachAgentState) -> dict:
     - Skill to Improve: {user_info.get("focus_area")}
     - Available Time: {available_time} minutes
     - Available Equipment: {user_info.get("equipment")}
+    - Additional Request: {user_info.get("free_text") or "None"}
 
     **Retrieved Drills from Database:**
     {context_str}
@@ -221,11 +222,13 @@ def generate_routine(state: CoachAgentState) -> dict:
          perform the drill with specific reps, sets, or targets)
        - A practical coaching_tip tailored to the user's skill level
          (technique cue, common mistake to avoid, or progression suggestion)
-    5. Write a motivating coach_message that references the user's specific
+    5. If "Additional Request" is provided, incorporate the user's specific
+       preferences or goals into drill selection and coaching tips.
+    6. Write a motivating coach_message that references the user's specific
        focus area and encourages consistent practice.
-    6. Create a descriptive routine_title that reflects the focus area and
+    7. Create a descriptive routine_title that reflects the focus area and
        intensity level.
-    7. Output a JSON object strictly following this schema:
+    8. Output a JSON object strictly following this schema:
 
     ```json
     {schema_json}
