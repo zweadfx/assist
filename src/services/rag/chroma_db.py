@@ -292,6 +292,24 @@ class ChromaDBManager:
         )
         return results
 
+    def get_shoes_by_player(self, player_name: str) -> Dict[str, List[Any]]:
+        """
+        Retrieves shoes associated with a specific player via player_signature
+        metadata.
+
+        Args:
+            player_name: The player's name to match against player_signature.
+
+        Returns:
+            A dictionary containing the matching shoe documents and metadata.
+        """
+        self._ensure_initialized()
+        results = self.shoes_collection.get(
+            where={"player_signature": player_name},
+            include=["documents", "metadatas"],
+        )
+        return results
+
     def add_players(
         self, players: List[Dict[str, Any]], embeddings: List[List[float]]
     ) -> None:

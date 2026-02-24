@@ -91,44 +91,55 @@ class ShoeRetriever:
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
 
-            # Post-filtering for position (tags are comma-separated, not suitable for DB
-            # filter)
-            filtered_docs = []
+            # Build all candidate documents first
+            all_docs = []
             for i, doc_content in enumerate(documents):
-                metadata = metadatas[i]
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                all_docs.append(doc)
 
-                if position:
-                    tags = metadata.get("tags", "").split(",")
-                    position_match = False
-                    if position.lower() == "guard" and any(
-                        tag.strip() in ["가드", "로우컷"] for tag in tags
-                    ):
-                        position_match = True
-                    elif position.lower() == "forward" and any(
-                        tag.strip() in ["포워드", "미드컷"] for tag in tags
-                    ):
-                        position_match = True
-                    elif position.lower() == "center" and any(
-                        tag.strip() in ["센터", "하이컷", "빅맨"] for tag in tags
-                    ):
-                        position_match = True
+            # Post-filtering for position (tags are comma-separated, not
+            # suitable for DB filter)
+            if position and position.lower() in ["guard", "forward", "center"]:
+                position_tag_map = {
+                    "guard": ["가드", "로우컷"],
+                    "forward": ["포워드", "미드컷"],
+                    "center": ["센터", "하이컷", "빅맨"],
+                }
+                target_tags = position_tag_map[position.lower()]
 
-                    if not position_match and position.lower() not in [
-                        "guard",
-                        "forward",
-                        "center",
-                    ]:
-                        position_match = True
+                filtered_docs = [
+                    doc
+                    for doc in all_docs
+                    if any(
+                        tag.strip() in target_tags
+                        for tag in doc.metadata.get("tags", "").split(",")
+                    )
+                ]
 
-                    if not position_match:
-                        continue
-
-                doc = Document(page_content=doc_content, metadata=metadata)
-                filtered_docs.append(doc)
+                # Fallback: if position filter removes all results, return
+                # unfiltered to avoid empty response
+                if not filtered_docs:
+                    logger.warning(
+                        "Position filter '%s' removed all candidates, "
+                        "returning unfiltered results",
+                        position,
+                    )
+                    filtered_docs = all_docs
+            elif position:
+                logger.warning(
+                    "Unrecognized position '%s'; allowed: %s. "
+                    "Returning unfiltered results",
+                    position,
+                    ["guard", "forward", "center"],
+                )
+                filtered_docs = all_docs
+            else:
+                filtered_docs = all_docs
 
             logger.info(
-                f"Retrieved {len(filtered_docs)} shoes after filtering "
-                f"(from {len(documents)} candidates)"
+                "Retrieved %d shoes after filtering (from %d candidates)",
+                len(filtered_docs),
+                len(documents),
             )
             return filtered_docs
 
@@ -217,30 +228,47 @@ class ShoeRetriever:
         result = {"shoes": [], "players": []}
 
         # 1. Search shoes by sensory preferences
-        shoes = self.search_by_sensory_preferences(
+        sensory_shoes = self.search_by_sensory_preferences(
             sensory_keywords=sensory_keywords,
             budget_max_krw=budget_max_krw,
             position=position,
             n_results=15,  # Get more candidates for better filtering
         )
 
-        # 2. Search player archetypes if specified
+        # 2. Search player archetypes and retrieve signature shoes if specified
         players = []
+        signature_shoes = []
         if player_archetype:
             players = self.search_by_player_archetype(
                 player_name=player_archetype, n_results=3
             )
 
-            # If player found, enhance shoe search with player's preferred features
-            if players:
-                player_meta = players[0].metadata
-                player_shoes = player_meta.get("signature_shoes", "").split(",")
+            # Directly retrieve signature shoes: try exact player_archetype
+            # first, fallback to best-match player from semantic search
+            signature_shoes = self._get_signature_shoes(player_archetype)
+            used_name = player_archetype
+            if not signature_shoes and players:
+                used_name = players[0].metadata.get("name", "")
+                signature_shoes = self._get_signature_shoes(used_name)
+            logger.info(
+                "Retrieved %d signature shoes for %s",
+                len(signature_shoes),
+                used_name,
+            )
 
-                # Boost shoes that match player's signature models
-                shoes = self._boost_signature_shoes(shoes, player_shoes)
+        # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
+        signature_ids = {
+            doc.metadata.get("shoe_id") for doc in signature_shoes
+        }
+        deduplicated_sensory = [
+            doc
+            for doc in sensory_shoes
+            if doc.metadata.get("shoe_id") not in signature_ids
+        ]
+        merged_shoes = signature_shoes + deduplicated_sensory
 
-        # 3. Limit to top N shoes
-        result["shoes"] = shoes[:n_shoes]
+        # 4. Limit to top N shoes
+        result["shoes"] = merged_shoes[:n_shoes]
         result["players"] = players
 
         logger.info(
@@ -249,48 +277,41 @@ class ShoeRetriever:
         )
         return result
 
-    def _boost_signature_shoes(
-        self, shoes: List[Document], signature_models: List[str]
-    ) -> List[Document]:
+    def _get_signature_shoes(self, player_name: str) -> List[Document]:
         """
-        Boost ranking of shoes that match player's signature models.
+        Directly retrieve shoes associated with a player via player_signature
+        metadata in ChromaDB.
 
         Args:
-            shoes: List of shoe Documents
-            signature_models: List of signature shoe model names
+            player_name: The player's name to match against player_signature.
 
         Returns:
-            Reordered list with signature shoes prioritized
+            List of Document objects for the player's signature shoes.
         """
-        if not signature_models:
-            return shoes
+        if not player_name:
+            return []
 
-        # Clean signature model names
-        signature_models = [
-            model.strip() for model in signature_models if model.strip()
-        ]
+        try:
+            results = self.chroma_manager.get_shoes_by_player(player_name)
 
-        signature_shoes = []
-        other_shoes = []
+            if not results or not results.get("documents"):
+                logger.info("No signature shoes found for player: %s", player_name)
+                return []
 
-        for shoe in shoes:
-            model_name = shoe.metadata.get("model_name", "")
-            brand = shoe.metadata.get("brand", "")
+            documents = results["documents"]
+            metadatas = results["metadatas"]
 
-            # Check if this shoe matches any signature model
-            is_signature = False
-            for sig_model in signature_models:
-                if sig_model.lower() in f"{brand} {model_name}".lower():
-                    is_signature = True
-                    break
+            sig_docs = []
+            for i, doc_content in enumerate(documents):
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                sig_docs.append(doc)
 
-            if is_signature:
-                signature_shoes.append(shoe)
-            else:
-                other_shoes.append(shoe)
+            return sig_docs
 
-        # Return signature shoes first, then others
-        return signature_shoes + other_shoes
+        except Exception as e:
+            logger.exception("Failed to retrieve signature shoes for: %s", player_name)
+            return []
+
 
 
 # Create singleton instance
