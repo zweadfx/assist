@@ -342,9 +342,14 @@ def generate_routine(state: CoachAgentState) -> dict:
             logger.debug("Generated Response: %s", final_response_str)
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
-            logger.error("Failed to parse or validate LLM response for routine: %s", e)
+            logger.error(
+                "Failed to parse or validate LLM response for routine: %s "
+                "(raw content: %.500s)",
+                e,
+                content,
+            )
             raise ValueError(
-                f"LLM returned an invalid routine object: {content}"
+                "LLM returned an invalid routine object"
             ) from e
 
     except openai.APIError as e:
