@@ -162,10 +162,14 @@ def generate_routine(state: CoachAgentState) -> dict:
     user_info = state["user_info"]
     context_docs = state["context"]
 
-    # Prepare context string from retrieved documents
+    # Prepare context string from retrieved documents with full metadata
     context_str = "\n\n".join(
         [
             f"Drill Name: {doc.metadata.get('name', 'N/A')}\n"
+            f"Phase: {doc.metadata.get('phase', 'N/A')}\n"
+            f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
+            f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
+            f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
             f"Description: {doc.page_content}"
             for doc in context_docs
         ]
@@ -179,33 +183,49 @@ def generate_routine(state: CoachAgentState) -> dict:
     language = user_info.get("language", "en")
     language_name = "Korean" if language == "ko" else "English"
 
-    prompt = f"""
-    You are an expert basketball coach. Your task is to create a personalized
-    training routine for a user based on their preferences and a list of
-    retrieved drills.
+    available_time = user_info.get("available_time_min", 30)
 
-    **User Preferences:**
+    prompt = f"""
+    You are an expert basketball coach with years of experience designing
+    effective training programs for players of all levels.
+
+    **User Profile:**
+    - Skill Level: {user_info.get("skill_level", "intermediate")}
     - Skill to Improve: {user_info.get("focus_area")}
-    - Available Time: {user_info.get("available_time_min")} minutes
+    - Available Time: {available_time} minutes
     - Available Equipment: {user_info.get("equipment")}
 
     **Retrieved Drills from Database:**
     {context_str}
 
     **Language:**
-    Respond in {language_name}. All string fields (routine_title, coach_message, drill descriptions, coaching_tips) must be written in {language_name}.
+    Respond in {language_name}. All string fields (routine_title, coach_message,
+    drill name, description, coaching_tip) must be written in {language_name}.
 
     **Instructions:**
-    1. Create a complete routine with 'warmup', 'main', and 'cooldown' phases.
-    2. For the 'main' phase, select the most relevant drill(s) from the
-       "Retrieved Drills". If none are relevant or available, create a
-       fundamental drill appropriate for the user's "Skill to Improve".
-    3. Allocate the user's "Available Time" intelligently across the drills.
-       The sum of drill durations should be close to this time.
-    4. For each drill, provide a specific, personalized "coaching_tip".
-    5. Write an overall encouraging "coach_message".
-    6. Your final output **must** be a JSON object that strictly follows this
-       Pydantic schema:
+    1. Design a realistic routine with exactly 3 phases:
+       - "warmup": ~15% of total time ({round(available_time * 0.15)} min).
+         Light movement, stretching, or low-intensity ball handling.
+       - "main": ~70% of total time ({round(available_time * 0.70)} min).
+         Core skill-building drills matching the user's focus area.
+         Include 2-4 drills with varied intensity.
+       - "cooldown": ~15% of total time ({round(available_time * 0.15)} min).
+         Stretching, free throws, or light shooting to wind down.
+    2. Prioritize drills from "Retrieved Drills" that match the user's skill
+       level. For beginners, use simpler drills with clear steps. For advanced
+       players, add complexity and game-like scenarios.
+    3. The sum of all drill durations MUST equal exactly {available_time} minutes.
+    4. Each drill must have:
+       - A unique drill_id (e.g., "warmup-1", "main-1", "cooldown-1")
+       - A clear, actionable description (2-3 sentences explaining how to
+         perform the drill with specific reps, sets, or targets)
+       - A practical coaching_tip tailored to the user's skill level
+         (technique cue, common mistake to avoid, or progression suggestion)
+    5. Write a motivating coach_message that references the user's specific
+       focus area and encourages consistent practice.
+    6. Create a descriptive routine_title that reflects the focus area and
+       intensity level.
+    7. Output a JSON object strictly following this schema:
 
     ```json
     {schema_json}
