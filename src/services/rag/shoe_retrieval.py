@@ -312,48 +312,6 @@ class ShoeRetriever:
             logger.exception("Failed to retrieve signature shoes for: %s", player_name)
             return []
 
-    def _boost_signature_shoes(
-        self, shoes: List[Document], signature_models: List[str]
-    ) -> List[Document]:
-        """
-        Boost ranking of shoes that match player's signature models.
-
-        Args:
-            shoes: List of shoe Documents
-            signature_models: List of signature shoe model names
-
-        Returns:
-            Reordered list with signature shoes prioritized
-        """
-        if not signature_models:
-            return shoes
-
-        # Clean signature model names
-        signature_models = [
-            model.strip() for model in signature_models if model.strip()
-        ]
-
-        signature_shoes = []
-        other_shoes = []
-
-        for shoe in shoes:
-            model_name = shoe.metadata.get("model_name", "")
-            brand = shoe.metadata.get("brand", "")
-
-            # Check if this shoe matches any signature model
-            is_signature = False
-            for sig_model in signature_models:
-                if sig_model.lower() in f"{brand} {model_name}".lower():
-                    is_signature = True
-                    break
-
-            if is_signature:
-                signature_shoes.append(shoe)
-            else:
-                other_shoes.append(shoe)
-
-        # Return signature shoes first, then others
-        return signature_shoes + other_shoes
 
 
 # Create singleton instance
