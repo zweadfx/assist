@@ -235,15 +235,18 @@ class ShoeRetriever:
                 player_name=player_archetype, n_results=3
             )
 
-            # Directly retrieve signature shoes from DB by player_signature
-            if players:
-                player_name = players[0].metadata.get("name", "")
-                signature_shoes = self._get_signature_shoes(player_name)
-                logger.info(
-                    "Retrieved %d signature shoes for %s",
-                    len(signature_shoes),
-                    player_name,
-                )
+            # Directly retrieve signature shoes: try exact player_archetype
+            # first, fallback to best-match player from semantic search
+            signature_shoes = self._get_signature_shoes(player_archetype)
+            used_name = player_archetype
+            if not signature_shoes and players:
+                used_name = players[0].metadata.get("name", "")
+                signature_shoes = self._get_signature_shoes(used_name)
+            logger.info(
+                "Retrieved %d signature shoes for %s",
+                len(signature_shoes),
+                used_name,
+            )
 
         # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
         signature_ids = {
