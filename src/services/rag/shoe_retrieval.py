@@ -217,30 +217,44 @@ class ShoeRetriever:
         result = {"shoes": [], "players": []}
 
         # 1. Search shoes by sensory preferences
-        shoes = self.search_by_sensory_preferences(
+        sensory_shoes = self.search_by_sensory_preferences(
             sensory_keywords=sensory_keywords,
             budget_max_krw=budget_max_krw,
             position=position,
             n_results=15,  # Get more candidates for better filtering
         )
 
-        # 2. Search player archetypes if specified
+        # 2. Search player archetypes and retrieve signature shoes if specified
         players = []
+        signature_shoes = []
         if player_archetype:
             players = self.search_by_player_archetype(
                 player_name=player_archetype, n_results=3
             )
 
-            # If player found, enhance shoe search with player's preferred features
+            # Directly retrieve signature shoes from DB by player_signature
             if players:
-                player_meta = players[0].metadata
-                player_shoes = player_meta.get("signature_shoes", "").split(",")
+                player_name = players[0].metadata.get("name", "")
+                signature_shoes = self._get_signature_shoes(player_name)
+                logger.info(
+                    "Retrieved %d signature shoes for %s",
+                    len(signature_shoes),
+                    player_name,
+                )
 
-                # Boost shoes that match player's signature models
-                shoes = self._boost_signature_shoes(shoes, player_shoes)
+        # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
+        signature_ids = {
+            doc.metadata.get("shoe_id") for doc in signature_shoes
+        }
+        deduplicated_sensory = [
+            doc
+            for doc in sensory_shoes
+            if doc.metadata.get("shoe_id") not in signature_ids
+        ]
+        merged_shoes = signature_shoes + deduplicated_sensory
 
-        # 3. Limit to top N shoes
-        result["shoes"] = shoes[:n_shoes]
+        # 4. Limit to top N shoes
+        result["shoes"] = merged_shoes[:n_shoes]
         result["players"] = players
 
         logger.info(
@@ -248,6 +262,41 @@ class ShoeRetriever:
             f"{len(result['players'])} players"
         )
         return result
+
+    def _get_signature_shoes(self, player_name: str) -> List[Document]:
+        """
+        Directly retrieve shoes associated with a player via player_signature
+        metadata in ChromaDB.
+
+        Args:
+            player_name: The player's name to match against player_signature.
+
+        Returns:
+            List of Document objects for the player's signature shoes.
+        """
+        if not player_name:
+            return []
+
+        try:
+            results = self.chroma_manager.get_shoes_by_player(player_name)
+
+            if not results or not results.get("documents"):
+                logger.info("No signature shoes found for player: %s", player_name)
+                return []
+
+            documents = results["documents"]
+            metadatas = results["metadatas"]
+
+            sig_docs = []
+            for i, doc_content in enumerate(documents):
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                sig_docs.append(doc)
+
+            return sig_docs
+
+        except Exception as e:
+            logger.warning("Failed to retrieve signature shoes: %s", e)
+            return []
 
     def _boost_signature_shoes(
         self, shoes: List[Document], signature_models: List[str]
