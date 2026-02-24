@@ -263,6 +263,11 @@ def generate_routine(state: CoachAgentState) -> dict:
 
     available_time = user_info.get("available_time_min", 30)
 
+    # Pre-compute phase durations to guarantee they sum to available_time
+    warmup_min = max(1, int(available_time * 0.15))
+    cooldown_min = max(1, int(available_time * 0.15))
+    main_min = max(1, available_time - warmup_min - cooldown_min)
+
     prompt = f"""
     You are an expert basketball coach with years of experience designing
     effective training programs for players of all levels.
@@ -286,12 +291,12 @@ def generate_routine(state: CoachAgentState) -> dict:
 
     **Instructions:**
     1. Design a realistic routine with exactly 3 phases:
-       - "warmup": ~15% of total time ({round(available_time * 0.15)} min).
+       - "warmup": {warmup_min} min.
          Light movement, stretching, or low-intensity ball handling.
-       - "main": ~70% of total time ({round(available_time * 0.70)} min).
+       - "main": {main_min} min.
          Core skill-building drills matching the user's focus area.
          Include 2-4 drills with varied intensity.
-       - "cooldown": ~15% of total time ({round(available_time * 0.15)} min).
+       - "cooldown": {cooldown_min} min.
          Stretching, free throws, or light shooting to wind down.
     2. Prioritize drills from "Retrieved Drills" that match the user's skill
        level. For beginners, use simpler drills with clear steps. For advanced
