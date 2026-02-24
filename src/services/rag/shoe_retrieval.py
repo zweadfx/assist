@@ -91,44 +91,47 @@ class ShoeRetriever:
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
 
-            # Post-filtering for position (tags are comma-separated, not suitable for DB
-            # filter)
-            filtered_docs = []
+            # Build all candidate documents first
+            all_docs = []
             for i, doc_content in enumerate(documents):
-                metadata = metadatas[i]
+                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                all_docs.append(doc)
 
-                if position:
-                    tags = metadata.get("tags", "").split(",")
-                    position_match = False
-                    if position.lower() == "guard" and any(
-                        tag.strip() in ["가드", "로우컷"] for tag in tags
-                    ):
-                        position_match = True
-                    elif position.lower() == "forward" and any(
-                        tag.strip() in ["포워드", "미드컷"] for tag in tags
-                    ):
-                        position_match = True
-                    elif position.lower() == "center" and any(
-                        tag.strip() in ["센터", "하이컷", "빅맨"] for tag in tags
-                    ):
-                        position_match = True
+            # Post-filtering for position (tags are comma-separated, not
+            # suitable for DB filter)
+            if position and position.lower() in ["guard", "forward", "center"]:
+                position_tag_map = {
+                    "guard": ["가드", "로우컷"],
+                    "forward": ["포워드", "미드컷"],
+                    "center": ["센터", "하이컷", "빅맨"],
+                }
+                target_tags = position_tag_map[position.lower()]
 
-                    if not position_match and position.lower() not in [
-                        "guard",
-                        "forward",
-                        "center",
-                    ]:
-                        position_match = True
+                filtered_docs = [
+                    doc
+                    for doc in all_docs
+                    if any(
+                        tag.strip() in target_tags
+                        for tag in doc.metadata.get("tags", "").split(",")
+                    )
+                ]
 
-                    if not position_match:
-                        continue
-
-                doc = Document(page_content=doc_content, metadata=metadata)
-                filtered_docs.append(doc)
+                # Fallback: if position filter removes all results, return
+                # unfiltered to avoid empty response
+                if not filtered_docs:
+                    logger.warning(
+                        "Position filter '%s' removed all candidates, "
+                        "returning unfiltered results",
+                        position,
+                    )
+                    filtered_docs = all_docs
+            else:
+                filtered_docs = all_docs
 
             logger.info(
-                f"Retrieved {len(filtered_docs)} shoes after filtering "
-                f"(from {len(documents)} candidates)"
+                "Retrieved %d shoes after filtering (from %d candidates)",
+                len(filtered_docs),
+                len(documents),
             )
             return filtered_docs
 
