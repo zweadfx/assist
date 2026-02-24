@@ -301,7 +301,7 @@ class ShoeRetriever:
             return sig_docs
 
         except Exception as e:
-            logger.warning("Failed to retrieve signature shoes: %s", e)
+            logger.exception("Failed to retrieve signature shoes for: %s", player_name)
             return []
 
     def _boost_signature_shoes(
