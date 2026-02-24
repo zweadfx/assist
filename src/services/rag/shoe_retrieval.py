@@ -257,6 +257,8 @@ class ShoeRetriever:
             )
 
         # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
+        # NOTE: Signature shoes intentionally bypass budget/position filters
+        # to guarantee inclusion when a player is selected.
         signature_ids = {
             doc.metadata.get("shoe_id") for doc in signature_shoes
         }
@@ -308,7 +310,7 @@ class ShoeRetriever:
 
             return sig_docs
 
-        except Exception as e:
+        except Exception:
             logger.exception("Failed to retrieve signature shoes for: %s", player_name)
             return []
 
