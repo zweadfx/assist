@@ -125,6 +125,14 @@ class ShoeRetriever:
                         position,
                     )
                     filtered_docs = all_docs
+            elif position:
+                logger.warning(
+                    "Unrecognized position '%s'; allowed: %s. "
+                    "Returning unfiltered results",
+                    position,
+                    ["guard", "forward", "center"],
+                )
+                filtered_docs = all_docs
             else:
                 filtered_docs = all_docs
 
