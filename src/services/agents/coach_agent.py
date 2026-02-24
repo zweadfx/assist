@@ -58,20 +58,98 @@ class UserDrillPreferences(BaseModel):
     )
 
 
+class ParsedFreeText(BaseModel):
+    """Structured output from parsing the user's free-text input."""
+
+    additional_focus: str = Field(
+        default="",
+        description="Specific sub-skill or technique the user wants to work on.",
+    )
+    additional_equipment: List[str] = Field(
+        default_factory=list,
+        description="Extra equipment mentioned in the free text.",
+    )
+    intensity_preference: str = Field(
+        default="",
+        description="Preferred intensity level (e.g., 'light', 'moderate', 'intense').",
+    )
+    special_notes: str = Field(
+        default="",
+        description="Any other relevant details from the user's request.",
+    )
+
+
+def _parse_free_text(free_text: str) -> dict:
+    """Parse free-text input using LLM to extract structured preferences."""
+    schema_json = json.dumps(ParsedFreeText.model_json_schema(), indent=2)
+
+    prompt = f"""Extract structured training preferences from the following user input.
+If a field is not mentioned, leave it as empty string or empty list.
+
+User input: "{free_text}"
+
+Output a JSON object following this schema:
+```json
+{schema_json}
+```
+
+JSON Output:"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+
+        if not response.choices or not response.choices[0].message.content:
+            logger.warning("Empty response from LLM for free_text parsing")
+            return {}
+
+        content = response.choices[0].message.content
+        parsed = ParsedFreeText.model_validate_json(content)
+        return parsed.model_dump(exclude_defaults=True)
+
+    except Exception as e:
+        logger.warning("Failed to parse free_text, skipping: %s", e)
+        return {}
+
+
 def diagnose_user_state(state: CoachAgentState) -> dict:
     """
-    Validates that the user_info is present in the state. In a more complex
-    scenario, this node could be used to further refine or validate the user
-    profile. For now, it's a pass-through and logging step.
+    Validates that the user_info is present in the state. If free_text is
+    provided, parses it with an LLM to enrich the user_info with additional
+    preferences.
     """
     logger.info("NODE: Diagnosing User State")
     if not state.get("user_info"):
         raise ValueError("User info is missing from the state.")
 
-    logger.debug("User Info: %s", state["user_info"])
-    # The user_info is already structured and passed in the initial call
-    # so we just pass it along to the next node.
-    return {"user_info": state["user_info"]}
+    user_info = {**state["user_info"]}
+
+    # Parse free_text if provided
+    free_text = user_info.get("free_text")
+    if free_text and free_text.strip():
+        logger.info("Parsing free_text input: %s", free_text[:100])
+        parsed = _parse_free_text(free_text)
+
+        if parsed.get("additional_equipment"):
+            existing = set(user_info.get("equipment", []))
+            existing.update(parsed["additional_equipment"])
+            user_info["equipment"] = list(existing)
+
+        if parsed.get("additional_focus"):
+            user_info["additional_focus"] = parsed["additional_focus"]
+
+        if parsed.get("intensity_preference"):
+            user_info["intensity_preference"] = parsed["intensity_preference"]
+
+        if parsed.get("special_notes"):
+            user_info["special_notes"] = parsed["special_notes"]
+
+        logger.debug("Enriched User Info: %s", user_info)
+
+    return {"user_info": user_info}
 
 
 def retrieve_drills(state: CoachAgentState) -> dict:
@@ -194,7 +272,10 @@ def generate_routine(state: CoachAgentState) -> dict:
     - Skill to Improve: {user_info.get("focus_area")}
     - Available Time: {available_time} minutes
     - Available Equipment: {user_info.get("equipment")}
-    - Additional Request: {user_info.get("free_text") or "None"}
+    - Additional Focus: {user_info.get("additional_focus") or "None"}
+    - Intensity Preference: {user_info.get("intensity_preference") or "None"}
+    - Special Notes: {user_info.get("special_notes") or "None"}
+    - Additional Request (raw): {user_info.get("free_text") or "None"}
 
     **Retrieved Drills from Database:**
     {context_str}
