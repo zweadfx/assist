@@ -216,7 +216,7 @@ Respond in {language_name}. All string fields (recommendation_title, user_profil
 
 **Critical Rule:**
 You MUST ONLY use shoes from the "Available Shoes Data" above. Do NOT invent or
-fabricate any shoe. Every shoe_id, brand, model_name, price_krw, and sensory_tags
+fabricate any shoe. Every brand, model_name, price_krw, and sensory_tags
 in your response MUST exactly match the provided data.
 
 **Instructions:**
