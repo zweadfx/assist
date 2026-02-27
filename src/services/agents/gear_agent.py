@@ -209,7 +209,9 @@ shoe recommendations based on the user's preferences and the available shoe data
 Respond in {language_name}. All string fields (recommendation_title, user_profile_summary, ai_reasoning, recommendation_reason) must be written in {language_name}.
 
 **Instructions:**
-1. Recommend 3-5 shoes from the provided data that best match the user's preferences.
+1. You MUST recommend at least 1 shoe and up to 5 shoes from the provided data.
+   Never return an empty shoes list. If no shoes perfectly match, recommend the
+   closest alternatives from the available data.
 2. Calculate a match_score (0-100) for each shoe based on:
    - Sensory tag overlap with user preferences (primary factor)
    - Player archetype compatibility (if specified)
@@ -251,10 +253,13 @@ JSON Output:
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
             logger.error(
-                f"Failed to parse or validate LLM response for recommendations: {e}"
+                "Failed to parse or validate LLM response for "
+                "recommendations: %s (raw content: %.500s)",
+                e,
+                content,
             )
             raise ValueError(
-                f"LLM returned an invalid recommendations object: {content}"
+                "LLM returned an invalid recommendations object"
             ) from e
 
     except openai.APIError as e:
