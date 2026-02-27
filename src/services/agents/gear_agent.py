@@ -173,8 +173,8 @@ def generate_recommendations(state: GearAgentState) -> dict:
             for doc in shoe_docs
         ]
     )
-    if not shoes_context_str:
-        shoes_context_str = "No shoes found matching the criteria."
+    if not shoe_docs:
+        raise ValueError("No shoe data available to generate recommendations")
     logger.info("Shoes context for prompt (%d docs): %.500s", len(shoe_docs), shoes_context_str)
 
     # Prepare player context string
