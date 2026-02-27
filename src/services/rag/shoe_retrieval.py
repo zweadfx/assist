@@ -267,7 +267,9 @@ class ShoeRetriever:
         limited_signature = signature_shoes[:max_signature]
 
         signature_models = {
-            doc.metadata.get("model_name") for doc in limited_signature
+            doc.metadata.get("model_name")
+            for doc in limited_signature
+            if doc.metadata.get("model_name") is not None
         }
         deduplicated_sensory = [
             doc
