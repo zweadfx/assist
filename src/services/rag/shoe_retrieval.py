@@ -243,13 +243,14 @@ class ShoeRetriever:
                 player_name=player_archetype, n_results=3
             )
 
-            # Directly retrieve signature shoes: try exact player_archetype
-            # first, fallback to best-match player from semantic search
-            signature_shoes = self._get_signature_shoes(player_archetype)
+            # Use semantic search result's English name first (handles Korean
+            # input), then fall back to raw input for direct English matches
             used_name = player_archetype
-            if not signature_shoes and players:
-                used_name = players[0].metadata.get("name", "")
-                signature_shoes = self._get_signature_shoes(used_name)
+            if players:
+                used_name = players[0].metadata.get("name", player_archetype)
+            signature_shoes = self._get_signature_shoes(used_name)
+            if not signature_shoes and used_name != player_archetype:
+                signature_shoes = self._get_signature_shoes(player_archetype)
             logger.info(
                 "Retrieved %d signature shoes for %s",
                 len(signature_shoes),
@@ -259,13 +260,13 @@ class ShoeRetriever:
         # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
         # NOTE: Signature shoes intentionally bypass budget/position filters
         # to guarantee inclusion when a player is selected.
-        signature_ids = {
-            doc.metadata.get("shoe_id") for doc in signature_shoes
+        signature_models = {
+            doc.metadata.get("model_name") for doc in signature_shoes
         }
         deduplicated_sensory = [
             doc
             for doc in sensory_shoes
-            if doc.metadata.get("shoe_id") not in signature_ids
+            if doc.metadata.get("model_name") not in signature_models
         ]
         merged_shoes = signature_shoes + deduplicated_sensory
 
