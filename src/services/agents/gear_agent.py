@@ -147,26 +147,35 @@ def generate_recommendations(state: GearAgentState) -> dict:
     user_info = state["user_info"]
     context_docs = state["context"]
 
-    # Separate shoes and players from context using explicit doc_type
-    shoe_docs = [doc for doc in context_docs if doc.metadata.get("doc_type") == "shoe"]
+    # Separate shoes and players from context
+    # Use shoe_id/brand presence to identify shoes, name/play_style for players
+    # (doc_type may not exist in legacy data)
+    shoe_docs = [
+        doc for doc in context_docs
+        if doc.metadata.get("doc_type") == "shoe"
+        or doc.metadata.get("brand")
+    ]
     player_docs = [
-        doc for doc in context_docs if doc.metadata.get("doc_type") == "player"
+        doc for doc in context_docs
+        if doc.metadata.get("doc_type") == "player"
+        or (doc.metadata.get("play_style") and not doc.metadata.get("brand"))
     ]
 
     # Prepare shoes context string
     shoes_context_str = "\n\n".join(
         [
-            f"Shoe ID: {doc.metadata.get('shoe_id', 'N/A')}\n"
             f"Brand: {doc.metadata.get('brand', 'N/A')}\n"
             f"Model: {doc.metadata.get('model_name', 'N/A')}\n"
             f"Price: {doc.metadata.get('price_krw', 'N/A')} KRW\n"
             f"Sensory Tags: {doc.metadata.get('sensory_tags', 'N/A')}\n"
+            f"Player Signature: {doc.metadata.get('player_signature', 'N/A')}\n"
             f"Description: {doc.page_content}"
             for doc in shoe_docs
         ]
     )
     if not shoes_context_str:
         shoes_context_str = "No shoes found matching the criteria."
+    logger.info("Shoes context for prompt (%d docs): %.500s", len(shoe_docs), shoes_context_str)
 
     # Prepare player context string
     players_context_str = ""
@@ -208,8 +217,13 @@ shoe recommendations based on the user's preferences and the available shoe data
 **Language:**
 Respond in {language_name}. All string fields (recommendation_title, user_profile_summary, ai_reasoning, recommendation_reason) must be written in {language_name}.
 
+**Critical Rule:**
+You MUST ONLY use shoes from the "Available Shoes Data" above. Do NOT invent or
+fabricate any shoe. Every shoe_id, brand, model_name, price_krw, and sensory_tags
+in your response MUST exactly match the provided data.
+
 **Instructions:**
-1. You MUST recommend at least 1 shoe and up to 5 shoes from the provided data.
+1. Recommend at least 1 and up to 5 shoes from the provided data above.
    Never return an empty shoes list. If no shoes perfectly match, recommend the
    closest alternatives from the available data.
 2. Calculate a match_score (0-100) for each shoe based on:
