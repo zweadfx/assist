@@ -34,8 +34,12 @@ def format_player_document(player: Dict[str, Any]) -> str:
     Emphasizes play style for better semantic matching.
     """
     styles = ", ".join(player.get("play_style", []))
+    name_ko = player.get("name_ko", "")
+    name_line = f"Player: {player['name']}"
+    if name_ko:
+        name_line += f" ({name_ko})"
     return (
-        f"Player: {player['name']}\n"
+        f"{name_line}\n"
         f"Position: {player['position']}\n"
         f"Play Style: {styles}\n"
         f"Description: {player['description']}"

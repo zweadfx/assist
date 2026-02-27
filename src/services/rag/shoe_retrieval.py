@@ -243,14 +243,18 @@ class ShoeRetriever:
                 player_name=player_archetype, n_results=3
             )
 
-            # Use semantic search result's English name first (handles Korean
-            # input), then fall back to raw input for direct English matches
+            # Try raw input first (works for English names), then try
+            # semantic search results' English names as fallback for Korean
+            signature_shoes = self._get_signature_shoes(player_archetype)
             used_name = player_archetype
-            if players:
-                used_name = players[0].metadata.get("name", player_archetype)
-            signature_shoes = self._get_signature_shoes(used_name)
-            if not signature_shoes and used_name != player_archetype:
-                signature_shoes = self._get_signature_shoes(player_archetype)
+            if not signature_shoes:
+                for player_doc in players:
+                    candidate = player_doc.metadata.get("name", "")
+                    if candidate and candidate != player_archetype:
+                        signature_shoes = self._get_signature_shoes(candidate)
+                        if signature_shoes:
+                            used_name = candidate
+                            break
             logger.info(
                 "Retrieved %d signature shoes for %s",
                 len(signature_shoes),

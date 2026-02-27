@@ -2,6 +2,7 @@
   {
     "id": "player_001",
     "name": "Stephen Curry",
+    "name_ko": "스테픈 커리",
     "position": "guard",
     "play_style": [
       "오프볼 무브먼트",
@@ -25,6 +26,7 @@
   {
     "id": "player_002",
     "name": "LeBron James",
+    "name_ko": "르브론 제임스",
     "position": "forward",
     "play_style": [
       "파워풀한 림 어택",
@@ -48,6 +50,7 @@
   {
     "id": "player_003",
     "name": "Kobe Bryant",
+    "name_ko": "코비 브라이언트",
     "position": "guard",
     "play_style": [
       "미드레인지 슈팅",
@@ -71,6 +74,7 @@
   {
     "id": "player_004",
     "name": "Kevin Durant",
+    "name_ko": "케빈 듀란트",
     "position": "forward",
     "play_style": [
       "만능형 스코어링",
@@ -94,6 +98,7 @@
   {
     "id": "player_005",
     "name": "Damian Lillard",
+    "name_ko": "데미안 릴라드",
     "position": "guard",
     "play_style": [
       "딥 3점슛",
@@ -117,6 +122,7 @@
   {
     "id": "player_006",
     "name": "Ja Morant",
+    "name_ko": "자 모란트",
     "position": "guard",
     "play_style": [
       "폭발적인 수직 점프",
@@ -139,6 +145,7 @@
   {
     "id": "player_007",
     "name": "James Harden",
+    "name_ko": "제임스 하든",
     "position": "guard",
     "play_style": [
       "스텝백 점퍼",
@@ -162,6 +169,7 @@
   {
     "id": "player_008",
     "name": "Giannis Antetokounmpo",
+    "name_ko": "야니스 아데토쿤보",
     "position": "forward",
     "play_style": [
       "유로스텝 드라이브",
@@ -185,6 +193,7 @@
   {
     "id": "player_009",
     "name": "Kawhi Leonard",
+    "name_ko": "카와이 레너드",
     "position": "forward",
     "play_style": [
       "미드레인지 특화",
@@ -208,6 +217,7 @@
   {
     "id": "player_010",
     "name": "LaMelo Ball",
+    "name_ko": "라멜로 볼",
     "position": "guard",
     "play_style": [
       "크리에이티브 패싱",
@@ -231,6 +241,7 @@
   {
     "id": "player_011",
     "name": "Luka Doncic",
+    "name_ko": "루카 돈치치",
     "position": "guard",
     "play_style": [
       "스텝백 3점슛",
@@ -254,6 +265,7 @@
   {
     "id": "player_012",
     "name": "Kyrie Irving",
+    "name_ko": "카이리 어빙",
     "position": "guard",
     "play_style": [
       "환상적인 핸들링",
@@ -277,6 +289,7 @@
   {
     "id": "player_013",
     "name": "Devin Booker",
+    "name_ko": "데빈 부커",
     "position": "guard",
     "play_style": [
       "미드레인지 마스터",
@@ -298,6 +311,7 @@
   {
     "id": "player_014",
     "name": "Jayson Tatum",
+    "name_ko": "제이슨 테이텀",
     "position": "forward",
     "play_style": [
       "만능형 스코어링",
@@ -320,6 +334,7 @@
   {
     "id": "player_015",
     "name": "Anthony Edwards",
+    "name_ko": "앤서니 에드워즈",
     "position": "guard",
     "play_style": [
       "폭발적인 애슬레티시즘",
@@ -341,6 +356,7 @@
   {
     "id": "player_016",
     "name": "Klay Thompson",
+    "name_ko": "클레이 탐슨",
     "position": "guard",
     "play_style": [
       "캐치앤슛 전문가",
@@ -363,6 +379,7 @@
   {
     "id": "player_017",
     "name": "Dwyane Wade",
+    "name_ko": "드웨인 웨이드",
     "position": "guard",
     "play_style": [
       "민첩한 드라이브",
@@ -386,6 +403,7 @@
   {
     "id": "player_018",
     "name": "Paul George",
+    "name_ko": "폴 조지",
     "position": "forward",
     "play_style": [
       "양방향 만능형",
@@ -408,6 +426,7 @@
   {
     "id": "player_019",
     "name": "Nikola Jokic",
+    "name_ko": "니콜라 요키치",
     "position": "center",
     "play_style": [
       "포스트업 플레이메이킹",
@@ -429,6 +448,7 @@
   {
     "id": "player_020",
     "name": "Sabrina Ionescu",
+    "name_ko": "사브리나 이오네스쿠",
     "position": "guard",
     "play_style": [
       "올라운드 스킬셋",
