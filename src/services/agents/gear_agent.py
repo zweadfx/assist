@@ -15,7 +15,7 @@ from src.services.rag.shoe_retrieval import shoe_retriever
 
 logger = logging.getLogger(__name__)
 
-_MAX_PREF_LENGTH = 100fix: 신발 추천 시 LLM 빈 배열 반환으로 인한 서버 오류 수정
+_MAX_PREF_LENGTH = 100
 _MAX_PLAYER_LENGTH = 100
 _BLOCKED_PATTERNS = re.compile(
     r"ignore\s+(all\s+)?previous\s+instructions"
