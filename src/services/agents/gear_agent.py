@@ -148,14 +148,19 @@ def generate_recommendations(state: GearAgentState) -> dict:
     context_docs = state["context"]
 
     # Separate shoes and players from context (mutually exclusive)
-    # Check shoe rules first; doc_type may not exist in legacy data
+    # Prefer explicit doc_type; fall back to field presence for legacy data
     shoe_docs = []
     player_docs = []
     for doc in context_docs:
         meta = doc.metadata
-        if meta.get("doc_type") == "shoe" or meta.get("brand"):
+        doc_type = meta.get("doc_type")
+        if doc_type == "shoe":
             shoe_docs.append(doc)
-        elif meta.get("doc_type") == "player" or meta.get("play_style"):
+        elif doc_type == "player":
+            player_docs.append(doc)
+        elif meta.get("brand"):
+            shoe_docs.append(doc)
+        elif meta.get("play_style"):
             player_docs.append(doc)
 
     # Prepare shoes context string
