@@ -13,6 +13,8 @@ from src.services.rag.chroma_db import chroma_manager
 
 logger = logging.getLogger(__name__)
 
+_MAX_SIGNATURE_SHOES = 2
+
 
 class ShoeRetriever:
     """
@@ -263,7 +265,7 @@ class ShoeRetriever:
 
         # 3. Merge: limit signature shoes to at most 2 so sensory-based
         # recommendations are also included in the final results.
-        max_signature = min(2, len(signature_shoes))
+        max_signature = min(_MAX_SIGNATURE_SHOES, len(signature_shoes))
         limited_signature = signature_shoes[:max_signature]
 
         signature_models = {
