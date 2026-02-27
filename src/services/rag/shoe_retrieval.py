@@ -13,6 +13,8 @@ from src.services.rag.chroma_db import chroma_manager
 
 logger = logging.getLogger(__name__)
 
+_MAX_SIGNATURE_SHOES = 2
+
 
 class ShoeRetriever:
     """
@@ -243,31 +245,40 @@ class ShoeRetriever:
                 player_name=player_archetype, n_results=3
             )
 
-            # Directly retrieve signature shoes: try exact player_archetype
-            # first, fallback to best-match player from semantic search
+            # Try raw input first (works for English names), then try
+            # semantic search results' English names as fallback for Korean
             signature_shoes = self._get_signature_shoes(player_archetype)
             used_name = player_archetype
-            if not signature_shoes and players:
-                used_name = players[0].metadata.get("name", "")
-                signature_shoes = self._get_signature_shoes(used_name)
+            if not signature_shoes:
+                for player_doc in players:
+                    candidate = player_doc.metadata.get("name", "")
+                    if candidate and candidate != player_archetype:
+                        signature_shoes = self._get_signature_shoes(candidate)
+                        if signature_shoes:
+                            used_name = candidate
+                            break
             logger.info(
                 "Retrieved %d signature shoes for %s",
                 len(signature_shoes),
                 used_name,
             )
 
-        # 3. Merge: signature shoes first, then sensory shoes (deduplicated)
-        # NOTE: Signature shoes intentionally bypass budget/position filters
-        # to guarantee inclusion when a player is selected.
-        signature_ids = {
-            doc.metadata.get("shoe_id") for doc in signature_shoes
+        # 3. Merge: limit signature shoes to at most 2 so sensory-based
+        # recommendations are also included in the final results.
+        max_signature = min(_MAX_SIGNATURE_SHOES, len(signature_shoes))
+        limited_signature = signature_shoes[:max_signature]
+
+        signature_models = {
+            doc.metadata.get("model_name")
+            for doc in limited_signature
+            if doc.metadata.get("model_name") is not None
         }
         deduplicated_sensory = [
             doc
             for doc in sensory_shoes
-            if doc.metadata.get("shoe_id") not in signature_ids
+            if doc.metadata.get("model_name") not in signature_models
         ]
-        merged_shoes = signature_shoes + deduplicated_sensory
+        merged_shoes = limited_signature + deduplicated_sensory
 
         # 4. Limit to top N shoes
         result["shoes"] = merged_shoes[:n_shoes]
