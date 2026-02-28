@@ -9,6 +9,7 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
+from src.core.constants import SENSORY_TAG_MAP
 from src.models.gear_schema import GearAdvisorResponse
 from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
@@ -164,12 +165,22 @@ def generate_recommendations(state: GearAgentState) -> dict:
             player_docs.append(doc)
 
     # Prepare shoes context string
+    def _sensory_tags_kr(doc: Document) -> str:
+        """Convert English sensory tag enums to Korean labels for the prompt."""
+        tags_kr = doc.metadata.get("sensory_tags_kr")
+        if tags_kr:
+            return str(tags_kr)
+        tags_en = doc.metadata.get("sensory_tags", [])
+        if isinstance(tags_en, list):
+            return str([SENSORY_TAG_MAP.get(t, t) for t in tags_en])
+        return str(tags_en) if tags_en else "N/A"
+
     shoes_context_str = "\n\n".join(
         [
             f"Brand: {doc.metadata.get('brand', 'N/A')}\n"
             f"Model: {doc.metadata.get('model_name', 'N/A')}\n"
             f"Price: {doc.metadata.get('price_krw', 'N/A')} KRW\n"
-            f"Sensory Tags: {doc.metadata.get('sensory_tags', 'N/A')}\n"
+            f"Sensory Tags: {_sensory_tags_kr(doc)}\n"
             f"Player Signature: {doc.metadata.get('player_signature', 'N/A')}\n"
             f"Description: {doc.page_content}"
             for doc in shoe_docs
