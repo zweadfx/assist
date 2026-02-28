@@ -5,6 +5,8 @@ Formats raw data dictionaries into consistent text for vector storage.
 
 from typing import Any, Dict
 
+from src.core.constants import SENSORY_TAG_MAP
+
 
 def format_drill_document(drill: Dict[str, Any]) -> str:
     """Formats a drill dictionary into a consistent string for embedding and storage."""
@@ -15,8 +17,13 @@ def format_shoe_document(shoe: Dict[str, Any]) -> str:
     """
     Formats a shoe dictionary into a consistent string for embedding and storage.
     Emphasizes sensory tags and description for better semantic matching.
+    Uses Korean labels for sensory tags to improve Korean semantic search.
     """
-    sensory = ", ".join(shoe.get("sensory_tags", []))
+    sensory_en = shoe.get("sensory_tags", [])
+    sensory_kr = shoe.get("sensory_tags_kr", [])
+    if not sensory_kr:
+        sensory_kr = [SENSORY_TAG_MAP.get(tag, tag) for tag in sensory_en]
+    sensory = ", ".join(sensory_kr)
     player_sig = shoe.get("player_signature") or "N/A"
     return (
         f"Brand: {shoe['brand']}\n"

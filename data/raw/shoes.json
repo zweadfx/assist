@@ -7,10 +7,16 @@
     "price_krw": 189000,
     "weight_g": 340,
     "sensory_tags": [
-      "최상급 접지",
-      "반발성 쿠션",
-      "가벼운 무게",
-      "쫀득한 접지감"
+      "traction",
+      "responsive",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "zoom",
     "support_level": "low",
@@ -33,10 +39,16 @@
     "price_krw": 199000,
     "weight_g": 332,
     "sensory_tags": [
-      "초경량",
-      "정교한 접지",
-      "빠른 반응성",
-      "민첩한 무브"
+      "lightweight",
+      "traction",
+      "responsive",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "접지력",
+      "반응성",
+      "코트 감각"
     ],
     "cushion_type": "zoom",
     "support_level": "low",
@@ -59,9 +71,15 @@
     "price_krw": 189000,
     "weight_g": 338,
     "sensory_tags": [
-      "쫀득한 접지",
-      "반발성 쿠션",
-      "가벼운 무게",
+      "traction",
+      "responsive",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "경량",
       "코트 감각"
     ],
     "cushion_type": "zoom",
@@ -85,10 +103,16 @@
     "price_krw": 209000,
     "weight_g": 348,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "유연한 착화감",
-      "쫀득한 접지",
-      "가벼운 무게"
+      "cushioning",
+      "flexibility",
+      "traction",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "유연성",
+      "접지력",
+      "경량"
     ],
     "cushion_type": "zoom",
     "support_level": "low",
@@ -111,10 +135,16 @@
     "price_krw": 229000,
     "weight_g": 365,
     "sensory_tags": [
-      "최상급 접지",
-      "폭발적인 반발력",
-      "aggressive 그립",
-      "빠른 커팅"
+      "traction",
+      "responsive",
+      "lockdown",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "락다운",
+      "코트 감각"
     ],
     "cushion_type": "zoom strobel",
     "support_level": "low",
@@ -137,10 +167,16 @@
     "price_krw": 239000,
     "weight_g": 358,
     "sensory_tags": [
-      "정교한 접지",
-      "즉각적인 반응성",
-      "쫀득한 그립",
-      "민첩한 무브"
+      "traction",
+      "responsive",
+      "lockdown",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "락다운",
+      "코트 감각"
     ],
     "cushion_type": "zoom strobel",
     "support_level": "low",
@@ -163,10 +199,16 @@
     "price_krw": 159000,
     "weight_g": 352,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "경쾌한 착화감"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -189,10 +231,16 @@
     "price_krw": 169000,
     "weight_g": 348,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "반응성 쿠션",
-      "안정적인 지지",
-      "유연한 착화감"
+      "cushioning",
+      "responsive",
+      "stability",
+      "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "반응성",
+      "안정성",
+      "유연성"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -215,10 +263,16 @@
     "price_krw": 249000,
     "weight_g": 418,
     "sensory_tags": [
-      "강력한 지지력",
-      "파워풀한 쿠션",
-      "안정적인 착지",
-      "단단한 발목 지지"
+      "ankle_support",
+      "cushioning",
+      "impact_protection",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "쿠셔닝",
+      "충격 보호",
+      "안정성"
     ],
     "cushion_type": "zoom + air max",
     "support_level": "high",
@@ -241,10 +295,16 @@
     "price_krw": 179000,
     "weight_g": 372,
     "sensory_tags": [
-      "가벼운 무게",
-      "반응성 쿠션",
-      "균형잡힌 지지",
-      "부드러운 착지"
+      "lightweight",
+      "responsive",
+      "stability",
+      "cushioning"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "안정성",
+      "쿠셔닝"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -267,10 +327,16 @@
     "price_krw": 199000,
     "weight_g": 368,
     "sensory_tags": [
-      "가벼운 무게",
-      "반응성 쿠션",
-      "부드러운 착지",
-      "균형잡힌 지지"
+      "lightweight",
+      "responsive",
+      "cushioning",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "쿠셔닝",
+      "안정성"
     ],
     "cushion_type": "zoom",
     "support_level": "mid",
@@ -293,10 +359,16 @@
     "price_krw": 209000,
     "weight_g": 365,
     "sensory_tags": [
-      "초경량",
-      "즉각적인 반응성",
-      "부드러운 쿠션",
-      "민첩한 무브"
+      "lightweight",
+      "responsive",
+      "cushioning",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "쿠셔닝",
+      "코트 감각"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -319,10 +391,16 @@
     "price_krw": 169000,
     "weight_g": 358,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "반응성 쿠션"
+      "cushioning",
+      "traction",
+      "comfort",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "편안함",
+      "반응성"
     ],
     "cushion_type": "zoom air",
     "support_level": "low",
@@ -345,10 +423,16 @@
     "price_krw": 159000,
     "weight_g": 342,
     "sensory_tags": [
-      "초경량",
-      "폭발적인 점프",
-      "민첩한 무브",
-      "유연한 착화감"
+      "lightweight",
+      "responsive",
+      "court_feel",
+      "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "유연성"
     ],
     "cushion_type": "zoom air",
     "support_level": "low",
@@ -371,9 +455,15 @@
     "price_krw": 149000,
     "weight_g": 405,
     "sensory_tags": [
-      "강력한 지지력",
-      "파워풀한 쿠션",
-      "안정적인 착지",
+      "ankle_support",
+      "cushioning",
+      "impact_protection",
+      "durability"
+    ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "쿠셔닝",
+      "충격 보호",
       "내구성"
     ],
     "cushion_type": "zoom air",
@@ -397,10 +487,16 @@
     "price_krw": 139000,
     "weight_g": 368,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "편안한 착화감"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -423,10 +519,16 @@
     "price_krw": 149000,
     "weight_g": 378,
     "sensory_tags": [
-      "균형잡힌 성능",
-      "쫀득한 접지",
-      "반응성 쿠션",
-      "안정적인 지지"
+      "stability",
+      "traction",
+      "responsive",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "안정성",
+      "접지력",
+      "반응성",
+      "편안함"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -449,10 +551,16 @@
     "price_krw": 189000,
     "weight_g": 388,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "파워풀한 착지"
+      "cushioning",
+      "stability",
+      "traction",
+      "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "충격 보호"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -475,10 +583,16 @@
     "price_krw": 259000,
     "weight_g": 375,
     "sensory_tags": [
-      "즉각적인 반응성",
-      "강력한 지지력",
-      "쫀득한 접지",
-      "프리미엄 착화감"
+      "responsive",
+      "ankle_support",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "발목 지지",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -501,10 +615,16 @@
     "price_krw": 229000,
     "weight_g": 358,
     "sensory_tags": [
-      "가벼운 무게",
-      "반응성 쿠션",
-      "쫀득한 접지",
-      "민첩한 무브"
+      "lightweight",
+      "responsive",
+      "traction",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "접지력",
+      "코트 감각"
     ],
     "cushion_type": "formula 23",
     "support_level": "low",
@@ -527,10 +647,16 @@
     "price_krw": 159000,
     "weight_g": 372,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "만능형 성능"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -553,10 +679,16 @@
     "price_krw": 199000,
     "weight_g": 392,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "강력한 지지력",
-      "안정적인 착지",
-      "쫀득한 접지"
+      "cushioning",
+      "ankle_support",
+      "impact_protection",
+      "traction"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "발목 지지",
+      "충격 보호",
+      "접지력"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -579,10 +711,16 @@
     "price_krw": 169000,
     "weight_g": 395,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "안정적인 지지",
-      "편안한 착화감",
-      "구름 같은 쿠션"
+      "cushioning",
+      "stability",
+      "comfort",
+      "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "편안함",
+      "충격 보호"
     ],
     "cushion_type": "boost",
     "support_level": "mid",
@@ -605,10 +743,16 @@
     "price_krw": 179000,
     "weight_g": 388,
     "sensory_tags": [
-      "구름 같은 쿠션",
-      "안정적인 지지",
-      "부드러운 착화감",
-      "편안한 쿠션"
+      "cushioning",
+      "stability",
+      "comfort",
+      "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "편안함",
+      "충격 보호"
     ],
     "cushion_type": "boost",
     "support_level": "mid",
@@ -631,10 +775,16 @@
     "price_krw": 129000,
     "weight_g": 365,
     "sensory_tags": [
-      "가성비 쿠션",
-      "경쾌한 착화감",
-      "쫀득한 접지",
-      "반응성 쿠션"
+      "value",
+      "lightweight",
+      "traction",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "경량",
+      "접지력",
+      "반응성"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -657,10 +807,16 @@
     "price_krw": 139000,
     "weight_g": 362,
     "sensory_tags": [
-      "폭발적인 반발력",
-      "쫀득한 접지",
-      "경쾌한 무게감",
-      "가성비 성능"
+      "responsive",
+      "traction",
+      "lightweight",
+      "value"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "가성비"
     ],
     "cushion_type": "bounce pro",
     "support_level": "low",
@@ -683,10 +839,16 @@
     "price_krw": 149000,
     "weight_g": 372,
     "sensory_tags": [
-      "폭발적인 출발",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "즉각적인 반응성"
+      "responsive",
+      "traction",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -709,10 +871,16 @@
     "price_krw": 159000,
     "weight_g": 372,
     "sensory_tags": [
-      "즉각적인 반응성",
-      "쫀득한 접지",
-      "폭발적인 출발",
-      "경쾌한 착화감"
+      "responsive",
+      "traction",
+      "court_feel",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "코트 감각",
+      "경량"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -735,10 +903,16 @@
     "price_krw": 169000,
     "weight_g": 368,
     "sensory_tags": [
-      "즉각적인 반응성",
-      "쫀득한 접지",
-      "경쾌한 무게감",
-      "폭발적인 스타트"
+      "responsive",
+      "traction",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "bounce pro",
     "support_level": "low",
@@ -761,10 +935,16 @@
     "price_krw": 189000,
     "weight_g": 335,
     "sensory_tags": [
-      "초경량",
-      "즉각적인 반응성",
-      "쫀득한 접지",
-      "민첩한 무브"
+      "lightweight",
+      "responsive",
+      "traction",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "접지력",
+      "코트 감각"
     ],
     "cushion_type": "lightstrike pro",
     "support_level": "low",
@@ -787,10 +967,16 @@
     "price_krw": 219000,
     "weight_g": 355,
     "sensory_tags": [
-      "정교한 접지",
-      "민첩한 무브",
-      "빠른 릴리즈",
-      "반응성 쿠션"
+      "traction",
+      "court_feel",
+      "responsive",
+      "lockdown"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "코트 감각",
+      "반응성",
+      "락다운"
     ],
     "cushion_type": "flow",
     "support_level": "low",
@@ -813,10 +999,16 @@
     "price_krw": 99000,
     "weight_g": 385,
     "sensory_tags": [
-      "가성비 쿠션",
-      "안정적인 지지",
+      "value",
+      "stability",
+      "durability",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "안정성",
       "내구성",
-      "편안한 착화감"
+      "편안함"
     ],
     "cushion_type": "charged",
     "support_level": "mid",
@@ -839,10 +1031,16 @@
     "price_krw": 149000,
     "weight_g": 368,
     "sensory_tags": [
-      "반응성 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "균형잡힌 성능"
+      "responsive",
+      "traction",
+      "lightweight",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "안정성"
     ],
     "cushion_type": "nitro",
     "support_level": "low",
@@ -865,10 +1063,16 @@
     "price_krw": 159000,
     "weight_g": 365,
     "sensory_tags": [
-      "반응성 쿠션",
-      "쫀득한 접지",
-      "경쾌한 무게감",
-      "향상된 지지력"
+      "responsive",
+      "traction",
+      "lightweight",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "안정성"
     ],
     "cushion_type": "nitro foam",
     "support_level": "low",
@@ -891,10 +1095,16 @@
     "price_krw": 179000,
     "weight_g": 358,
     "sensory_tags": [
-      "프리미엄 쿠션",
-      "최상급 접지",
-      "가벼운 무게",
-      "엘리트 성능"
+      "cushioning",
+      "traction",
+      "lightweight",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "경량",
+      "반응성"
     ],
     "cushion_type": "nitro elite",
     "support_level": "low",
@@ -917,10 +1127,16 @@
     "price_krw": 139000,
     "weight_g": 355,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "만능형 성능"
+      "cushioning",
+      "traction",
+      "comfort",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "편안함",
+      "안정성"
     ],
     "cushion_type": "nitro",
     "support_level": "low",
@@ -943,10 +1159,16 @@
     "price_krw": 189000,
     "weight_g": 378,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "프리미엄 착화감"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "carbon fiber",
     "support_level": "mid",
@@ -969,10 +1191,16 @@
     "price_krw": 199000,
     "weight_g": 375,
     "sensory_tags": [
-      "구름 같은 쿠션",
-      "강력한 지지력",
-      "쫀득한 접지",
-      "프리미엄 성능"
+      "cushioning",
+      "ankle_support",
+      "traction",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "발목 지지",
+      "접지력",
+      "반응성"
     ],
     "cushion_type": "carbon fiber",
     "support_level": "mid",
@@ -995,10 +1223,16 @@
     "price_krw": 159000,
     "weight_g": 365,
     "sensory_tags": [
-      "반응성 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "가성비 성능"
+      "responsive",
+      "traction",
+      "lightweight",
+      "value"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "가성비"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -1021,10 +1255,16 @@
     "price_krw": 169000,
     "weight_g": 362,
     "sensory_tags": [
-      "폭발적인 반발력",
-      "쫀득한 접지",
-      "경쾌한 무게감",
-      "향상된 성능"
+      "responsive",
+      "traction",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "lightfoam",
     "support_level": "low",
@@ -1047,10 +1287,16 @@
     "price_krw": 149000,
     "weight_g": 368,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "편안한 착화감"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "lightfoam",
     "support_level": "low",
@@ -1073,10 +1319,16 @@
     "price_krw": 139000,
     "weight_g": 372,
     "sensory_tags": [
-      "가성비 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "실용적 성능"
+      "value",
+      "traction",
+      "comfort",
+      "durability"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "편안함",
+      "내구성"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -1099,10 +1351,16 @@
     "price_krw": 149000,
     "weight_g": 368,
     "sensory_tags": [
-      "반응성 쿠션",
-      "쫀득한 접지",
-      "경쾌한 무게감",
-      "향상된 성능"
+      "responsive",
+      "traction",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "lightfoam",
     "support_level": "low",
@@ -1125,10 +1383,16 @@
     "price_krw": 149000,
     "weight_g": 358,
     "sensory_tags": [
-      "폭발적인 출발",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "민첩한 무브"
+      "responsive",
+      "traction",
+      "lightweight",
+      "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "nitro speed",
     "support_level": "low",
@@ -1151,10 +1415,16 @@
     "price_krw": 159000,
     "weight_g": 355,
     "sensory_tags": [
-      "즉각적인 반응성",
-      "최상급 접지",
-      "민첩한 무브",
-      "경쾌한 무게감"
+      "responsive",
+      "traction",
+      "court_feel",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "코트 감각",
+      "경량"
     ],
     "cushion_type": "nitro speed pro",
     "support_level": "low",
@@ -1177,10 +1447,16 @@
     "price_krw": 169000,
     "weight_g": 365,
     "sensory_tags": [
-      "안정적인 지지",
-      "쫀득한 접지",
-      "균형잡힌 쿠션",
-      "슈팅 특화"
+      "stability",
+      "traction",
+      "cushioning",
+      "lockdown"
+    ],
+    "sensory_tags_kr": [
+      "안정성",
+      "접지력",
+      "쿠셔닝",
+      "락다운"
     ],
     "cushion_type": "a-flashfoam",
     "support_level": "low",
@@ -1203,10 +1479,16 @@
     "price_krw": 159000,
     "weight_g": 388,
     "sensory_tags": [
-      "부드러운 쿠션",
-      "편안한 착화감",
-      "안정적인 지지",
-      "균형잡힌 성능"
+      "cushioning",
+      "comfort",
+      "stability",
+      "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "편안함",
+      "안정성",
+      "충격 보호"
     ],
     "cushion_type": "fresh foam",
     "support_level": "mid",
@@ -1229,10 +1511,16 @@
     "price_krw": 189000,
     "weight_g": 382,
     "sensory_tags": [
-      "강력한 지지력",
-      "안정적인 착지",
-      "쫀득한 접지",
-      "프리미엄 성능"
+      "ankle_support",
+      "impact_protection",
+      "traction",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "충격 보호",
+      "접지력",
+      "안정성"
     ],
     "cushion_type": "fuelcell",
     "support_level": "mid",
@@ -1255,10 +1543,16 @@
     "price_krw": 129000,
     "weight_g": 375,
     "sensory_tags": [
-      "가성비 쿠션",
-      "쫀득한 접지",
-      "경쾌한 착화감",
-      "실용적 성능"
+      "value",
+      "traction",
+      "comfort",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "편안함",
+      "반응성"
     ],
     "cushion_type": "mono tech",
     "support_level": "low",
@@ -1281,10 +1575,16 @@
     "price_krw": 79000,
     "weight_g": 395,
     "sensory_tags": [
-      "저가 쿠션",
-      "안정적인 지지",
+      "value",
+      "stability",
+      "durability",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "안정성",
       "내구성",
-      "입문용 성능"
+      "편안함"
     ],
     "cushion_type": "air cooled",
     "support_level": "mid",
@@ -1307,10 +1607,16 @@
     "price_krw": 119000,
     "weight_g": 368,
     "sensory_tags": [
-      "가성비 쿠션",
-      "경쾌한 착화감",
-      "쫀득한 접지",
-      "빠른 무브"
+      "value",
+      "lightweight",
+      "traction",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "경량",
+      "접지력",
+      "반응성"
     ],
     "cushion_type": "quk foam",
     "support_level": "low",
@@ -1333,10 +1639,16 @@
     "price_krw": 149000,
     "weight_g": 378,
     "sensory_tags": [
-      "균형잡힌 쿠션",
-      "안정적인 지지",
-      "쫀득한 접지",
-      "만능형 성능"
+      "cushioning",
+      "stability",
+      "traction",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "quk foam pro",
     "support_level": "mid",
@@ -1349,6 +1661,230 @@
       "빅맨",
       "안정성",
       "균형"
+    ]
+  },
+  {
+    "id": "shoe_053",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Jump 2",
+    "release_year": 2023,
+    "price_krw": 229000,
+    "weight_g": 442,
+    "sensory_tags": [
+      "responsive",
+      "impact_protection",
+      "cushioning",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "충격 보호",
+      "쿠셔닝",
+      "경량"
+    ],
+    "cushion_type": "zoom strobel",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "수직 점프와 폭발적인 도약에 특화된 G.T. 시리즈. 최대 에너지 리턴으로 림 어택에 최적화되었습니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "점프력",
+      "폭발력",
+      "림 어택"
+    ]
+  },
+  {
+    "id": "shoe_054",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Run",
+    "release_year": 2021,
+    "price_krw": 219000,
+    "weight_g": null,
+    "sensory_tags": [
+      "lightweight",
+      "responsive",
+      "court_feel",
+      "breathable"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "통기성"
+    ],
+    "cushion_type": "zoom x",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "G.T. 시리즈의 스피드 모델. 트랜지션과 빠른 달리기에 최적화된 초경량 농구화입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "스피드",
+      "트랜지션",
+      "초경량"
+    ]
+  },
+  {
+    "id": "shoe_055",
+    "brand": "Adidas",
+    "model_name": "Trae Young 3",
+    "release_year": 2023,
+    "price_krw": 149000,
+    "weight_g": 425,
+    "sensory_tags": [
+      "lightweight",
+      "court_feel",
+      "traction",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "코트 감각",
+      "접지력",
+      "반응성"
+    ],
+    "cushion_type": "bounce pro",
+    "support_level": "low",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Trae Young",
+    "description": "트레이 영의 시그니처 모델. 빠른 크로스오버와 딥 3점슛을 위한 경량 디자인입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "핸들링",
+      "딥 3",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_056",
+    "brand": "Adidas",
+    "model_name": "Exhibit A",
+    "release_year": 2021,
+    "price_krw": 119000,
+    "weight_g": 375,
+    "sensory_tags": [
+      "value",
+      "traction",
+      "stability",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "안정성",
+      "편안함"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": null,
+    "description": "아디다스의 가성비 팀 농구화. 실용적인 성능으로 입문자부터 중급자까지 적합합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "가성비",
+      "입문용",
+      "팀화"
+    ]
+  },
+  {
+    "id": "shoe_057",
+    "brand": "New Balance",
+    "model_name": "TWO WXY v4",
+    "release_year": 2023,
+    "price_krw": 169000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "responsive",
+      "traction",
+      "stability",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "안정성",
+      "경량"
+    ],
+    "cushion_type": "fuelcell",
+    "support_level": "mid",
+    "traction_pattern": "컴파운드 패턴",
+    "player_signature": null,
+    "description": "뉴발란스의 팀 농구화 라인. 균형잡힌 성능과 현대적인 디자인을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "올라운드",
+      "균형",
+      "반응성"
+    ]
+  },
+  {
+    "id": "shoe_058",
+    "brand": "Puma",
+    "model_name": "MB.03",
+    "release_year": 2023,
+    "price_krw": 159000,
+    "weight_g": null,
+    "sensory_tags": [
+      "lightweight",
+      "responsive",
+      "court_feel",
+      "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "유연성"
+    ],
+    "cushion_type": "nitro foam",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "LaMelo Ball",
+    "description": "라멜로 볼의 시그니처 모델. 화려한 플레이메이킹과 빠른 트랜지션에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "플레이메이킹",
+      "스타일",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_059",
+    "brand": "Anta",
+    "model_name": "Shock Wave 5",
+    "release_year": 2023,
+    "price_krw": 139000,
+    "weight_g": 370,
+    "sensory_tags": [
+      "cushioning",
+      "impact_protection",
+      "traction",
+      "value"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "충격 보호",
+      "접지력",
+      "가성비"
+    ],
+    "cushion_type": "a-flashfoam",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": null,
+    "description": "안타의 가성비 팀 농구화. 충격 흡수와 접지력을 합리적인 가격에 제공합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "가성비",
+      "충격흡수",
+      "팀화"
     ]
   }
 ]
