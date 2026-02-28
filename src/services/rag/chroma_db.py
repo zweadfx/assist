@@ -385,6 +385,23 @@ class ChromaDBManager:
         )
         return results
 
+    def get_player_by_name_ko(self, name_ko: str) -> Dict[str, List[Any]]:
+        """
+        Retrieves a player by exact Korean name match via metadata filter.
+
+        Args:
+            name_ko: The player's Korean name to match against name_ko metadata.
+
+        Returns:
+            A dictionary containing the matching player documents and metadata.
+        """
+        self._ensure_initialized()
+        results = self.players_collection.get(
+            where={"name_ko": name_ko},
+            include=["documents", "metadatas"],
+        )
+        return results
+
     def add_rules(
         self,
         rule_chunks: List[Dict[str, Any]],

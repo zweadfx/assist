@@ -251,13 +251,28 @@ class ShoeRetriever:
             signature_shoes = self._get_signature_shoes(player_archetype)
             used_name = player_archetype
             if not signature_shoes:
-                # Prefer exact name_ko match to avoid wrong player mapping
+                # Step 1: direct metadata filter on the full players collection
                 exact_match = None
-                for player_doc in players:
-                    name_ko = player_doc.metadata.get("name_ko", "")
-                    if name_ko and name_ko == player_archetype:
-                        exact_match = player_doc.metadata.get("name", "")
-                        break
+                try:
+                    direct = self.chroma_manager.get_player_by_name_ko(
+                        player_archetype
+                    )
+                    if direct and direct.get("metadatas"):
+                        exact_match = direct["metadatas"][0].get("name", "")
+                except Exception:
+                    logger.debug(
+                        "Direct name_ko lookup failed for '%s', "
+                        "falling back to semantic candidates",
+                        player_archetype,
+                    )
+
+                # Step 2: fall back to iterating semantic top-3 candidates
+                if not exact_match:
+                    for player_doc in players:
+                        name_ko = player_doc.metadata.get("name_ko", "")
+                        if name_ko and name_ko == player_archetype:
+                            exact_match = player_doc.metadata.get("name", "")
+                            break
 
                 candidates = (
                     [exact_match]
