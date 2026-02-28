@@ -246,13 +246,30 @@ class ShoeRetriever:
             )
 
             # Try raw input first (works for English names), then try
-            # semantic search results' English names as fallback for Korean
+            # name_ko exact match for Korean input, finally fall back to
+            # first semantic search result's English name
             signature_shoes = self._get_signature_shoes(player_archetype)
             used_name = player_archetype
             if not signature_shoes:
+                # Prefer exact name_ko match to avoid wrong player mapping
+                exact_match = None
                 for player_doc in players:
-                    candidate = player_doc.metadata.get("name", "")
-                    if candidate and candidate != player_archetype:
+                    name_ko = player_doc.metadata.get("name_ko", "")
+                    if name_ko and name_ko == player_archetype:
+                        exact_match = player_doc.metadata.get("name", "")
+                        break
+
+                candidates = (
+                    [exact_match]
+                    if exact_match
+                    else [
+                        d.metadata.get("name", "")
+                        for d in players
+                        if d.metadata.get("name", "") != player_archetype
+                    ]
+                )
+                for candidate in candidates:
+                    if candidate:
                         signature_shoes = self._get_signature_shoes(candidate)
                         if signature_shoes:
                             used_name = candidate

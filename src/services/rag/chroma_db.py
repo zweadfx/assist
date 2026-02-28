@@ -346,6 +346,7 @@ class ChromaDBManager:
             metadata = {
                 "doc_type": "player",
                 "name": player["name"],
+                "name_ko": player.get("name_ko", ""),
                 "position": player["position"],
                 # Join lists into comma-separated strings for metadata compatibility
                 "play_style": ",".join(player.get("play_style", [])),
