@@ -169,11 +169,12 @@ def generate_recommendations(state: GearAgentState) -> dict:
         """Convert English sensory tag enums to Korean labels for the prompt."""
         tags_kr = doc.metadata.get("sensory_tags_kr")
         if tags_kr:
-            return str(tags_kr)
-        tags_en = doc.metadata.get("sensory_tags", [])
-        if isinstance(tags_en, list):
-            return str([SENSORY_TAG_MAP.get(t, t) for t in tags_en])
-        return str(tags_en) if tags_en else "N/A"
+            return tags_kr
+        tags_en = doc.metadata.get("sensory_tags", "")
+        if tags_en:
+            en_list = [t.strip() for t in tags_en.split(",") if t.strip()]
+            return ", ".join(SENSORY_TAG_MAP.get(t, t) for t in en_list)
+        return "N/A"
 
     shoes_context_str = "\n\n".join(
         [

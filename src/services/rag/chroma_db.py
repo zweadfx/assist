@@ -261,6 +261,7 @@ class ChromaDBManager:
                 "player_signature": shoe.get("player_signature") or "None",
                 # Join list into a comma-separated string for metadata compatibility
                 "sensory_tags": ",".join(shoe.get("sensory_tags", [])),
+                "sensory_tags_kr": ",".join(shoe.get("sensory_tags_kr", [])),
                 "tags": ",".join(shoe.get("tags", [])),
             }
             metadatas.append(metadata)
