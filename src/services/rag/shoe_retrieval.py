@@ -7,6 +7,8 @@ and multi-filtering with post-processing.
 import logging
 from typing import Dict, List, Optional
 
+import chromadb.errors
+
 from langchain_core.documents import Document
 
 from src.services.rag.chroma_db import chroma_manager
@@ -246,13 +248,45 @@ class ShoeRetriever:
             )
 
             # Try raw input first (works for English names), then try
-            # semantic search results' English names as fallback for Korean
+            # name_ko exact match for Korean input, finally fall back to
+            # first semantic search result's English name
             signature_shoes = self._get_signature_shoes(player_archetype)
             used_name = player_archetype
             if not signature_shoes:
-                for player_doc in players:
-                    candidate = player_doc.metadata.get("name", "")
-                    if candidate and candidate != player_archetype:
+                # Step 1: direct metadata filter on the full players collection
+                exact_match = None
+                try:
+                    direct = self.chroma_manager.get_player_by_name_ko(
+                        player_archetype
+                    )
+                    if direct and direct.get("metadatas"):
+                        exact_match = direct["metadatas"][0].get("name", "")
+                except chromadb.errors.ChromaError:
+                    logger.debug(
+                        "Direct name_ko lookup failed for '%s', "
+                        "falling back to semantic candidates",
+                        player_archetype,
+                    )
+
+                # Step 2: fall back to iterating semantic top-3 candidates
+                if not exact_match:
+                    for player_doc in players:
+                        name_ko = player_doc.metadata.get("name_ko", "")
+                        if name_ko and name_ko == player_archetype:
+                            exact_match = player_doc.metadata.get("name", "")
+                            break
+
+                candidates = (
+                    [exact_match]
+                    if exact_match
+                    else [
+                        d.metadata.get("name", "")
+                        for d in players
+                        if d.metadata.get("name", "") != player_archetype
+                    ]
+                )
+                for candidate in candidates:
+                    if candidate:
                         signature_shoes = self._get_signature_shoes(candidate)
                         if signature_shoes:
                             used_name = candidate
