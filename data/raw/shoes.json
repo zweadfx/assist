@@ -1667,9 +1667,9 @@
     "id": "shoe_053",
     "brand": "Nike",
     "model_name": "Air Zoom G.T. Jump 2",
-    "release_year": 2024,
+    "release_year": 2023,
     "price_krw": 229000,
-    "weight_g": 378,
+    "weight_g": 442,
     "sensory_tags": [
       "responsive",
       "impact_protection",
@@ -1699,9 +1699,9 @@
     "id": "shoe_054",
     "brand": "Nike",
     "model_name": "Air Zoom G.T. Run",
-    "release_year": 2024,
+    "release_year": 2021,
     "price_krw": 219000,
-    "weight_g": 345,
+    "weight_g": null,
     "sensory_tags": [
       "lightweight",
       "responsive",
@@ -1729,75 +1729,11 @@
   },
   {
     "id": "shoe_055",
-    "brand": "Nike",
-    "model_name": "Vomero 5",
-    "release_year": 2024,
-    "price_krw": 179000,
-    "weight_g": 398,
-    "sensory_tags": [
-      "cushioning",
-      "comfort",
-      "durability",
-      "stability"
-    ],
-    "sensory_tags_kr": [
-      "쿠셔닝",
-      "편안함",
-      "내구성",
-      "안정성"
-    ],
-    "cushion_type": "zoom air",
-    "support_level": "mid",
-    "traction_pattern": "러닝 크로스오버",
-    "player_signature": null,
-    "description": "러닝화 크로스오버 모델. 뛰어난 쿠셔닝과 편안함으로 트레이닝과 캐주얼 착용에 적합합니다.",
-    "tags": [
-      "미드컷",
-      "트레이닝",
-      "러닝 크로스오버",
-      "편안함",
-      "캐주얼"
-    ]
-  },
-  {
-    "id": "shoe_056",
-    "brand": "Jordan",
-    "model_name": "Why Not .7",
-    "release_year": 2024,
-    "price_krw": 169000,
-    "weight_g": 385,
-    "sensory_tags": [
-      "responsive",
-      "impact_protection",
-      "traction",
-      "durability"
-    ],
-    "sensory_tags_kr": [
-      "반응성",
-      "충격 보호",
-      "접지력",
-      "내구성"
-    ],
-    "cushion_type": "formula 23",
-    "support_level": "mid",
-    "traction_pattern": "멀티 디렉션",
-    "player_signature": "Russell Westbrook",
-    "description": "러셀 웨스트브룩의 시그니처 모델. 폭발적인 운동 능력과 공격적인 림 어택에 최적화되었습니다.",
-    "tags": [
-      "미드컷",
-      "가드",
-      "폭발력",
-      "림 어택",
-      "에너지"
-    ]
-  },
-  {
-    "id": "shoe_057",
     "brand": "Adidas",
     "model_name": "Trae Young 3",
-    "release_year": 2024,
+    "release_year": 2023,
     "price_krw": 149000,
-    "weight_g": 348,
+    "weight_g": 425,
     "sensory_tags": [
       "lightweight",
       "court_feel",
@@ -1824,10 +1760,10 @@
     ]
   },
   {
-    "id": "shoe_058",
+    "id": "shoe_056",
     "brand": "Adidas",
     "model_name": "Exhibit A",
-    "release_year": 2024,
+    "release_year": 2021,
     "price_krw": 119000,
     "weight_g": 375,
     "sensory_tags": [
@@ -1856,10 +1792,10 @@
     ]
   },
   {
-    "id": "shoe_059",
+    "id": "shoe_057",
     "brand": "New Balance",
     "model_name": "TWO WXY v4",
-    "release_year": 2024,
+    "release_year": 2023,
     "price_krw": 169000,
     "weight_g": 372,
     "sensory_tags": [
@@ -1888,12 +1824,12 @@
     ]
   },
   {
-    "id": "shoe_060",
+    "id": "shoe_058",
     "brand": "Puma",
     "model_name": "MB.03",
-    "release_year": 2024,
+    "release_year": 2023,
     "price_krw": 159000,
-    "weight_g": 362,
+    "weight_g": null,
     "sensory_tags": [
       "lightweight",
       "responsive",
@@ -1920,10 +1856,10 @@
     ]
   },
   {
-    "id": "shoe_061",
+    "id": "shoe_059",
     "brand": "Anta",
     "model_name": "Shock Wave 5",
-    "release_year": 2024,
+    "release_year": 2023,
     "price_krw": 139000,
     "weight_g": 370,
     "sensory_tags": [
