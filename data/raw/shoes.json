@@ -12,6 +12,12 @@
       "lightweight",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "경량",
+      "코트 감각"
+    ],
     "cushion_type": "zoom",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -37,6 +43,12 @@
       "traction",
       "responsive",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "접지력",
+      "반응성",
+      "코트 감각"
     ],
     "cushion_type": "zoom",
     "support_level": "low",
@@ -64,6 +76,12 @@
       "lightweight",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "경량",
+      "코트 감각"
+    ],
     "cushion_type": "zoom",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -89,6 +107,12 @@
       "flexibility",
       "traction",
       "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "유연성",
+      "접지력",
+      "경량"
     ],
     "cushion_type": "zoom",
     "support_level": "low",
@@ -116,6 +140,12 @@
       "lockdown",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "락다운",
+      "코트 감각"
+    ],
     "cushion_type": "zoom strobel",
     "support_level": "low",
     "traction_pattern": "독립형 포드",
@@ -141,6 +171,12 @@
       "responsive",
       "lockdown",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "접지력",
+      "반응성",
+      "락다운",
+      "코트 감각"
     ],
     "cushion_type": "zoom strobel",
     "support_level": "low",
@@ -168,6 +204,12 @@
       "traction",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
+    ],
     "cushion_type": "zoom air",
     "support_level": "mid",
     "traction_pattern": "헤링본 변형",
@@ -193,6 +235,12 @@
       "responsive",
       "stability",
       "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "반응성",
+      "안정성",
+      "유연성"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -220,6 +268,12 @@
       "impact_protection",
       "stability"
     ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "쿠셔닝",
+      "충격 보호",
+      "안정성"
+    ],
     "cushion_type": "zoom + air max",
     "support_level": "high",
     "traction_pattern": "멀티 코트 패턴",
@@ -245,6 +299,12 @@
       "responsive",
       "stability",
       "cushioning"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "안정성",
+      "쿠셔닝"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -272,6 +332,12 @@
       "cushioning",
       "stability"
     ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "쿠셔닝",
+      "안정성"
+    ],
     "cushion_type": "zoom",
     "support_level": "mid",
     "traction_pattern": "헤링본 변형",
@@ -297,6 +363,12 @@
       "responsive",
       "cushioning",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "쿠셔닝",
+      "코트 감각"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -324,6 +396,12 @@
       "comfort",
       "responsive"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "편안함",
+      "반응성"
+    ],
     "cushion_type": "zoom air",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -349,6 +427,12 @@
       "responsive",
       "court_feel",
       "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "유연성"
     ],
     "cushion_type": "zoom air",
     "support_level": "low",
@@ -376,6 +460,12 @@
       "impact_protection",
       "durability"
     ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "쿠셔닝",
+      "충격 보호",
+      "내구성"
+    ],
     "cushion_type": "zoom air",
     "support_level": "mid",
     "traction_pattern": "와이드 헤링본",
@@ -401,6 +491,12 @@
       "stability",
       "traction",
       "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "zoom air",
     "support_level": "mid",
@@ -428,6 +524,12 @@
       "responsive",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "안정성",
+      "접지력",
+      "반응성",
+      "편안함"
+    ],
     "cushion_type": "zoom air",
     "support_level": "mid",
     "traction_pattern": "멀티 디렉션",
@@ -453,6 +555,12 @@
       "stability",
       "traction",
       "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "충격 보호"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -480,6 +588,12 @@
       "traction",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "발목 지지",
+      "접지력",
+      "편안함"
+    ],
     "cushion_type": "formula 23",
     "support_level": "mid",
     "traction_pattern": "트랙션 패턴",
@@ -505,6 +619,12 @@
       "responsive",
       "traction",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "접지력",
+      "코트 감각"
     ],
     "cushion_type": "formula 23",
     "support_level": "low",
@@ -532,6 +652,12 @@
       "traction",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
+    ],
     "cushion_type": "formula 23",
     "support_level": "mid",
     "traction_pattern": "멀티 디렉션",
@@ -557,6 +683,12 @@
       "ankle_support",
       "impact_protection",
       "traction"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "발목 지지",
+      "충격 보호",
+      "접지력"
     ],
     "cushion_type": "formula 23",
     "support_level": "mid",
@@ -584,6 +716,12 @@
       "comfort",
       "impact_protection"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "편안함",
+      "충격 보호"
+    ],
     "cushion_type": "boost",
     "support_level": "mid",
     "traction_pattern": "와이드 헤링본",
@@ -609,6 +747,12 @@
       "stability",
       "comfort",
       "impact_protection"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "편안함",
+      "충격 보호"
     ],
     "cushion_type": "boost",
     "support_level": "mid",
@@ -636,6 +780,12 @@
       "traction",
       "responsive"
     ],
+    "sensory_tags_kr": [
+      "가성비",
+      "경량",
+      "접지력",
+      "반응성"
+    ],
     "cushion_type": "bounce",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -661,6 +811,12 @@
       "traction",
       "lightweight",
       "value"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "가성비"
     ],
     "cushion_type": "bounce pro",
     "support_level": "low",
@@ -688,6 +844,12 @@
       "lightweight",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
+    ],
     "cushion_type": "bounce",
     "support_level": "low",
     "traction_pattern": "헤링본 풀 렝스",
@@ -713,6 +875,12 @@
       "traction",
       "court_feel",
       "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "코트 감각",
+      "경량"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -740,6 +908,12 @@
       "lightweight",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
+    ],
     "cushion_type": "bounce pro",
     "support_level": "low",
     "traction_pattern": "헤링본 변형",
@@ -765,6 +939,12 @@
       "responsive",
       "traction",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "접지력",
+      "코트 감각"
     ],
     "cushion_type": "lightstrike pro",
     "support_level": "low",
@@ -792,6 +972,12 @@
       "responsive",
       "lockdown"
     ],
+    "sensory_tags_kr": [
+      "접지력",
+      "코트 감각",
+      "반응성",
+      "락다운"
+    ],
     "cushion_type": "flow",
     "support_level": "low",
     "traction_pattern": "멀티 디렉션 패턴",
@@ -817,6 +1003,12 @@
       "stability",
       "durability",
       "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "안정성",
+      "내구성",
+      "편안함"
     ],
     "cushion_type": "charged",
     "support_level": "mid",
@@ -844,6 +1036,12 @@
       "lightweight",
       "stability"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "안정성"
+    ],
     "cushion_type": "nitro",
     "support_level": "low",
     "traction_pattern": "헤링본 변형",
@@ -869,6 +1067,12 @@
       "traction",
       "lightweight",
       "stability"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "안정성"
     ],
     "cushion_type": "nitro foam",
     "support_level": "low",
@@ -896,6 +1100,12 @@
       "lightweight",
       "responsive"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "경량",
+      "반응성"
+    ],
     "cushion_type": "nitro elite",
     "support_level": "low",
     "traction_pattern": "독립형 포드",
@@ -921,6 +1131,12 @@
       "traction",
       "comfort",
       "stability"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "접지력",
+      "편안함",
+      "안정성"
     ],
     "cushion_type": "nitro",
     "support_level": "low",
@@ -948,6 +1164,12 @@
       "traction",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
+    ],
     "cushion_type": "carbon fiber",
     "support_level": "mid",
     "traction_pattern": "헤링본 변형",
@@ -973,6 +1195,12 @@
       "ankle_support",
       "traction",
       "responsive"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "발목 지지",
+      "접지력",
+      "반응성"
     ],
     "cushion_type": "carbon fiber",
     "support_level": "mid",
@@ -1000,6 +1228,12 @@
       "lightweight",
       "value"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "가성비"
+    ],
     "cushion_type": "bounce",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -1025,6 +1259,12 @@
       "traction",
       "lightweight",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "lightfoam",
     "support_level": "low",
@@ -1052,6 +1292,12 @@
       "traction",
       "comfort"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
+    ],
     "cushion_type": "lightfoam",
     "support_level": "low",
     "traction_pattern": "헤링본 변형",
@@ -1077,6 +1323,12 @@
       "traction",
       "comfort",
       "durability"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "편안함",
+      "내구성"
     ],
     "cushion_type": "bounce",
     "support_level": "low",
@@ -1104,6 +1356,12 @@
       "lightweight",
       "court_feel"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
+    ],
     "cushion_type": "lightfoam",
     "support_level": "low",
     "traction_pattern": "멀티 디렉션",
@@ -1129,6 +1387,12 @@
       "traction",
       "lightweight",
       "court_feel"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "경량",
+      "코트 감각"
     ],
     "cushion_type": "nitro speed",
     "support_level": "low",
@@ -1156,6 +1420,12 @@
       "court_feel",
       "lightweight"
     ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "코트 감각",
+      "경량"
+    ],
     "cushion_type": "nitro speed pro",
     "support_level": "low",
     "traction_pattern": "독립형 포드",
@@ -1181,6 +1451,12 @@
       "traction",
       "cushioning",
       "lockdown"
+    ],
+    "sensory_tags_kr": [
+      "안정성",
+      "접지력",
+      "쿠셔닝",
+      "락다운"
     ],
     "cushion_type": "a-flashfoam",
     "support_level": "low",
@@ -1208,6 +1484,12 @@
       "stability",
       "impact_protection"
     ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "편안함",
+      "안정성",
+      "충격 보호"
+    ],
     "cushion_type": "fresh foam",
     "support_level": "mid",
     "traction_pattern": "컴파운드 패턴",
@@ -1233,6 +1515,12 @@
       "impact_protection",
       "traction",
       "stability"
+    ],
+    "sensory_tags_kr": [
+      "발목 지지",
+      "충격 보호",
+      "접지력",
+      "안정성"
     ],
     "cushion_type": "fuelcell",
     "support_level": "mid",
@@ -1260,6 +1548,12 @@
       "comfort",
       "responsive"
     ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "편안함",
+      "반응성"
+    ],
     "cushion_type": "mono tech",
     "support_level": "low",
     "traction_pattern": "헤링본 변형",
@@ -1285,6 +1579,12 @@
       "stability",
       "durability",
       "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "안정성",
+      "내구성",
+      "편안함"
     ],
     "cushion_type": "air cooled",
     "support_level": "mid",
@@ -1312,6 +1612,12 @@
       "traction",
       "responsive"
     ],
+    "sensory_tags_kr": [
+      "가성비",
+      "경량",
+      "접지력",
+      "반응성"
+    ],
     "cushion_type": "quk foam",
     "support_level": "low",
     "traction_pattern": "헤링본 패턴",
@@ -1337,6 +1643,12 @@
       "stability",
       "traction",
       "comfort"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "안정성",
+      "접지력",
+      "편안함"
     ],
     "cushion_type": "quk foam pro",
     "support_level": "mid",
