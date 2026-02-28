@@ -1662,5 +1662,293 @@
       "안정성",
       "균형"
     ]
+  },
+  {
+    "id": "shoe_053",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Jump 2",
+    "release_year": 2024,
+    "price_krw": 229000,
+    "weight_g": 378,
+    "sensory_tags": [
+      "responsive",
+      "impact_protection",
+      "cushioning",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "충격 보호",
+      "쿠셔닝",
+      "경량"
+    ],
+    "cushion_type": "zoom strobel",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "수직 점프와 폭발적인 도약에 특화된 G.T. 시리즈. 최대 에너지 리턴으로 림 어택에 최적화되었습니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "점프력",
+      "폭발력",
+      "림 어택"
+    ]
+  },
+  {
+    "id": "shoe_054",
+    "brand": "Nike",
+    "model_name": "Air Zoom G.T. Run",
+    "release_year": 2024,
+    "price_krw": 219000,
+    "weight_g": 345,
+    "sensory_tags": [
+      "lightweight",
+      "responsive",
+      "court_feel",
+      "breathable"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "통기성"
+    ],
+    "cushion_type": "zoom x",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": null,
+    "description": "G.T. 시리즈의 스피드 모델. 트랜지션과 빠른 달리기에 최적화된 초경량 농구화입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "스피드",
+      "트랜지션",
+      "초경량"
+    ]
+  },
+  {
+    "id": "shoe_055",
+    "brand": "Nike",
+    "model_name": "Vomero 5",
+    "release_year": 2024,
+    "price_krw": 179000,
+    "weight_g": 398,
+    "sensory_tags": [
+      "cushioning",
+      "comfort",
+      "durability",
+      "stability"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "편안함",
+      "내구성",
+      "안정성"
+    ],
+    "cushion_type": "zoom air",
+    "support_level": "mid",
+    "traction_pattern": "러닝 크로스오버",
+    "player_signature": null,
+    "description": "러닝화 크로스오버 모델. 뛰어난 쿠셔닝과 편안함으로 트레이닝과 캐주얼 착용에 적합합니다.",
+    "tags": [
+      "미드컷",
+      "트레이닝",
+      "러닝 크로스오버",
+      "편안함",
+      "캐주얼"
+    ]
+  },
+  {
+    "id": "shoe_056",
+    "brand": "Jordan",
+    "model_name": "Why Not .7",
+    "release_year": 2024,
+    "price_krw": 169000,
+    "weight_g": 385,
+    "sensory_tags": [
+      "responsive",
+      "impact_protection",
+      "traction",
+      "durability"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "충격 보호",
+      "접지력",
+      "내구성"
+    ],
+    "cushion_type": "formula 23",
+    "support_level": "mid",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "Russell Westbrook",
+    "description": "러셀 웨스트브룩의 시그니처 모델. 폭발적인 운동 능력과 공격적인 림 어택에 최적화되었습니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "폭발력",
+      "림 어택",
+      "에너지"
+    ]
+  },
+  {
+    "id": "shoe_057",
+    "brand": "Adidas",
+    "model_name": "Trae Young 3",
+    "release_year": 2024,
+    "price_krw": 149000,
+    "weight_g": 348,
+    "sensory_tags": [
+      "lightweight",
+      "court_feel",
+      "traction",
+      "responsive"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "코트 감각",
+      "접지력",
+      "반응성"
+    ],
+    "cushion_type": "bounce pro",
+    "support_level": "low",
+    "traction_pattern": "헤링본 변형",
+    "player_signature": "Trae Young",
+    "description": "트레이 영의 시그니처 모델. 빠른 크로스오버와 딥 3점슛을 위한 경량 디자인입니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "핸들링",
+      "딥 3",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_058",
+    "brand": "Adidas",
+    "model_name": "Exhibit A",
+    "release_year": 2024,
+    "price_krw": 119000,
+    "weight_g": 375,
+    "sensory_tags": [
+      "value",
+      "traction",
+      "stability",
+      "comfort"
+    ],
+    "sensory_tags_kr": [
+      "가성비",
+      "접지력",
+      "안정성",
+      "편안함"
+    ],
+    "cushion_type": "bounce",
+    "support_level": "mid",
+    "traction_pattern": "헤링본 패턴",
+    "player_signature": null,
+    "description": "아디다스의 가성비 팀 농구화. 실용적인 성능으로 입문자부터 중급자까지 적합합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "가성비",
+      "입문용",
+      "팀화"
+    ]
+  },
+  {
+    "id": "shoe_059",
+    "brand": "New Balance",
+    "model_name": "TWO WXY v4",
+    "release_year": 2024,
+    "price_krw": 169000,
+    "weight_g": 372,
+    "sensory_tags": [
+      "responsive",
+      "traction",
+      "stability",
+      "lightweight"
+    ],
+    "sensory_tags_kr": [
+      "반응성",
+      "접지력",
+      "안정성",
+      "경량"
+    ],
+    "cushion_type": "fuelcell",
+    "support_level": "mid",
+    "traction_pattern": "컴파운드 패턴",
+    "player_signature": null,
+    "description": "뉴발란스의 팀 농구화 라인. 균형잡힌 성능과 현대적인 디자인을 제공합니다.",
+    "tags": [
+      "미드컷",
+      "가드",
+      "올라운드",
+      "균형",
+      "반응성"
+    ]
+  },
+  {
+    "id": "shoe_060",
+    "brand": "Puma",
+    "model_name": "MB.03",
+    "release_year": 2024,
+    "price_krw": 159000,
+    "weight_g": 362,
+    "sensory_tags": [
+      "lightweight",
+      "responsive",
+      "court_feel",
+      "flexibility"
+    ],
+    "sensory_tags_kr": [
+      "경량",
+      "반응성",
+      "코트 감각",
+      "유연성"
+    ],
+    "cushion_type": "nitro foam",
+    "support_level": "low",
+    "traction_pattern": "멀티 디렉션",
+    "player_signature": "LaMelo Ball",
+    "description": "라멜로 볼의 시그니처 모델. 화려한 플레이메이킹과 빠른 트랜지션에 최적화되었습니다.",
+    "tags": [
+      "로우컷",
+      "가드",
+      "플레이메이킹",
+      "스타일",
+      "스피드"
+    ]
+  },
+  {
+    "id": "shoe_061",
+    "brand": "Anta",
+    "model_name": "Shock Wave 5",
+    "release_year": 2024,
+    "price_krw": 139000,
+    "weight_g": 370,
+    "sensory_tags": [
+      "cushioning",
+      "impact_protection",
+      "traction",
+      "value"
+    ],
+    "sensory_tags_kr": [
+      "쿠셔닝",
+      "충격 보호",
+      "접지력",
+      "가성비"
+    ],
+    "cushion_type": "a-flashfoam",
+    "support_level": "mid",
+    "traction_pattern": "와이드 헤링본",
+    "player_signature": null,
+    "description": "안타의 가성비 팀 농구화. 충격 흡수와 접지력을 합리적인 가격에 제공합니다.",
+    "tags": [
+      "미드컷",
+      "포워드",
+      "가성비",
+      "충격흡수",
+      "팀화"
+    ]
   }
 ]
