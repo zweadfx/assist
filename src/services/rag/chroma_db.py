@@ -346,6 +346,7 @@ class ChromaDBManager:
             metadata = {
                 "doc_type": "player",
                 "name": player["name"],
+                "name_ko": player.get("name_ko", ""),
                 "position": player["position"],
                 # Join lists into comma-separated strings for metadata compatibility
                 "play_style": ",".join(player.get("play_style", [])),
@@ -381,6 +382,23 @@ class ChromaDBManager:
         self._ensure_initialized()
         results = self.players_collection.query(
             query_texts=query_texts, n_results=n_results, where=where
+        )
+        return results
+
+    def get_player_by_name_ko(self, name_ko: str) -> Dict[str, List[Any]]:
+        """
+        Retrieves a player by exact Korean name match via metadata filter.
+
+        Args:
+            name_ko: The player's Korean name to match against name_ko metadata.
+
+        Returns:
+            A dictionary containing the matching player documents and metadata.
+        """
+        self._ensure_initialized()
+        results = self.players_collection.get(
+            where={"name_ko": name_ko},
+            include=["documents", "metadatas"],
         )
         return results
 
