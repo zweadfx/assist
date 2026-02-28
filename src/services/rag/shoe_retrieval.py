@@ -7,6 +7,8 @@ and multi-filtering with post-processing.
 import logging
 from typing import Dict, List, Optional
 
+import chromadb.errors
+
 from langchain_core.documents import Document
 
 from src.services.rag.chroma_db import chroma_manager
@@ -259,7 +261,7 @@ class ShoeRetriever:
                     )
                     if direct and direct.get("metadatas"):
                         exact_match = direct["metadatas"][0].get("name", "")
-                except Exception:
+                except chromadb.errors.ChromaError:
                     logger.debug(
                         "Direct name_ko lookup failed for '%s', "
                         "falling back to semantic candidates",
