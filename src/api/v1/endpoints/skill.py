@@ -77,8 +77,9 @@ async def generate_weekly_routine(
             "user_info": request.model_dump(),
         }
 
-        final_state = await asyncio.to_thread(
-            weekly_coach_agent_graph.invoke, initial_state
+        final_state = await asyncio.wait_for(
+            asyncio.to_thread(weekly_coach_agent_graph.invoke, initial_state),
+            timeout=120,
         )
 
         if final_response_str := final_state.get("final_response"):
@@ -92,6 +93,12 @@ async def generate_weekly_routine(
                 detail="Agent failed to produce a weekly routine response.",
             )
 
+    except asyncio.TimeoutError:
+        logger.error("Weekly routine generation timed out")
+        raise HTTPException(
+            status_code=504,
+            detail="Weekly routine generation timed out. Please try again.",
+        )
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
