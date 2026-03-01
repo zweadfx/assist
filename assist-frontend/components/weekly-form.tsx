@@ -57,11 +57,14 @@ export default function WeeklyForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const guardedTime = Number.isFinite(availableTime) && availableTime > 0
+      ? availableTime
+      : 60;
     onSubmit({
       skill_level: skillLevel,
       training_days: trainingDays,
       focus_areas: focusAreas as WeeklyRoutineRequest["focus_areas"],
-      available_time_per_day_min: availableTime,
+      available_time_per_day_min: guardedTime,
       equipment,
       language,
       free_text: freeText || undefined,
