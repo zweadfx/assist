@@ -92,6 +92,23 @@ class DailyPlan(BaseModel):
         ..., description="List of drills for this day."
     )
 
+    @model_validator(mode="after")
+    def validate_durations_and_phases(self) -> "DailyPlan":
+        drill_sum = sum(d.duration_min for d in self.drills)
+        if drill_sum != self.total_duration_min:
+            raise ValueError(
+                f"Sum of drill durations ({drill_sum}) does not match "
+                f"total_duration_min ({self.total_duration_min})"
+            )
+        phases_present = {d.phase for d in self.drills}
+        required_phases = {"warmup", "main", "cooldown"}
+        missing = required_phases - phases_present
+        if missing:
+            raise ValueError(
+                f"Missing required phases: {', '.join(sorted(missing))}"
+            )
+        return self
+
 
 class WeeklyRoutineResponse(BaseModel):
     """Response model for the weekly training routine."""
