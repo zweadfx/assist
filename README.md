@@ -31,8 +31,9 @@
 This project implements three core features developed during a high-intensity development sprint, specifically tailored for the modern **hooper**.
 
 ### **1. AI Skill Lab (Personalized Skill Trainer)**
-* **Definition**: A structured training generator that creates actionable **'Daily Routine Cards'** based on a **hooper's** specific weaknesses, position, and available time.
-* **Details**: Instead of generic advice, it retrieves specific drills from a vector database and orchestrates them into a complete workout session (Warm-up → Main Drills → Cool-down) in a checklist format to ensure immediate court application.
+* **Definition**: A structured training generator that creates actionable **'Daily Routine Cards'** and **'Weekly Training Plans'** based on a **hooper's** specific weaknesses, position, and available time.
+* **Details**: Instead of generic advice, it retrieves specific drills from a vector database (47 drills across shooting, dribble, defense, conditioning) and orchestrates them into complete workout sessions (Warm-up → Main Drills → Cool-down) in a checklist format to ensure immediate court application.
+* **Weekly Routine**: A 4-node LangGraph agent (`diagnose → plan_week → retrieve → generate`) distributes multiple focus areas across 1-7 training days with recovery-aware scheduling, and generates custom drill variations when the database is insufficient.
 
 ### **2. Gear Advisor (Sensory-based Recommendation)**
 * **Definition**: A next-gen recommendation engine that matches basketball shoes based on **'Sensory Preferences'** (e.g., cushion feel, traction sound) and **'Player Archetypes'**.
@@ -50,6 +51,7 @@ The following technical ecosystem was established to ensure system stability and
 | :--- | :--- | :--- |
 | **Language** | **Python 3.10+** | Provides optimized compatibility with AI and data analysis libraries |
 | **Backend** | **FastAPI** | Implements high-performance API services through asynchronous processing |
+| **Frontend** | **Next.js 15 + Tailwind CSS** | Delivers a responsive UI with server-side rendering and utility-first styling |
 | **Orchestration** | **LangGraph** | Enables advanced agent control via state-based cyclic logic for multi-functional tasks |
 | **Vector DB** | **ChromaDB** | Supports rapid data embedding and efficient vector similarity search |
 | **Package/Quality**| **uv & Ruff** | Ensures ultra-fast dependency management and strict code standard compliance |
@@ -76,7 +78,7 @@ The following technical ecosystem was established to ensure system stability and
 ### **Installation & Run**
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/your-username/assist.git](https://github.com/your-username/assist.git)
+git clone https://github.com/your-username/assist.git
 cd assist
 
 # 2. Install dependencies and sync virtual environment
@@ -86,5 +88,10 @@ uv sync
 cp .env.example .env
 # Enter required keys such as OPENAI_API_KEY in the .env file
 
-# 4. Run the development server
+# 4. Run the backend server
 uv run uvicorn src.main:app --reload
+
+# 5. Run the frontend (in a separate terminal)
+cd assist-frontend
+npm install
+npm run dev
