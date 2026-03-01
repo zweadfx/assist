@@ -78,6 +78,7 @@ export default function WeeklyForm({
         <select
           value={language}
           onChange={(e) => onLanguageChange(e.target.value as Language)}
+          aria-label={t(language, "language")}
           className="rounded-md border border-gray-300 px-3 py-1 text-sm"
         >
           <option value="en">English</option>
