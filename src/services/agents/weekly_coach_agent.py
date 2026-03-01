@@ -65,7 +65,6 @@ def plan_week(state: WeeklyCoachState) -> dict:
     if not isinstance(focus_areas, list) or not focus_areas:
         raise ValueError("focus_areas must be a non-empty list.")
     skill_level = user_info.get("skill_level", "intermediate")
-    language = user_info.get("language", "en")
 
     additional_focus = user_info.get("additional_focus", "")
     intensity_pref = user_info.get("intensity_preference", "")
