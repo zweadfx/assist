@@ -330,9 +330,9 @@ JSON Output:"""
         except (json.JSONDecodeError, ValidationError) as e:
             logger.error(
                 "Failed to parse or validate LLM response for weekly routine: "
-                "%s (raw content: %.500s)",
+                "%s (response length: %d)",
                 e,
-                content,
+                len(content),
             )
             raise ValueError(
                 "LLM returned an invalid weekly routine object"
