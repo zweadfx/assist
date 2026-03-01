@@ -1,6 +1,6 @@
 from typing import Annotated, List, Literal, Optional
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 
 class WeeklyRoutineRequest(BaseModel):
@@ -108,3 +108,21 @@ class WeeklyRoutineResponse(BaseModel):
     days: List[DailyPlan] = Field(
         ..., description="List of daily training plans."
     )
+
+    @model_validator(mode="after")
+    def validate_days_consistency(self) -> "WeeklyRoutineResponse":
+        if len(self.days) != self.total_days:
+            raise ValueError(
+                f"total_days ({self.total_days}) does not match "
+                f"number of days ({len(self.days)})"
+            )
+        day_numbers = [d.day_number for d in self.days]
+        if len(set(day_numbers)) != len(day_numbers):
+            raise ValueError(f"Duplicate day_number values: {day_numbers}")
+        expected = set(range(1, self.total_days + 1))
+        if set(day_numbers) != expected:
+            raise ValueError(
+                f"day_number values {sorted(day_numbers)} do not match "
+                f"expected {sorted(expected)}"
+            )
+        return self
