@@ -61,7 +61,9 @@ def plan_week(state: WeeklyCoachState) -> dict:
     logger.info("WEEKLY NODE: Planning Week")
     user_info = state["user_info"]
     training_days = user_info.get("training_days", 3)
-    focus_areas = user_info.get("focus_areas", [])
+    focus_areas = user_info.get("focus_areas") or []
+    if not isinstance(focus_areas, list) or not focus_areas:
+        raise ValueError("focus_areas must be a non-empty list.")
     skill_level = user_info.get("skill_level", "intermediate")
     language = user_info.get("language", "en")
 
