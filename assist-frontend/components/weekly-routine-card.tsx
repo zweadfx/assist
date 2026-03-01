@@ -49,6 +49,7 @@ function DrillCard({
           type="checkbox"
           checked={checked}
           onChange={() => setChecked(!checked)}
+          aria-label={drill.name}
           className="mt-1 h-4 w-4 rounded border-gray-300"
         />
         <div className="flex-1">
