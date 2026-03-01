@@ -5,7 +5,9 @@ from langchain_core.messages import HumanMessage
 
 from src.models.response_schema import SuccessResponse
 from src.models.skill_schema import SkillLabRequest, SkillLabResponse
+from src.models.weekly_schema import WeeklyRoutineRequest, WeeklyRoutineResponse
 from src.services.agents.coach_agent import coach_agent_graph
+from src.services.agents.weekly_coach_agent import weekly_coach_agent_graph
 
 router = APIRouter()
 
@@ -49,6 +51,50 @@ async def create_skill_routine(
             raise
         # For any other unexpected errors from the agent workflow, wrap them
         # in a generic 500 error.
+        raise HTTPException(
+            status_code=500, detail=f"An internal error occurred: {e}"
+        ) from e
+
+
+@router.post("/weekly", response_model=SuccessResponse[WeeklyRoutineResponse])
+async def generate_weekly_routine(
+    request: WeeklyRoutineRequest,
+) -> SuccessResponse[WeeklyRoutineResponse]:
+    """
+    Receives user's training preferences and returns a personalized weekly
+    training routine by invoking the WeeklyCoachAgent.
+    """
+    try:
+        initial_state = {
+            "messages": [
+                HumanMessage(
+                    content=(
+                        f"Generate a {request.training_days}-day weekly training "
+                        f"routine focusing on {', '.join(request.focus_areas)}"
+                    )
+                )
+            ],
+            "user_info": request.model_dump(),
+        }
+
+        final_state = await asyncio.to_thread(
+            weekly_coach_agent_graph.invoke, initial_state
+        )
+
+        if final_response_str := final_state.get("final_response"):
+            response_data = WeeklyRoutineResponse.model_validate_json(
+                final_response_str
+            )
+            return SuccessResponse(data=response_data)
+        else:
+            raise HTTPException(
+                status_code=500,
+                detail="Agent failed to produce a weekly routine response.",
+            )
+
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise
         raise HTTPException(
             status_code=500, detail=f"An internal error occurred: {e}"
         ) from e
