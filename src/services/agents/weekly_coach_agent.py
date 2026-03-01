@@ -168,9 +168,11 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
                 if results and results.get("documents"):
                     documents = results["documents"][0]
                     metadatas = results["metadatas"][0]
+                    ids = results.get("ids", [[]])[0]
 
                     for i, doc_content in enumerate(documents):
                         metadata = metadatas[i]
+                        drill_id = ids[i] if i < len(ids) else "unknown"
 
                         # Equipment filter
                         required_equipment_str = metadata.get(
@@ -183,6 +185,7 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
 
                         drills_for_day.append(
                             {
+                                "id": drill_id,
                                 "content": doc_content,
                                 "metadata": metadata,
                             }
@@ -229,6 +232,7 @@ def generate_weekly_routine(state: WeeklyCoachState) -> dict:
         drills = day_drills.get(day_key, [])
         if drills:
             context_str = "\n\n".join(
+                f"Drill ID: {d.get('id', 'N/A')}\n"
                 f"Drill Name: {d['metadata'].get('name', 'N/A')}\n"
                 f"Phase: {d['metadata'].get('phase', 'N/A')}\n"
                 f"Difficulty: {d['metadata'].get('difficulty', 'N/A')}\n"
