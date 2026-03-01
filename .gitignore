@@ -211,3 +211,15 @@ __marimo__/
 
 # PyCharm user-specific files
 .idea/workspace.xml
+
+# Next.js
+assist-frontend/node_modules/
+assist-frontend/.next/
+assist-frontend/.env.local
+
+# PWA generated files
+assist-frontend/public/sw.js
+assist-frontend/public/sw.js.map
+assist-frontend/public/swe-worker-*.js
+assist-frontend/public/workbox-*.js
+assist-frontend/public/workbox-*.js.map
