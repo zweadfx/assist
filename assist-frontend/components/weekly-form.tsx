@@ -96,6 +96,7 @@ export default function WeeklyForm({
             <button
               key={level}
               type="button"
+              aria-pressed={skillLevel === level}
               onClick={() => setSkillLevel(level)}
               className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 skillLevel === level
@@ -139,6 +140,7 @@ export default function WeeklyForm({
             <button
               key={area}
               type="button"
+              aria-pressed={focusAreas.includes(area)}
               onClick={() => toggleFocusArea(area)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 focusAreas.includes(area)
@@ -177,6 +179,7 @@ export default function WeeklyForm({
             <button
               key={value}
               type="button"
+              aria-pressed={equipment.includes(value)}
               onClick={() => toggleEquipment(value)}
               className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
                 equipment.includes(value)
