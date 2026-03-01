@@ -36,7 +36,7 @@ def diagnose_user_state(state: WeeklyCoachState) -> dict:
 
     free_text = user_info.get("free_text")
     if free_text and free_text.strip():
-        logger.info("Parsing free_text input: %s", free_text[:100])
+        logger.info("Parsing free_text input: length=%d", len(free_text))
         parsed = _parse_free_text(free_text)
 
         if parsed.get("additional_equipment"):
