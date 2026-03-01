@@ -140,7 +140,7 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
     user_info = state["user_info"]
     week_plan = state["week_plan"]
     skill_level = user_info.get("skill_level", "")
-    user_equipment = set(user_info.get("equipment", []))
+    user_equipment = {e.strip().lower() for e in user_info.get("equipment", [])}
 
     level_phrase = f"{skill_level} " if skill_level else ""
     equipment_str = (
@@ -178,7 +178,10 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
                             "required_equipment", ""
                         )
                         if required_equipment_str:
-                            required = set(required_equipment_str.split(","))
+                            required = {
+                                t.strip().lower()
+                                for t in required_equipment_str.split(",")
+                            }
                             if not required.issubset(user_equipment):
                                 continue
 
