@@ -28,8 +28,8 @@ class WeeklyRoutineRequest(BaseModel):
     )
     available_time_per_day_min: int = Field(
         ...,
-        gt=0,
-        description="Available training time per day in minutes.",
+        ge=3,
+        description="Available training time per day in minutes (minimum 3 for warmup/main/cooldown).",
         examples=[60],
     )
     equipment: List[str] = Field(
