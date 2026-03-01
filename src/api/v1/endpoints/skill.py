@@ -1,7 +1,10 @@
 import asyncio
+import logging
 
 from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
+
+logger = logging.getLogger(__name__)
 
 from src.models.response_schema import SuccessResponse
 from src.models.skill_schema import SkillLabRequest, SkillLabResponse
@@ -45,14 +48,11 @@ async def create_skill_routine(
             )
 
     except Exception as e:
-        # If the exception is already an HTTPException, re-raise it to preserve
-        # the specific status code and detail.
         if isinstance(e, HTTPException):
             raise
-        # For any other unexpected errors from the agent workflow, wrap them
-        # in a generic 500 error.
+        logger.exception("Unexpected error in create_skill_routine")
         raise HTTPException(
-            status_code=500, detail=f"An internal error occurred: {e}"
+            status_code=500, detail="An internal server error occurred."
         ) from e
 
 
@@ -95,6 +95,7 @@ async def generate_weekly_routine(
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
+        logger.exception("Unexpected error in generate_weekly_routine")
         raise HTTPException(
-            status_code=500, detail=f"An internal error occurred: {e}"
+            status_code=500, detail="An internal server error occurred."
         ) from e
