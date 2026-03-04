@@ -18,6 +18,8 @@
   </p>
 </div>
 
+**🌐 Live Demo: [https://assist-frontend-plum.vercel.app](https://assist-frontend-plum.vercel.app)**
+
 ---
 
 ## 🏀 Introduction
