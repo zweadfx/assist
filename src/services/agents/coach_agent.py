@@ -348,9 +348,7 @@ def generate_routine(state: CoachAgentState) -> dict:
                 e,
                 content,
             )
-            raise ValueError(
-                "LLM returned an invalid routine object"
-            ) from e
+            raise ValueError("LLM returned an invalid routine object") from e
 
     except openai.APIError as e:
         logger.error("OpenAI API error during routine generation: %s", e)

@@ -174,9 +174,7 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
                         drill_id = ids[i] if i < len(ids) else "unknown"
 
                         # Equipment filter
-                        required_equipment_str = metadata.get(
-                            "required_equipment", ""
-                        )
+                        required_equipment_str = metadata.get("required_equipment", "")
                         if required_equipment_str:
                             required = {
                                 t.strip().lower()
@@ -253,7 +251,7 @@ def generate_weekly_routine(state: WeeklyCoachState) -> dict:
         focus = week_plan[day_key]
         days_section += f"""
 --- Day {day_key} ---
-Focus Areas: {', '.join(focus)}
+Focus Areas: {", ".join(focus)}
 Available Drills from Database:
 {day_contexts[day_key]}
 """
@@ -315,9 +313,7 @@ JSON Output:"""
         )
 
         if not response.choices or not response.choices[0].message.content:
-            raise ValueError(
-                "Received an invalid or empty response from OpenAI API."
-            )
+            raise ValueError("Received an invalid or empty response from OpenAI API.")
 
         content = response.choices[0].message.content
 
@@ -334,14 +330,10 @@ JSON Output:"""
                 e,
                 len(content),
             )
-            raise ValueError(
-                "LLM returned an invalid weekly routine object"
-            ) from e
+            raise ValueError("LLM returned an invalid weekly routine object") from e
 
     except openai.APIError as e:
-        logger.error(
-            "OpenAI API error during weekly routine generation: %s", e
-        )
+        logger.error("OpenAI API error during weekly routine generation: %s", e)
         raise ValueError(
             "Failed to generate weekly routine due to an API error."
         ) from e

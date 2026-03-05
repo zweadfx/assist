@@ -256,9 +256,7 @@ class ShoeRetriever:
                 # Step 1: direct metadata filter on the full players collection
                 exact_match = None
                 try:
-                    direct = self.chroma_manager.get_player_by_name_ko(
-                        player_archetype
-                    )
+                    direct = self.chroma_manager.get_player_by_name_ko(player_archetype)
                     if direct and direct.get("metadatas"):
                         exact_match = direct["metadatas"][0].get("name", "")
                 except chromadb.errors.ChromaError:
@@ -358,7 +356,6 @@ class ShoeRetriever:
         except Exception:
             logger.exception("Failed to retrieve signature shoes for: %s", player_name)
             return []
-
 
 
 # Create singleton instance

@@ -189,7 +189,9 @@ def generate_recommendations(state: GearAgentState) -> dict:
     )
     if not shoe_docs:
         raise ValueError("No shoe data available to generate recommendations")
-    logger.info("Shoes context for prompt (%d docs): %.500s", len(shoe_docs), shoes_context_str)
+    logger.info(
+        "Shoes context for prompt (%d docs): %.500s", len(shoe_docs), shoes_context_str
+    )
 
     # Prepare player context string
     players_context_str = ""
@@ -286,9 +288,7 @@ JSON Output:
                 e,
                 content,
             )
-            raise ValueError(
-                "LLM returned an invalid recommendations object"
-            ) from e
+            raise ValueError("LLM returned an invalid recommendations object") from e
 
     except openai.APIError as e:
         logger.error(f"OpenAI API error during recommendations generation: {e}")

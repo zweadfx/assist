@@ -18,13 +18,13 @@ class WeeklyRoutineRequest(BaseModel):
         description="Number of training days for the week.",
         examples=[3],
     )
-    focus_areas: List[
-        Literal["dribble", "shooting", "defense", "conditioning"]
-    ] = Field(
-        ...,
-        min_length=1,
-        description="Skill categories the user wants to focus on (multiple allowed).",
-        examples=[["shooting", "dribble"]],
+    focus_areas: List[Literal["dribble", "shooting", "defense", "conditioning"]] = (
+        Field(
+            ...,
+            min_length=1,
+            description="Skill categories the user wants to focus on (multiple allowed).",
+            examples=[["shooting", "dribble"]],
+        )
     )
     available_time_per_day_min: int = Field(
         ...,
@@ -88,9 +88,7 @@ class DailyPlan(BaseModel):
     total_duration_min: int = Field(
         ..., gt=0, description="Total duration of this day's training in minutes."
     )
-    drills: List[WeeklyDrill] = Field(
-        ..., description="List of drills for this day."
-    )
+    drills: List[WeeklyDrill] = Field(..., description="List of drills for this day.")
 
     @model_validator(mode="after")
     def validate_durations_and_phases(self) -> "DailyPlan":
@@ -104,27 +102,21 @@ class DailyPlan(BaseModel):
         required_phases = {"warmup", "main", "cooldown"}
         missing = required_phases - phases_present
         if missing:
-            raise ValueError(
-                f"Missing required phases: {', '.join(sorted(missing))}"
-            )
+            raise ValueError(f"Missing required phases: {', '.join(sorted(missing))}")
         return self
 
 
 class WeeklyRoutineResponse(BaseModel):
     """Response model for the weekly training routine."""
 
-    weekly_title: str = Field(
-        ..., description="A title for the entire weekly routine."
-    )
+    weekly_title: str = Field(..., description="A title for the entire weekly routine.")
     coach_overview: str = Field(
         ..., description="Weekly strategy overview message from the AI coach."
     )
     total_days: int = Field(
         ..., ge=1, le=7, description="Total number of training days."
     )
-    days: List[DailyPlan] = Field(
-        ..., description="List of daily training plans."
-    )
+    days: List[DailyPlan] = Field(..., description="List of daily training plans.")
 
     @model_validator(mode="after")
     def validate_days_consistency(self) -> "WeeklyRoutineResponse":

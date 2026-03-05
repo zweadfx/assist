@@ -111,9 +111,7 @@ async def lifespan(app: FastAPI):
                 all_chunks.extend(fiba_chunks)
                 logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
             else:
-                logger.warning(
-                    f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}"
-                )
+                logger.warning(f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}")
 
             if NBA_RULES_PDF_PATH.exists():
                 nba_chunks = parse_rules_pdf(
@@ -124,18 +122,12 @@ async def lifespan(app: FastAPI):
                 all_chunks.extend(nba_chunks)
                 logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
             else:
-                logger.warning(
-                    f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}"
-                )
+                logger.warning(f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}")
 
             if all_chunks:
-                rules_texts = [
-                    format_rule_document(chunk) for chunk in all_chunks
-                ]
+                rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
                 rules_embeddings = generate_embeddings(rules_texts)
-                logger.info(
-                    f"Generated {len(rules_embeddings)} rule embeddings."
-                )
+                logger.info(f"Generated {len(rules_embeddings)} rule embeddings.")
 
                 chroma_manager.add_rules(
                     rule_chunks=all_chunks, embeddings=rules_embeddings
@@ -145,9 +137,7 @@ async def lifespan(app: FastAPI):
                 )
                 logger.info("Successfully added rules to ChromaDB.")
             else:
-                logger.warning(
-                    "No rules PDF files found. Skipping rules init."
-                )
+                logger.warning("No rules PDF files found. Skipping rules init.")
 
         # Initialize glossary collection
         if chroma_manager.glossary_collection.count() == 0:

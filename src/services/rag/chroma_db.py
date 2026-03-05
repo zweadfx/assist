@@ -130,9 +130,7 @@ class ChromaDBManager:
             existing_meta.get("pdf_hash") == current_hash
             and self.rules_collection.count() > 0
         ):
-            logger.info(
-                "Rules PDF hash unchanged, skipping re-initialization."
-            )
+            logger.info("Rules PDF hash unchanged, skipping re-initialization.")
             return False
 
         # Hash differs, missing, or collection is empty — delete and recreate
