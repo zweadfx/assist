@@ -164,6 +164,10 @@ def generate_recommendations(state: GearAgentState) -> dict:
         elif meta.get("play_style"):
             player_docs.append(doc)
 
+    # Resolve language early so it's available for shoes context construction
+    language = user_info.get("language", "en")
+    language_name = "Korean" if language == "ko" else "English"
+
     # Prepare shoes context string
     def _sensory_tags(doc: Document, language: str) -> str:
         """Convert sensory tag enums to the appropriate language for the prompt."""
@@ -211,9 +215,6 @@ def generate_recommendations(state: GearAgentState) -> dict:
 
     # Prepare the JSON schema for the prompt
     schema_json = json.dumps(GearAdvisorResponse.model_json_schema(), indent=2)
-
-    language = user_info.get("language", "en")
-    language_name = "Korean" if language == "ko" else "English"
 
     # Build player section separately to avoid nested f-string
     player_section = ""
