@@ -164,16 +164,23 @@ def generate_recommendations(state: GearAgentState) -> dict:
         elif meta.get("play_style"):
             player_docs.append(doc)
 
+    # Resolve language early so it's available for shoes context construction
+    language = user_info.get("language", "en")
+    language_name = "Korean" if language == "ko" else "English"
+
     # Prepare shoes context string
-    def _sensory_tags_kr(doc: Document) -> str:
-        """Convert English sensory tag enums to Korean labels for the prompt."""
-        tags_kr = doc.metadata.get("sensory_tags_kr")
-        if tags_kr:
-            return tags_kr
+    def _sensory_tags(doc: Document, language: str) -> str:
+        """Convert sensory tag enums to the appropriate language for the prompt."""
+        if language == "ko":
+            tags_kr = doc.metadata.get("sensory_tags_kr")
+            if tags_kr:
+                return tags_kr
         tags_en = doc.metadata.get("sensory_tags", "")
         if tags_en:
             en_list = [t.strip() for t in tags_en.split(",") if t.strip()]
-            return ", ".join(SENSORY_TAG_MAP.get(t, t) for t in en_list)
+            if language == "ko":
+                return ", ".join(SENSORY_TAG_MAP.get(t, t) for t in en_list)
+            return ", ".join(en_list)
         return "N/A"
 
     shoes_context_str = "\n\n".join(
@@ -181,7 +188,7 @@ def generate_recommendations(state: GearAgentState) -> dict:
             f"Brand: {doc.metadata.get('brand', 'N/A')}\n"
             f"Model: {doc.metadata.get('model_name', 'N/A')}\n"
             f"Price: {doc.metadata.get('price_krw', 'N/A')} KRW\n"
-            f"Sensory Tags: {_sensory_tags_kr(doc)}\n"
+            f"Sensory Tags: {_sensory_tags(doc, language)}\n"
             f"Player Signature: {doc.metadata.get('player_signature', 'N/A')}\n"
             f"Description: {doc.page_content}"
             for doc in shoe_docs
@@ -209,9 +216,6 @@ def generate_recommendations(state: GearAgentState) -> dict:
     # Prepare the JSON schema for the prompt
     schema_json = json.dumps(GearAdvisorResponse.model_json_schema(), indent=2)
 
-    language = user_info.get("language", "en")
-    language_name = "Korean" if language == "ko" else "English"
-
     # Build player section separately to avoid nested f-string
     player_section = ""
     if players_context_str:
@@ -231,7 +235,7 @@ shoe recommendations based on the user's preferences and the available shoe data
 {shoes_context_str}
 
 **Language:**
-Respond in {language_name}. All string fields (recommendation_title, user_profile_summary, ai_reasoning, recommendation_reason) must be written in {language_name}.
+Respond in {language_name}. All string fields (recommendation_title, user_profile_summary, ai_reasoning, recommendation_reason, sensory_tags) must be written in {language_name}.
 
 **Critical Rule:**
 You MUST ONLY use shoes from the "Available Shoes Data" above. Do NOT invent or

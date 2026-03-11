@@ -295,10 +295,16 @@ class ShoeRetriever:
                 used_name,
             )
 
-        # 3. Merge: limit signature shoes to at most 2 so sensory-based
-        # recommendations are also included in the final results.
-        max_signature = min(_MAX_SIGNATURE_SHOES, len(signature_shoes))
-        limited_signature = signature_shoes[:max_signature]
+        # 3. Merge: filter signature shoes by budget, then limit to at most 2
+        # so sensory-based recommendations are also included in the final results.
+        if budget_max_krw and budget_max_krw > 0:
+            limited_signature = [
+                doc
+                for doc in signature_shoes
+                if doc.metadata.get("price_krw", 0) <= budget_max_krw
+            ][:_MAX_SIGNATURE_SHOES]
+        else:
+            limited_signature = signature_shoes[:_MAX_SIGNATURE_SHOES]
 
         signature_models = {
             doc.metadata.get("model_name")
