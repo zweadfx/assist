@@ -2,8 +2,10 @@ import asyncio
 import logging
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from langchain_core.messages import HumanMessage
 
+from src.core.exceptions import BudgetInsufficientError
 from src.models.gear_schema import GearAdvisorRequest, GearAdvisorResponse
 from src.models.response_schema import SuccessResponse
 from src.services.agents.gear_agent import gear_agent_graph
@@ -48,6 +50,18 @@ async def recommend_gear(
                 status_code=500, detail="Agent failed to produce a final response."
             )
 
+    except BudgetInsufficientError as e:
+        logger.info("Budget insufficient: %s", e)
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "error": {
+                    "code": "BUDGET_INSUFFICIENT",
+                    "message": str(e),
+                },
+            },
+        )
     except Exception as e:
         # If the exception is already an HTTPException, re-raise it to preserve
         # the specific status code and detail.
