@@ -33,7 +33,7 @@ class GearAdvisorRequest(BaseModel):
     )
     budget_max_krw: Optional[int] = Field(
         None,
-        gt=0,
+        ge=0,
         description="Maximum budget in KRW",
         examples=[200000],
     )
