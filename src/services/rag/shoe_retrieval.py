@@ -72,7 +72,7 @@ class ShoeRetriever:
         try:
             # Build where filter for DB-level pre-filtering
             where_conditions = []
-            if budget_max_krw is not None and budget_max_krw > 0:
+            if budget_max_krw is not None and budget_max_krw >= 0:
                 where_conditions.append({"price_krw": {"$lte": budget_max_krw}})
 
             where_filter = None
@@ -297,7 +297,7 @@ class ShoeRetriever:
 
         # 3. Merge: filter signature shoes by budget, then limit to at most 2
         # so sensory-based recommendations are also included in the final results.
-        if budget_max_krw is not None and budget_max_krw > 0:
+        if budget_max_krw is not None and budget_max_krw >= 0:
             limited_signature = [
                 doc
                 for doc in signature_shoes
