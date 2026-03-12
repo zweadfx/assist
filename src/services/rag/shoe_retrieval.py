@@ -11,7 +11,6 @@ import chromadb.errors
 
 from langchain_core.documents import Document
 
-from src.core.exceptions import BudgetInsufficientError
 from src.services.rag.chroma_db import chroma_manager
 
 logger = logging.getLogger(__name__)
@@ -319,13 +318,7 @@ class ShoeRetriever:
         ]
         merged_shoes = limited_signature + deduplicated_sensory
 
-        # 4. If budget is set but no shoes remain, raise budget error
-        if not merged_shoes and budget_max_krw and budget_max_krw > 0:
-            raise BudgetInsufficientError(
-                f"No shoes available within budget of {budget_max_krw:,} KRW"
-            )
-
-        # 5. Limit to top N shoes
+        # 4. Limit to top N shoes
         result["shoes"] = merged_shoes[:n_shoes]
         result["players"] = players
 

@@ -125,6 +125,16 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
             n_shoes=5,
         )
 
+        # If budget is set but no shoes found, raise budget error
+        if (
+            not search_results["shoes"]
+            and budget_max_krw
+            and budget_max_krw > 0
+        ):
+            raise BudgetInsufficientError(
+                f"No shoes available within budget of {budget_max_krw:,} KRW"
+            )
+
         # Combine shoes and players into context
         context_docs = search_results["players"] + search_results["shoes"]
 
