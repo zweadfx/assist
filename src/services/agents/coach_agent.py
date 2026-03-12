@@ -8,7 +8,7 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field, ValidationError
 
-from src.models.skill_schema import Drill
+from src.models.skill_schema import Step
 from src.services.rag.chroma_db import chroma_manager
 from src.services.rag.embedding import client as openai_client
 
@@ -21,41 +21,10 @@ class CoachAgentState(TypedDict):
     that is passed between nodes in the graph.
     """
 
-    # The conversation history. The last message is the user's request.
     messages: List[BaseMessage]
-
-    # Information about the user (e.g., skill level, available time, equipment).
-    # This will be extracted from the user's request.
     user_info: dict
-
-    # A list of relevant drills retrieved from the RAG store.
     context: List[Document]
-
-    # The final generated "Daily Routine Card" in JSON format.
     final_response: str
-
-
-class UserDrillPreferences(BaseModel):
-    """
-    A model to hold the structured user preferences for a drill session,
-    extracted from their natural language request.
-    """
-
-    focus_area: str = Field(
-        description=(
-            "The primary basketball skill the user wants to improve, e.g., "
-            "'dribbling', 'shooting'."
-        )
-    )
-    available_time_min: int = Field(
-        description="The total available time for the training session in minutes."
-    )
-    equipment: List[str] = Field(
-        description=(
-            "A list of equipment the user has available, e.g., ['ball', 'hoop', "
-            "'cones']."
-        )
-    )
 
 
 class ParsedFreeText(BaseModel):
@@ -127,7 +96,6 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
 
     user_info = {**state["user_info"]}
 
-    # Parse free_text if provided
     free_text = user_info.get("free_text")
     if free_text and free_text.strip():
         logger.info("Parsing free_text input: %s", free_text[:100])
@@ -154,33 +122,38 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
 
 def retrieve_drills(state: CoachAgentState) -> dict:
     """
-    Retrieves relevant drills from the vector store based on user_info. This
-    node performs a semantic search and then post-filters the results based
-    on the user's available equipment.
+    Retrieves relevant drills from the vector store based on user_info.
+    Uses specific_skill for semantic search when available, otherwise
+    falls back to category-based search.
     """
     logger.info("NODE: Retrieving Drills")
     user_info = state["user_info"]
-    focus_area = user_info.get("focus_area", "")
+    category = user_info.get("category", "")
+    specific_skill = user_info.get("specific_skill", "")
     skill_level = user_info.get("skill_level", "")
     user_equipment = set(user_info.get("equipment", []))
 
-    # Build enriched query with user context for better semantic matching
     level_phrase = f"{skill_level} " if skill_level else ""
     equipment_str = (
         ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
     )
-    query_text = (
-        f"A {level_phrase}basketball drill focusing on improving "
-        f"{focus_area} skills using {equipment_str}."
-    )
-    logger.info("Querying for drills related to: %s", focus_area)
+
+    if specific_skill:
+        query_text = (
+            f"A {level_phrase}basketball drill for mastering {specific_skill} "
+            f"technique using {equipment_str}."
+        )
+    else:
+        query_text = (
+            f"A {level_phrase}basketball drill focusing on improving "
+            f"{category} skills using {equipment_str}."
+        )
+    logger.info("Querying for drills: %s", query_text)
 
     unfiltered_docs = []
     try:
-        # Build metadata filter for DB-level pre-filtering
-        where_filter = {"category": focus_area} if focus_area else None
+        where_filter = {"category": category} if category else None
 
-        # Retrieve candidates with DB-level category filtering
         results = chroma_manager.query_drills(
             query_texts=[query_text], n_results=10, where=where_filter
         )
@@ -197,13 +170,10 @@ def retrieve_drills(state: CoachAgentState) -> dict:
         logger.exception("Failed to retrieve drills from RAG")
         raise ValueError("Failed to retrieve drills from database") from e
 
-    # Post-filter the results based on available equipment
     filtered_docs = []
     for doc in unfiltered_docs:
         required_equipment_str = doc.metadata.get("required_equipment", "")
-        if (
-            not required_equipment_str
-        ):  # If no equipment is required, it's a valid drill
+        if not required_equipment_str:
             filtered_docs.append(doc)
             continue
 
@@ -215,36 +185,37 @@ def retrieve_drills(state: CoachAgentState) -> dict:
     return {"context": filtered_docs}
 
 
-class DailyRoutineCard(BaseModel):
-    """Data model for the final daily routine card output."""
+class SkillBreakdownCard(BaseModel):
+    """Data model for the micro-step skill breakdown output."""
 
-    routine_title: str = Field(
-        description="A catchy and relevant title for the routine."
-    )
+    skill_name: str = Field(description="The specific basketball skill being mastered.")
     total_duration_min: int = Field(
-        description="The total calculated duration for the entire routine in minutes.",
+        description="The total duration for the skill breakdown in minutes.",
         gt=0,
+    )
+    difficulty_level: str = Field(
+        description=(
+            "A short summary of the progression range, e.g. 'Basics → Game Speed'."
+        )
     )
     coach_message: str = Field(
         description="A personalized, encouraging message from the AI coach."
     )
-    drills: List[Drill]
+    steps: List[Step]
 
 
-def generate_routine(state: CoachAgentState) -> dict:
+def generate_skill_breakdown(state: CoachAgentState) -> dict:
     """
-    Generates the final "Daily Routine Card" by synthesizing the user's
-    preferences and the retrieved drills using an LLM.
+    Generates a micro-step progressive breakdown of a single basketball
+    skill by synthesizing user preferences and retrieved reference drills.
     """
-    logger.info("NODE: Generating Routine")
+    logger.info("NODE: Generating Skill Breakdown")
     user_info = state["user_info"]
     context_docs = state["context"]
 
-    # Prepare context string from retrieved documents with full metadata
     context_str = "\n\n".join(
         [
             f"Drill Name: {doc.metadata.get('name', 'N/A')}\n"
-            f"Phase: {doc.metadata.get('phase', 'N/A')}\n"
             f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
             f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
             f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
@@ -255,73 +226,73 @@ def generate_routine(state: CoachAgentState) -> dict:
     if not context_str:
         context_str = "No specific drills found in the database."
 
-    # Prepare the JSON schema for the prompt to ensure valid JSON output.
-    schema_json = json.dumps(DailyRoutineCard.model_json_schema(), indent=2)
+    schema_json = json.dumps(SkillBreakdownCard.model_json_schema(), indent=2)
 
     language = user_info.get("language", "en")
     language_name = "Korean" if language == "ko" else "English"
 
-    available_time = user_info.get("available_time_min", 30)
+    available_time = user_info.get("available_time_min", 20)
+    specific_skill = user_info.get("specific_skill") or ""
+    category = user_info.get("category", "")
 
-    # Pre-compute phase durations to guarantee they sum to available_time
-    warmup_min = max(1, int(available_time * 0.15))
-    cooldown_min = max(1, int(available_time * 0.15))
-    main_min = max(1, available_time - warmup_min - cooldown_min)
+    skill_instruction = (
+        f'The user wants to master: "{specific_skill}".'
+        if specific_skill
+        else (
+            f"The user did not specify a skill. Pick the most impactful "
+            f"{category} technique for a {user_info.get('skill_level', 'intermediate')} "
+            f"player and set it as skill_name."
+        )
+    )
 
-    prompt = f"""
-    You are an expert basketball coach with years of experience designing
-    effective training programs for players of all levels.
+    prompt = f"""You are an expert basketball skills coach who specializes in
+breaking down individual techniques into progressive micro-steps.
 
-    **User Profile:**
-    - Skill Level: {user_info.get("skill_level", "intermediate")}
-    - Skill to Improve: {user_info.get("focus_area")}
-    - Available Time: {available_time} minutes
-    - Available Equipment: {user_info.get("equipment")}
-    - Additional Focus: {user_info.get("additional_focus") or "None"}
-    - Intensity Preference: {user_info.get("intensity_preference") or "None"}
-    - Special Notes: {user_info.get("special_notes") or "None"}
-    - Additional Request (raw): {user_info.get("free_text") or "None"}
+**User Profile:**
+- Skill Level: {user_info.get("skill_level", "intermediate")}
+- Category: {category}
+- Available Time: {available_time} minutes
+- Available Equipment: {user_info.get("equipment")}
+- Additional Focus: {user_info.get("additional_focus") or "None"}
+- Intensity Preference: {user_info.get("intensity_preference") or "None"}
+- Special Notes: {user_info.get("special_notes") or "None"}
+- Additional Request (raw): {user_info.get("free_text") or "None"}
 
-    **Retrieved Drills from Database:**
-    {context_str}
+**Skill Selection:**
+{skill_instruction}
 
-    **Language:**
-    Respond in {language_name}. All string fields (routine_title, coach_message,
-    drill name, description, coaching_tip) must be written in {language_name}.
+**Reference Drills from Database (use as inspiration):**
+{context_str}
 
-    **Instructions:**
-    1. Design a realistic routine with exactly 3 phases:
-       - "warmup": {warmup_min} min.
-         Light movement, stretching, or low-intensity ball handling.
-       - "main": {main_min} min.
-         Core skill-building drills matching the user's focus area.
-         Include 2-4 drills with varied intensity.
-       - "cooldown": {cooldown_min} min.
-         Stretching, free throws, or light shooting to wind down.
-    2. Prioritize drills from "Retrieved Drills" that match the user's skill
-       level. For beginners, use simpler drills with clear steps. For advanced
-       players, add complexity and game-like scenarios.
-    3. The sum of all drill durations MUST equal exactly {available_time} minutes.
-    4. Each drill must have:
-       - A unique drill_id (e.g., "warmup-1", "main-1", "cooldown-1")
-       - A clear, actionable description (2-3 sentences explaining how to
-         perform the drill with specific reps, sets, or targets)
-       - A practical coaching_tip tailored to the user's skill level
-         (technique cue, common mistake to avoid, or progression suggestion)
-    5. If "Additional Request" is provided, incorporate the user's specific
-       preferences or goals into drill selection and coaching tips.
-    6. Write a motivating coach_message that references the user's specific
-       focus area and encourages consistent practice.
-    7. Create a descriptive routine_title that reflects the focus area and
-       intensity level.
-    8. Output a JSON object strictly following this schema:
+**Language:**
+Respond in {language_name}. All string fields (skill_name, coach_message,
+step name, description, focus_point, success_criteria) must be in {language_name}.
 
-    ```json
-    {schema_json}
-    ```
+**Instructions:**
+1. Break the skill into 3-5 progressive steps, ordered from simplest to
+   most game-like:
+   - Step 1: MUST start with no ball or stationary movement (anyone can do it)
+   - Each subsequent step adds exactly ONE layer of complexity
+     (e.g., add ball → add movement → add speed → add defender/obstacle)
+   - The final step MUST simulate a real game situation
+2. The sum of all step durations MUST equal exactly {available_time} minutes.
+3. Each step must have:
+   - A clear, descriptive name
+   - A description (2-3 sentences with specific reps, sets, or targets)
+   - A focus_point: the ONE thing to concentrate on in this step
+   - A success_criteria: a measurable goal to pass this step
+     (e.g., "Complete 5 consecutive reps without losing the ball")
+4. Set difficulty_level to a short phrase showing the progression range
+   (e.g., "Basics → Game Speed" or "기초 → 실전").
+5. Write a motivating coach_message about mastering this specific skill.
+6. Output a JSON object strictly following this schema:
 
-    JSON Output:
-    """
+```json
+{schema_json}
+```
+
+JSON Output:
+"""
     try:
         response = openai_client.chat.completions.create(
             model="gpt-4o",
@@ -336,41 +307,38 @@ def generate_routine(state: CoachAgentState) -> dict:
 
         try:
             extracted_data = json.loads(content)
-            # Validate the data with the Pydantic model
-            validated_routine = DailyRoutineCard.model_validate(extracted_data)
-            final_response_str = validated_routine.model_dump_json(indent=2)
+            validated = SkillBreakdownCard.model_validate(extracted_data)
+            final_response_str = validated.model_dump_json(indent=2)
             logger.debug("Generated Response: %s", final_response_str)
             return {"final_response": final_response_str}
         except (json.JSONDecodeError, ValidationError) as e:
             logger.error(
-                "Failed to parse or validate LLM response for routine: %s "
-                "(raw content: %.500s)",
+                "Failed to parse or validate LLM response: %s (raw content: %.500s)",
                 e,
                 content,
             )
-            raise ValueError("LLM returned an invalid routine object") from e
+            raise ValueError("LLM returned an invalid skill breakdown object") from e
 
     except openai.APIError as e:
-        logger.error("OpenAI API error during routine generation: %s", e)
-        raise ValueError("Failed to generate routine due to an API error.") from e
+        logger.error("OpenAI API error during skill breakdown: %s", e)
+        raise ValueError(
+            "Failed to generate skill breakdown due to an API error."
+        ) from e
     except Exception as e:
-        logger.error("An unexpected error occurred during routine generation: %s", e)
+        logger.error("An unexpected error occurred during skill breakdown: %s", e)
         raise
 
 
 # Define the graph workflow
 workflow = StateGraph(CoachAgentState)
 
-# Add nodes to the graph
 workflow.add_node("diagnose", diagnose_user_state)
 workflow.add_node("retrieve", retrieve_drills)
-workflow.add_node("generate", generate_routine)
+workflow.add_node("generate", generate_skill_breakdown)
 
-# Define the edges for the graph
 workflow.set_entry_point("diagnose")
 workflow.add_edge("diagnose", "retrieve")
 workflow.add_edge("retrieve", "generate")
 workflow.add_edge("generate", END)
 
-# Compile the graph into a runnable object
 coach_agent_graph = workflow.compile()
