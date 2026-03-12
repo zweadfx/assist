@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, StringConstraints
 class SkillLabRequest(BaseModel):
     """Request model for the AI Skill Lab endpoint.
 
-    Defines the user's input for generating a personalized training routine.
+    Defines the user's input for generating a micro-step skill breakdown.
     """
 
     skill_level: Literal["beginner", "intermediate", "advanced"] = Field(
@@ -14,16 +14,25 @@ class SkillLabRequest(BaseModel):
         description="User's basketball skill level.",
         examples=["intermediate"],
     )
-    focus_area: Literal["dribble", "shooting", "defense", "conditioning"] = Field(
+    category: Literal["dribble", "shooting", "defense", "conditioning"] = Field(
         ...,
-        description="The specific skill category the user wants to focus on.",
+        description="The broad skill category for drill retrieval.",
         examples=["dribble"],
+    )
+    specific_skill: Optional[Annotated[str, StringConstraints(max_length=100)]] = Field(
+        default=None,
+        description=(
+            "The specific technique to master, e.g. 'euro step', "
+            "'between the legs', 'pull-up jumper'. "
+            "If omitted, the AI coach picks a suitable skill."
+        ),
+        examples=["euro step"],
     )
     available_time_min: int = Field(
         ...,
         gt=0,
         description="Total available time for training in minutes.",
-        examples=[30],
+        examples=[20],
     )
     equipment: List[str] = Field(
         default_factory=list,
@@ -41,46 +50,62 @@ class SkillLabRequest(BaseModel):
             "Optional free-text input describing additional training preferences "
             "or goals in natural language."
         ),
-        examples=["I want to improve my weak hand dribbling and work on crossovers"],
+        examples=["I want to focus on finishing with my weak hand"],
     )
 
 
-class Drill(BaseModel):
-    """Represents a single training drill within a routine."""
+class Step(BaseModel):
+    """A single progressive step within a micro-step skill breakdown."""
 
-    phase: Literal["warmup", "main", "cooldown"] = Field(
-        ..., description="The phase of the workout this drill belongs to."
+    step_number: int = Field(
+        ..., ge=1, le=5, description="Step number in the progression (1-5)."
     )
-    drill_id: str = Field(..., description="Unique identifier for the drill.")
-    name: str = Field(..., description="The name of the drill.")
+    name: str = Field(..., description="Short name of this step.")
     duration_min: int = Field(
-        ..., gt=0, description="Duration of the drill in minutes."
+        ..., gt=0, description="Duration of this step in minutes."
     )
     description: str = Field(
-        ..., description="A brief description of how to perform the drill."
+        ...,
+        description=(
+            "2-3 sentences explaining how to perform this step, "
+            "including specific reps/sets/targets."
+        ),
     )
-    coaching_tip: str = Field(
-        ..., description="An AI-generated tip for performing the drill effectively."
+    focus_point: str = Field(
+        ...,
+        description="The single key focus point for this step.",
+    )
+    success_criteria: str = Field(
+        ...,
+        description=(
+            "Clear, measurable criteria to pass this step, "
+            "e.g. 'Complete 5 consecutive reps without losing the ball'."
+        ),
     )
 
 
 class SkillLabResponse(BaseModel):
     """Response model for the AI Skill Lab endpoint.
 
-    Provides a personalized daily routine card.
+    Provides a micro-step progressive breakdown of a single basketball skill.
     """
 
-    routine_title: str = Field(
-        ..., description="A catchy title for the generated routine."
-    )
+    skill_name: str = Field(..., description="The specific skill being mastered.")
     total_duration_min: int = Field(
         ...,
         gt=0,
-        description="The total estimated duration of the routine in minutes.",
+        description="The total duration of the skill breakdown in minutes.",
+    )
+    difficulty_level: str = Field(
+        ...,
+        description=(
+            "A short summary of the progression range, "
+            "e.g. 'Basics → Game Speed' or '기초 → 실전'."
+        ),
     )
     coach_message: str = Field(
         ..., description="A personalized motivational message from the AI coach."
     )
-    drills: List[Drill] = Field(
-        ..., description="A list of drills sequenced for the routine."
+    steps: List[Step] = Field(
+        ..., description="Progressive steps from simplest to game-like complexity."
     )
