@@ -20,16 +20,15 @@ async def create_skill_routine(
     request: SkillLabRequest,
 ) -> SuccessResponse[SkillLabResponse]:
     """
-    Receives user's skill profile and returns a personalized training routine
-    by invoking the CoachAgent.
+    Receives user's skill profile and returns a micro-step progressive
+    breakdown of a single basketball skill by invoking the CoachAgent.
     """
     try:
-        # The agent expects a list of messages, but our primary input is the
-        # structured user_info. We can pass a synthetic message for context.
+        skill_desc = request.specific_skill or request.category
         initial_state = {
             "messages": [
                 HumanMessage(
-                    content=f"Generate a training routine for {request.focus_area}"
+                    content=(f"Generate a micro-step skill breakdown for {skill_desc}")
                 )
             ],
             "user_info": request.model_dump(),
