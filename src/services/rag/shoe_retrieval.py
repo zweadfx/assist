@@ -318,13 +318,27 @@ class ShoeRetriever:
         ]
         merged_shoes = limited_signature + deduplicated_sensory
 
-        # 4. Limit to top N shoes
+        # 4. Determine empty_reason when no shoes remain
+        empty_reason = None
+        if not merged_shoes and budget_max_krw and budget_max_krw > 0:
+            # Re-search without budget to check if budget was the cause
+            no_budget_shoes = self.search_by_sensory_preferences(
+                sensory_keywords=sensory_keywords,
+                budget_max_krw=None,
+                position=position,
+                n_results=1,
+            )
+            if no_budget_shoes:
+                empty_reason = "budget"
+
+        # 5. Limit to top N shoes
         result["shoes"] = merged_shoes[:n_shoes]
         result["players"] = players
+        result["empty_reason"] = empty_reason
 
         logger.info(
             f"Cross-analysis complete: {len(result['shoes'])} shoes, "
-            f"{len(result['players'])} players"
+            f"{len(result['players'])} players, empty_reason={empty_reason}"
         )
         return result
 

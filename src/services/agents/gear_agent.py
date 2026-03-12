@@ -10,6 +10,7 @@ from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
 from src.core.constants import SENSORY_TAG_MAP
+from src.core.exceptions import BudgetInsufficientError
 from src.models.gear_schema import GearAdvisorResponse
 from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
@@ -124,6 +125,12 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
             n_shoes=5,
         )
 
+        # Raise budget error only when retrieval confirmed budget was the cause
+        if search_results.get("empty_reason") == "budget":
+            raise BudgetInsufficientError(
+                f"No shoes available within budget of {budget_max_krw:,} KRW"
+            )
+
         # Combine shoes and players into context
         context_docs = search_results["players"] + search_results["shoes"]
 
@@ -133,6 +140,8 @@ def retrieve_shoes_and_players(state: GearAgentState) -> dict:
         )
         return {"context": context_docs}
 
+    except BudgetInsufficientError:
+        raise
     except Exception as e:
         logger.exception("Failed to retrieve shoes and players from RAG")
         # Re-raise the exception to prevent hallucinations with empty context
