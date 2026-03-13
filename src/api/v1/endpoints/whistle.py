@@ -3,6 +3,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
+from pydantic import ValidationError
 
 from src.models.response_schema import SuccessResponse
 from src.models.rule_schema import WhistleRequest, WhistleResponse
@@ -54,5 +55,10 @@ async def judge_situation(
     if not (final_response_str := final_state.get("final_response")):
         raise HTTPException(status_code=500, detail="Agent failed to produce a final response.")
 
-    response_data = WhistleResponse.model_validate_json(final_response_str)
+    try:
+        response_data = WhistleResponse.model_validate_json(final_response_str)
+    except ValidationError:
+        logger.exception("WhistleResponse validation failed. raw=%s", final_response_str[:200])
+        raise HTTPException(status_code=500, detail="Invalid WhistleResponse from agent.")
+
     return SuccessResponse(data=response_data)
