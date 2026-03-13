@@ -24,6 +24,8 @@ class RuleRetriever:
     3. Hybrid search: Combine rules and glossary for comprehensive judgment
     """
 
+    MAX_DISTANCE = 1.3
+
     def __init__(self):
         """Initialize the rule retriever with ChromaDB manager."""
         self.chroma_manager = chroma_manager
@@ -68,13 +70,21 @@ class RuleRetriever:
 
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
+            distances = results.get("distances", [[]])[0]
 
             rule_docs = []
             for i, doc_content in enumerate(documents):
-                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                dist = distances[i] if i < len(distances) else 0.0
+                if dist > self.MAX_DISTANCE:
+                    continue
+                metadata = {**metadatas[i], "distance": dist}
+                doc = Document(page_content=doc_content, metadata=metadata)
                 rule_docs.append(doc)
 
-            logger.info(f"Retrieved {len(rule_docs)} rule documents")
+            logger.info(
+                f"Retrieved {len(rule_docs)} rule documents "
+                f"(filtered from {len(documents)} by distance <= {self.MAX_DISTANCE})"
+            )
 
         except Exception as e:
             logger.exception("Failed to search rules by situation")
@@ -122,13 +132,21 @@ class RuleRetriever:
 
             documents = results["documents"][0]
             metadatas = results["metadatas"][0]
+            distances = results.get("distances", [[]])[0]
 
             glossary_docs = []
             for i, doc_content in enumerate(documents):
-                doc = Document(page_content=doc_content, metadata=metadatas[i])
+                dist = distances[i] if i < len(distances) else 0.0
+                if dist > self.MAX_DISTANCE:
+                    continue
+                metadata = {**metadatas[i], "distance": dist}
+                doc = Document(page_content=doc_content, metadata=metadata)
                 glossary_docs.append(doc)
 
-            logger.info(f"Retrieved {len(glossary_docs)} glossary terms")
+            logger.info(
+                f"Retrieved {len(glossary_docs)} glossary terms "
+                f"(filtered from {len(documents)} by distance <= {self.MAX_DISTANCE})"
+            )
 
         except Exception as e:
             logger.exception("Failed to search glossary terms")
