@@ -6,7 +6,7 @@ from langchain_core.messages import HumanMessage
 
 from src.models.response_schema import SuccessResponse
 from src.models.rule_schema import WhistleRequest, WhistleResponse
-from src.services.agents.judge_agent import judge_agent_graph
+from src.services.agents.judge_agent import JudgmentParseError, judge_agent_graph
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -37,6 +37,9 @@ async def judge_situation(
     except asyncio.TimeoutError:
         logger.error("Judgment timed out after %ds", JUDGMENT_TIMEOUT_SECONDS)
         raise HTTPException(status_code=504, detail="Judgment timed out. Please try again.")
+    except JudgmentParseError as e:
+        logger.error("LLM response parse failed. raw=%s partial=%s", e.raw_content[:200], e.partial)
+        raise HTTPException(status_code=422, detail="LLM returned an unparseable judgment. Please try again.")
     except ValueError as e:
         msg = str(e)
         if "retrieve" in msg.lower() or "database" in msg.lower():

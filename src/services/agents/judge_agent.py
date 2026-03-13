@@ -15,6 +15,15 @@ from src.services.rag.rule_retrieval import rule_retriever
 
 logger = logging.getLogger(__name__)
 
+
+class JudgmentParseError(Exception):
+    """Raised when LLM response cannot be parsed into WhistleResponse after retries."""
+
+    def __init__(self, message: str, raw_content: str = "", partial: dict = None):
+        super().__init__(message)
+        self.raw_content = raw_content
+        self.partial = partial or {}
+
 MAX_SITUATION_LENGTH = 1000
 _BLOCKED_PATTERNS = re.compile(
     r"ignore\s+(all\s+)?previous\s+instructions"
@@ -90,54 +99,18 @@ def _parse_llm_response(
         retry_content = retry_response.choices[0].message.content or ""
         return WhistleResponse.model_validate(json.loads(retry_content))
     except (json.JSONDecodeError, ValidationError, openai.APIError) as retry_err:
-        logger.warning("Retry parse also failed (%s). Using fallback response.", retry_err)
+        logger.warning("Retry parse also failed (%s). Raising JudgmentParseError.", retry_err)
 
-    # Fallback: best-effort extraction, fill missing fields with defaults
     try:
         parsed = json.loads(content)
         partial = parsed if isinstance(parsed, dict) else {}
     except json.JSONDecodeError:
         partial = {}
 
-    from src.models.rule_schema import RuleReference
-
-    _allowed_decisions = {"violation", "foul", "legal", "other"}
-    fallback_rule_type = (
-        partial.get("rule_type") or partial.get("ruleset") or "FIBA"
-    )
-    fallback_ref = RuleReference(
-        rule_type=fallback_rule_type if fallback_rule_type in {"FIBA", "NBA"} else "FIBA",
-        article="N/A",
-        clause="N/A",
-        page_number=None,
-        excerpt="규칙 참조를 자동으로 추출하지 못했습니다.",
-    )
-
-    rule_refs_raw = partial.get("rule_references")
-    rule_refs_raw = rule_refs_raw if isinstance(rule_refs_raw, list) else []
-    coerced_refs = []
-    for item in rule_refs_raw:
-        if not isinstance(item, dict):
-            continue
-        try:
-            coerced_refs.append(RuleReference(**item))
-        except Exception:
-            coerced_refs.append(fallback_ref)
-
-    raw_terms = partial.get("related_terms")
-    related_terms = raw_terms if isinstance(raw_terms, list) else []
-
-    decision = partial.get("decision")
-    if decision not in _allowed_decisions:
-        decision = "other"
-
-    return WhistleResponse(
-        judgment_title=partial.get("judgment_title") or "판정 결과",
-        situation_summary=partial.get("situation_summary") or str(situation)[:200],
-        decision=decision,
-        reasoning=partial.get("reasoning") or "판정 근거를 자동으로 생성하지 못했습니다.",
-        rule_references=coerced_refs or [fallback_ref],
-        related_terms=related_terms,
+    raise JudgmentParseError(
+        "LLM response could not be parsed into WhistleResponse after retries.",
+        raw_content=content,
+        partial=partial,
     )
 
 
