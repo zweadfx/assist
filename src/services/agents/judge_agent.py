@@ -51,6 +51,71 @@ class JudgeAgentState(TypedDict):
     final_response: str
 
 
+def _parse_llm_response(
+    content: str,
+    client,
+    situation: str,
+    system_prompt: str,
+) -> WhistleResponse:
+    """
+    Parse and validate LLM JSON output into WhistleResponse.
+
+    Strategy:
+    1. Try direct parse + validation.
+    2. On failure, send the invalid JSON back to the LLM for correction (1 retry).
+    3. On second failure, return a fallback WhistleResponse.
+    """
+    try:
+        return WhistleResponse.model_validate(json.loads(content))
+    except (json.JSONDecodeError, ValidationError) as first_err:
+        logger.warning("First parse attempt failed (%s). Retrying with fix prompt.", first_err)
+
+    # Retry: ask LLM to fix the invalid JSON
+    fix_prompt = (
+        "The following JSON is invalid or does not match the required schema.\n"
+        f"Invalid JSON:\n{content}\n\n"
+        "Please return a corrected JSON object that strictly matches the schema."
+    )
+    try:
+        retry_response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": situation},
+                {"role": "assistant", "content": content},
+                {"role": "user", "content": fix_prompt},
+            ],
+            response_format={"type": "json_object"},
+        )
+        retry_content = retry_response.choices[0].message.content or ""
+        return WhistleResponse.model_validate(json.loads(retry_content))
+    except (json.JSONDecodeError, ValidationError, openai.APIError) as retry_err:
+        logger.warning("Retry parse also failed (%s). Using fallback response.", retry_err)
+
+    # Fallback: best-effort extraction, fill missing fields with defaults
+    try:
+        partial = json.loads(content)
+    except json.JSONDecodeError:
+        partial = {}
+
+    from src.models.rule_schema import RuleReference
+    fallback_ref = RuleReference(
+        rule_type="FIBA",
+        article="N/A",
+        clause="N/A",
+        page_number=None,
+        excerpt="규칙 참조를 자동으로 추출하지 못했습니다.",
+    )
+    return WhistleResponse(
+        judgment_title=partial.get("judgment_title", "판정 결과"),
+        situation_summary=partial.get("situation_summary", situation[:200]),
+        decision=partial.get("decision", "other"),
+        reasoning=partial.get("reasoning", "판정 근거를 자동으로 생성하지 못했습니다."),
+        rule_references=partial.get("rule_references") or [fallback_ref],
+        related_terms=partial.get("related_terms") or [],
+    )
+
+
 def parse_situation(state: JudgeAgentState) -> dict:
     """
     Validates that the user_info contains a situation description.
@@ -212,20 +277,12 @@ JSON Output:
             raise ValueError("Received an invalid or empty response from OpenAI API.")
 
         content = response.choices[0].message.content
-
-        try:
-            extracted_data = json.loads(content)
-            validated_response = WhistleResponse.model_validate(extracted_data)
-            final_response_str = validated_response.model_dump_json(indent=2)
-            logger.debug(f"Generated Response: {final_response_str}")
-            return {"final_response": final_response_str}
-        except (json.JSONDecodeError, ValidationError) as e:
-            logger.exception(
-                "Failed to parse or validate LLM response for judgment: %s", e
-            )
-            raise ValueError(
-                f"LLM returned an invalid judgment object: {content}"
-            ) from e
+        validated_response = _parse_llm_response(
+            content, openai_client, situation, system_prompt
+        )
+        final_response_str = validated_response.model_dump_json(indent=2)
+        logger.debug(f"Generated Response: {final_response_str}")
+        return {"final_response": final_response_str}
 
     except openai.APIError as e:
         logger.exception("OpenAI API error during judgment generation: %s", e)
