@@ -1,7 +1,7 @@
 import json
 import logging
 import re
-from typing import List, TypedDict
+from typing import List, Optional, TypedDict
 
 import openai
 from langchain_core.documents import Document
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class JudgmentParseError(Exception):
     """Raised when LLM response cannot be parsed into WhistleResponse after retries."""
 
-    def __init__(self, message: str, raw_content: str = "", partial: dict = None):
+    def __init__(self, message: str, raw_content: str = "", partial: Optional[dict] = None):
         super().__init__(message)
         self.raw_content = raw_content
         self.partial = partial or {}
