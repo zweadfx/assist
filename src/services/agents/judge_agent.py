@@ -99,19 +99,31 @@ def _parse_llm_response(
         partial = {}
 
     from src.models.rule_schema import RuleReference
+    fallback_rule_type = (
+        partial.get("rule_type") or partial.get("ruleset") or "FIBA"
+    )
     fallback_ref = RuleReference(
-        rule_type="FIBA",
+        rule_type=fallback_rule_type,
         article="N/A",
         clause="N/A",
         page_number=None,
         excerpt="규칙 참조를 자동으로 추출하지 못했습니다.",
     )
+
+    rule_refs_raw = partial.get("rule_references") or []
+    coerced_refs = []
+    for item in rule_refs_raw:
+        try:
+            coerced_refs.append(RuleReference(**item) if isinstance(item, dict) else item)
+        except Exception:
+            pass
+
     return WhistleResponse(
         judgment_title=partial.get("judgment_title", "판정 결과"),
         situation_summary=partial.get("situation_summary", situation[:200]),
         decision=partial.get("decision", "other"),
         reasoning=partial.get("reasoning", "판정 근거를 자동으로 생성하지 못했습니다."),
-        rule_references=partial.get("rule_references") or [fallback_ref],
+        rule_references=coerced_refs or [fallback_ref],
         related_terms=partial.get("related_terms") or [],
     )
 
