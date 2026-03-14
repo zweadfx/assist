@@ -39,7 +39,11 @@ async def judge_situation(
         logger.error("Judgment timed out after %ds", JUDGMENT_TIMEOUT_SECONDS)
         raise HTTPException(status_code=504, detail="Judgment timed out. Please try again.")
     except JudgmentParseError as e:
-        logger.error("LLM response parse failed. raw=%s partial=%s", e.raw_content[:200], e.partial)
+        logger.error(
+            "LLM response parse failed. raw_length=%d partial_keys=%s",
+            len(e.raw_content),
+            list(e.partial.keys()),
+        )
         raise HTTPException(status_code=422, detail="LLM returned an unparseable judgment. Please try again.")
     except ValueError as e:
         msg = str(e)
@@ -58,7 +62,7 @@ async def judge_situation(
     try:
         response_data = WhistleResponse.model_validate_json(final_response_str)
     except ValidationError:
-        logger.exception("WhistleResponse validation failed. raw=%s", final_response_str[:200])
+        logger.exception("WhistleResponse validation failed. response_length=%d", len(final_response_str))
         raise HTTPException(status_code=500, detail="Invalid WhistleResponse from agent.")
 
     return SuccessResponse(data=response_data)
