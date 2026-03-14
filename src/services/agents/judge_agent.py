@@ -98,7 +98,7 @@ def _parse_llm_response(
         )
         retry_content = retry_response.choices[0].message.content or ""
         return WhistleResponse.model_validate(json.loads(retry_content))
-    except (json.JSONDecodeError, ValidationError, openai.APIError) as retry_err:
+    except (json.JSONDecodeError, ValidationError) as retry_err:
         logger.warning("Retry parse also failed (%s). Raising JudgmentParseError.", retry_err)
 
     try:
