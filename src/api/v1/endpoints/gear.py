@@ -13,6 +13,8 @@ from src.services.agents.gear_agent import gear_agent_graph
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+GEAR_TIMEOUT_SECONDS = 60
+
 
 @router.post("/recommend", response_model=SuccessResponse[GearAdvisorResponse])
 async def recommend_gear(
@@ -39,7 +41,10 @@ async def recommend_gear(
         }
 
         # Invoke the agent graph in a separate thread to avoid blocking the event loop
-        final_state = await asyncio.to_thread(gear_agent_graph.invoke, initial_state)
+        final_state = await asyncio.wait_for(
+            asyncio.to_thread(gear_agent_graph.invoke, initial_state),
+            timeout=GEAR_TIMEOUT_SECONDS,
+        )
 
         # The agent's final response is a JSON string, parse and validate it
         if final_response_str := final_state.get("final_response"):
@@ -50,6 +55,9 @@ async def recommend_gear(
                 status_code=500, detail="Agent failed to produce a final response."
             )
 
+    except asyncio.TimeoutError:
+        logger.error("Gear recommendation timed out after %ds", GEAR_TIMEOUT_SECONDS)
+        raise HTTPException(status_code=504, detail="Gear recommendation timed out. Please try again.")
     except BudgetInsufficientError as e:
         logger.info("Budget insufficient: %s", e)
         return JSONResponse(
