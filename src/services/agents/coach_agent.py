@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from src.models.skill_schema import Step
 from src.services.rag.chroma_db import chroma_manager
-from src.services.rag.embedding import client as openai_client
+from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ Output a JSON object following this schema:
 JSON Output:"""
 
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
@@ -294,7 +294,7 @@ step name, description, focus_point, success_criteria) must be in {language_name
 JSON Output:
 """
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},

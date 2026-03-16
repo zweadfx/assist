@@ -10,8 +10,8 @@ from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
 from src.models.rule_schema import WhistleResponse
-from src.services.rag.embedding import client as openai_client
 from src.services.rag.rule_retrieval import rule_retriever
+from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,6 @@ class JudgeAgentState(TypedDict):
 
 def _parse_llm_response(
     content: str,
-    client,
     situation: str,
     system_prompt: str,
 ) -> WhistleResponse:
@@ -86,7 +85,7 @@ def _parse_llm_response(
         "Please return a corrected JSON object that strictly matches the schema."
     )
     try:
-        retry_response = client.chat.completions.create(
+        retry_response = chat_completion_with_retry(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -262,7 +261,7 @@ JSON Output:
     situation = user_info.get("situation_description") or ""
 
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -276,7 +275,7 @@ JSON Output:
 
         content = response.choices[0].message.content
         validated_response = _parse_llm_response(
-            content, openai_client, situation, system_prompt
+            content, situation, system_prompt
         )
         final_response_str = validated_response.model_dump_json(indent=2)
         logger.debug(f"Generated Response: {final_response_str}")
