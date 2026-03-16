@@ -12,8 +12,8 @@ from pydantic import ValidationError
 from src.core.constants import SENSORY_TAG_MAP
 from src.core.exceptions import BudgetInsufficientError
 from src.models.gear_schema import GearAdvisorResponse
-from src.services.rag.embedding import client as openai_client
 from src.services.rag.shoe_retrieval import shoe_retriever
+from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -276,7 +276,7 @@ JSON Output:
 """
 
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},

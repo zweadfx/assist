@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from src.models.weekly_schema import DailyPlan, WeeklyRoutineResponse
 from src.services.agents.coach_agent import _parse_free_text
 from src.services.rag.chroma_db import chroma_manager
-from src.services.rag.embedding import client as openai_client
+from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ Example for 3 days with ["shooting", "dribble", "conditioning"]:
 JSON Output:"""
 
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
@@ -306,7 +306,7 @@ Respond in {language_name}. All string fields must be written in {language_name}
 JSON Output:"""
 
     try:
-        response = openai_client.chat.completions.create(
+        response = chat_completion_with_retry(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
