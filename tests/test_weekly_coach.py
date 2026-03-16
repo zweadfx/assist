@@ -348,6 +348,8 @@ class TestWeeklyCoachAPI:
                 f"total_duration_min {day['total_duration_min']}"
             )
 
+        mock_weekly_coach.assert_called_once()
+
     def test_tc02_focus_areas_distribution(self, test_client):
         """
         TC-02 통합: focus_areas가 training_days에 분배되는지 검증
