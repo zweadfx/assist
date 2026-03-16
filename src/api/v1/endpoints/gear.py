@@ -54,9 +54,9 @@ async def recommend_gear(
                 status_code=500, detail="Agent failed to produce a final response."
             )
 
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as err:
         logger.error("Gear recommendation timed out after %ds", GEAR_TIMEOUT_SECONDS)
-        raise HTTPException(status_code=504, detail="Gear recommendation timed out. Please try again.")
+        raise HTTPException(status_code=504, detail="Gear recommendation timed out. Please try again.") from err
     except BudgetInsufficientError as e:
         logger.info("Budget insufficient: %s", e)
         return JSONResponse(
