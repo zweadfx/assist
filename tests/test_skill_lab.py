@@ -78,7 +78,7 @@ class TestDrillRetrieval:
 
         filtered = []
         excluded = []
-        for i, metadata in enumerate(metadatas):
+        for metadata in metadatas:
             required_str = metadata.get("required_equipment", "")
             if not required_str:
                 filtered.append(metadata)
