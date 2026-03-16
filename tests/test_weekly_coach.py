@@ -8,6 +8,9 @@ Test Cases:
 - TC-04: API endpoint integration tests
 """
 
+import json
+from unittest.mock import patch
+
 import pytest
 from pydantic import ValidationError
 from fastapi.testclient import TestClient
@@ -16,11 +19,80 @@ from src.main import app
 from src.models.weekly_schema import DailyPlan, WeeklyDrill, WeeklyRoutineResponse
 
 
+def _build_fake_day(day_number, focus_areas, time_per_day=30):
+    """Build a single fake day plan matching the schema validators."""
+    warmup_min = max(1, int(time_per_day * 0.15))
+    cooldown_min = max(1, int(time_per_day * 0.15))
+    main_min = time_per_day - warmup_min - cooldown_min
+    return {
+        "day_number": day_number,
+        "day_label": f"Day {day_number} - {focus_areas[0].title()} Focus",
+        "focus_areas": focus_areas,
+        "total_duration_min": time_per_day,
+        "drills": [
+            {
+                "phase": "warmup",
+                "drill_id": f"test-warmup-d{day_number}",
+                "name": "Dynamic Warm-up",
+                "duration_min": warmup_min,
+                "description": "Light jogging and dynamic stretches.",
+                "coaching_tip": "Keep movements controlled.",
+                "is_custom": False,
+            },
+            {
+                "phase": "main",
+                "drill_id": f"test-main-d{day_number}",
+                "name": f"{focus_areas[0].title()} Drill",
+                "duration_min": main_min,
+                "description": "Main training drill for the day.",
+                "coaching_tip": "Stay focused on technique.",
+                "is_custom": False,
+            },
+            {
+                "phase": "cooldown",
+                "drill_id": f"test-cooldown-d{day_number}",
+                "name": "Static Stretching",
+                "duration_min": cooldown_min,
+                "description": "Full body static stretches.",
+                "coaching_tip": "Hold each stretch for 20 seconds.",
+                "is_custom": False,
+            },
+        ],
+    }
+
+
+def _build_fake_weekly_response(total_days, focus_areas, time_per_day=30):
+    """Build a complete fake weekly routine response."""
+    days = []
+    for i in range(1, total_days + 1):
+        day_focus = [focus_areas[(i - 1) % len(focus_areas)]]
+        days.append(_build_fake_day(i, day_focus, time_per_day))
+    return {
+        "weekly_title": "Test Weekly Routine",
+        "coach_overview": "A well-balanced week of training.",
+        "total_days": total_days,
+        "days": days,
+    }
+
+
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def mock_weekly_coach():
+    """Patch weekly_coach_agent_graph.invoke to return a canned response."""
+    fake = _build_fake_weekly_response(
+        total_days=3, focus_areas=["shooting", "dribble"]
+    )
+    with patch(
+        "src.api.v1.endpoints.skill.weekly_coach_agent_graph.invoke",
+        return_value={"final_response": json.dumps(fake)},
+    ) as mock:
+        yield mock
 
 
 class TestWeeklySchemaValidation:
@@ -228,7 +300,7 @@ class TestWeeklySchemaValidation:
 class TestWeeklyCoachAPI:
     """Integration tests for Weekly Coach API endpoint."""
 
-    def test_tc01_normal_weekly_routine(self, test_client):
+    def test_tc01_normal_weekly_routine(self, test_client, mock_weekly_coach):
         """
         TC-01 통합: 정상 주간 루틴 생성 (POST /api/v1/skill/weekly)
         """
@@ -280,30 +352,38 @@ class TestWeeklyCoachAPI:
         """
         TC-02 통합: focus_areas가 training_days에 분배되는지 검증
         """
-        payload = {
-            "skill_level": "beginner",
-            "training_days": 4,
-            "focus_areas": ["shooting", "dribble", "defense", "conditioning"],
-            "available_time_per_day_min": 30,
-            "equipment": ["ball"],
-        }
+        focus_areas = ["shooting", "dribble", "defense", "conditioning"]
+        fake = _build_fake_weekly_response(
+            total_days=4, focus_areas=focus_areas, time_per_day=30
+        )
+        with patch(
+            "src.api.v1.endpoints.skill.weekly_coach_agent_graph.invoke",
+            return_value={"final_response": json.dumps(fake)},
+        ):
+            payload = {
+                "skill_level": "beginner",
+                "training_days": 4,
+                "focus_areas": focus_areas,
+                "available_time_per_day_min": 30,
+                "equipment": ["ball"],
+            }
 
-        response = test_client.post("/api/v1/skill/weekly", json=payload)
-        assert response.status_code == 200
+            response = test_client.post("/api/v1/skill/weekly", json=payload)
+            assert response.status_code == 200
 
-        weekly = response.json()["data"]
-        assert weekly["total_days"] == 4
+            weekly = response.json()["data"]
+            assert weekly["total_days"] == 4
 
-        # Collect all focus areas across all days
-        all_focus = []
-        for day in weekly["days"]:
-            all_focus.extend(day["focus_areas"])
+            # Collect all focus areas across all days
+            all_focus = []
+            for day in weekly["days"]:
+                all_focus.extend(day["focus_areas"])
 
-        # Each requested focus area should appear at least once
-        for area in payload["focus_areas"]:
-            assert area in all_focus, (
-                f"Focus area '{area}' not found in any day's plan"
-            )
+            # Each requested focus area should appear at least once
+            for area in payload["focus_areas"]:
+                assert area in all_focus, (
+                    f"Focus area '{area}' not found in any day's plan"
+                )
 
     def test_tc04_validation_error_missing_focus_areas(self, test_client):
         """
@@ -364,16 +444,23 @@ class TestWeeklyCoachAPI:
         """
         TC-04 통합: 최소 입력으로 주간 루틴 생성
         """
-        payload = {
-            "skill_level": "beginner",
-            "training_days": 2,
-            "focus_areas": ["dribble"],
-            "available_time_per_day_min": 20,
-        }
+        fake = _build_fake_weekly_response(
+            total_days=2, focus_areas=["dribble"], time_per_day=20
+        )
+        with patch(
+            "src.api.v1.endpoints.skill.weekly_coach_agent_graph.invoke",
+            return_value={"final_response": json.dumps(fake)},
+        ):
+            payload = {
+                "skill_level": "beginner",
+                "training_days": 2,
+                "focus_areas": ["dribble"],
+                "available_time_per_day_min": 20,
+            }
 
-        response = test_client.post("/api/v1/skill/weekly", json=payload)
-        assert response.status_code == 200
+            response = test_client.post("/api/v1/skill/weekly", json=payload)
+            assert response.status_code == 200
 
-        weekly = response.json()["data"]
-        assert weekly["total_days"] == 2
-        assert len(weekly["days"]) == 2
+            weekly = response.json()["data"]
+            assert weekly["total_days"] == 2
+            assert len(weekly["days"]) == 2

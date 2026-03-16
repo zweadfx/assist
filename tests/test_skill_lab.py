@@ -10,11 +10,68 @@ Test Cases:
 - TC-06: API endpoint integration tests
 """
 
+import json
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
 
 from src.main import app
 from src.services.rag.chroma_db import chroma_manager
+
+_FAKE_SKILL_RESPONSE = {
+    "skill_name": "Crossover Dribble",
+    "total_duration_min": 20,
+    "difficulty_level": "Basics → Game Speed",
+    "coach_message": "Master the crossover step by step!",
+    "steps": [
+        {
+            "step_number": 1,
+            "name": "Stationary Hand Switch",
+            "duration_min": 4,
+            "description": "Stand still and switch the ball between hands. "
+            "Focus on a low, controlled bounce. Do 3 sets of 10 reps.",
+            "focus_point": "Keep your eyes up, not on the ball.",
+            "success_criteria": "Complete 10 consecutive switches without losing the ball.",
+        },
+        {
+            "step_number": 2,
+            "name": "Walking Crossover",
+            "duration_min": 4,
+            "description": "Walk forward while performing crossover dribbles. "
+            "Maintain a rhythm with each step. Do 5 lengths of the court.",
+            "focus_point": "Synchronize the crossover with your footwork.",
+            "success_criteria": "Complete 5 lengths without breaking rhythm.",
+        },
+        {
+            "step_number": 3,
+            "name": "Jogging Crossover",
+            "duration_min": 4,
+            "description": "Jog at half speed while executing crossovers. "
+            "Add a slight change of direction. Do 5 lengths.",
+            "focus_point": "Push the ball low and hard on the cross.",
+            "success_criteria": "Complete 5 lengths at jogging pace with control.",
+        },
+        {
+            "step_number": 4,
+            "name": "Cone Weave Crossover",
+            "duration_min": 4,
+            "description": "Set up 5 cones and weave through them using crossovers. "
+            "Increase speed each round. Do 3 rounds.",
+            "focus_point": "Sell the move with a head fake before crossing over.",
+            "success_criteria": "Complete 3 rounds in under 30 seconds each.",
+        },
+        {
+            "step_number": 5,
+            "name": "Live Defender Crossover",
+            "duration_min": 4,
+            "description": "Face a partner acting as a defender. "
+            "Use the crossover to beat them off the dribble. Do 10 reps.",
+            "focus_point": "Attack the defender's front foot.",
+            "success_criteria": "Beat the defender 7 out of 10 attempts.",
+        },
+    ],
+}
 
 
 @pytest.fixture
@@ -22,6 +79,16 @@ def test_client():
     """FastAPI test client fixture."""
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def mock_coach():
+    """Patch coach_agent_graph.invoke to return a canned response."""
+    with patch(
+        "src.api.v1.endpoints.skill.coach_agent_graph.invoke",
+        return_value={"final_response": json.dumps(_FAKE_SKILL_RESPONSE)},
+    ) as mock:
+        yield mock
 
 
 class TestDrillRetrieval:
@@ -194,7 +261,7 @@ class TestDrillRetrieval:
 class TestSkillLabAPI:
     """Integration tests for Skill Lab API endpoint."""
 
-    def test_tc01_api_normal_skill_breakdown(self, test_client):
+    def test_tc01_api_normal_skill_breakdown(self, test_client, mock_coach):
         """
         TC-01 통합: 정상 스킬 분해 생성 (POST /api/v1/skill/)
         """
@@ -237,7 +304,7 @@ class TestSkillLabAPI:
             assert "success_criteria" in step
             assert 1 <= step["step_number"] <= 5
 
-    def test_tc03_time_allocation(self, test_client):
+    def test_tc03_time_allocation(self, test_client, mock_coach):
         """
         TC-03 통합: 시간 배분 검증
         available_time_min과 steps duration 합계가 일치
@@ -266,7 +333,7 @@ class TestSkillLabAPI:
             f"total_duration_min ({data['total_duration_min']})"
         )
 
-    def test_tc04_free_text_parsing(self, test_client):
+    def test_tc04_free_text_parsing(self, test_client, mock_coach):
         """
         TC-04 통합: free_text 자연어 입력이 반영되는지 검증
         """
@@ -328,7 +395,7 @@ class TestSkillLabAPI:
         response = test_client.post("/api/v1/skill/", json=payload)
         assert response.status_code == 422
 
-    def test_tc06_minimal_input(self, test_client):
+    def test_tc06_minimal_input(self, test_client, mock_coach):
         """
         TC-06 통합: 최소 입력으로 API 호출
         """
@@ -346,7 +413,7 @@ class TestSkillLabAPI:
         assert data["total_duration_min"] > 0
         assert len(data["steps"]) >= 3
 
-    def test_tc06_korean_language(self, test_client):
+    def test_tc06_korean_language(self, test_client, mock_coach):
         """
         TC-06 통합: 한국어 응답 요청
         """
