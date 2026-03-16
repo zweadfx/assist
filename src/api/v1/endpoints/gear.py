@@ -40,9 +40,8 @@ async def recommend_gear(
             "user_info": request.model_dump(),
         }
 
-        # Invoke the agent graph in a separate thread to avoid blocking the event loop
         final_state = await asyncio.wait_for(
-            asyncio.to_thread(gear_agent_graph.invoke, initial_state),
+            gear_agent_graph.ainvoke(initial_state),
             timeout=GEAR_TIMEOUT_SECONDS,
         )
 
