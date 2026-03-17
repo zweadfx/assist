@@ -25,6 +25,58 @@ from langchain_core.documents import Document
 from src.main import app
 from src.services.rag.rule_retrieval import RuleRetriever
 
+# ---------------------------------------------------------------------------
+# Fake data for ChromaDB mock responses
+# ---------------------------------------------------------------------------
+
+_FAKE_RULE_DOCS = [
+    "A player who catches the ball while standing may pivot, using one foot.",
+    "A player shall not run while holding a live ball (Traveling).",
+    "A player in the act of shooting must not be contacted by a defender.",
+]
+
+_FAKE_RULE_METAS = [
+    {
+        "rule_type": "FIBA",
+        "article": "Article 25",
+        "clause": "25.1",
+        "page_number": 42,
+        "doc_type": "rule",
+    },
+    {
+        "rule_type": "FIBA",
+        "article": "Article 25",
+        "clause": "25.2",
+        "page_number": 43,
+        "doc_type": "rule",
+    },
+    {
+        "rule_type": "NBA",
+        "article": "Rule 12B",
+        "clause": "Section I",
+        "page_number": 55,
+        "doc_type": "rule",
+    },
+]
+
+_FAKE_GLOSSARY_DOCS = [
+    "Traveling: Moving illegally with the ball without dribbling.",
+    "Blocking Foul: Illegal contact that impedes the progress of an opponent.",
+]
+
+_FAKE_GLOSSARY_METAS = [
+    {
+        "term": "Traveling",
+        "category": "violation",
+        "doc_type": "glossary",
+    },
+    {
+        "term": "Blocking Foul",
+        "category": "foul",
+        "doc_type": "glossary",
+    },
+]
+
 _FAKE_WHISTLE_RESPONSE = {
     "judgment_title": "트래블링 바이얼레이션",
     "situation_summary": "공을 들고 세 발자국 이상 걸은 상황입니다.",
@@ -45,11 +97,72 @@ _FAKE_WHISTLE_RESPONSE = {
 }
 
 
+def _fake_query_rules(query_texts, n_results=5, where=None):
+    """Return filtered rule results based on where clause."""
+    docs, metas, dists = [], [], []
+    for d, m in zip(_FAKE_RULE_DOCS, _FAKE_RULE_METAS):
+        if where:
+            rt = where.get("rule_type")
+            if rt and m["rule_type"] != rt:
+                continue
+        docs.append(d)
+        metas.append(m)
+        dists.append(0.5)
+    docs = docs[:n_results]
+    metas = metas[:n_results]
+    dists = dists[:n_results]
+    return {"documents": [docs], "metadatas": [metas], "distances": [dists]}
+
+
+def _fake_query_glossary(query_texts, n_results=3, where=None):
+    """Return glossary results."""
+    docs, metas, dists = [], [], []
+    for d, m in zip(_FAKE_GLOSSARY_DOCS, _FAKE_GLOSSARY_METAS):
+        if where:
+            cat = where.get("category")
+            if cat and m["category"] != cat:
+                continue
+        docs.append(d)
+        metas.append(m)
+        dists.append(0.4)
+    docs = docs[:n_results]
+    metas = metas[:n_results]
+    dists = dists[:n_results]
+    return {"documents": [docs], "metadatas": [metas], "distances": [dists]}
+
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def mock_chroma_rules():
+    """Patch chroma_manager methods used by RuleRetriever."""
+    with (
+        patch(
+            "src.services.rag.rule_retrieval.chroma_manager.query_rules",
+            side_effect=_fake_query_rules,
+        ),
+        patch(
+            "src.services.rag.rule_retrieval.chroma_manager.query_glossary",
+            side_effect=_fake_query_glossary,
+        ),
+    ):
+        yield
+
+
+@pytest.fixture
+def rule_retriever_instance(mock_chroma_rules):
+    """RuleRetriever instance with mocked ChromaDB."""
+    return RuleRetriever()
 
 
 @pytest.fixture
@@ -65,15 +178,13 @@ def mock_judge():
 class TestRuleRetrieval:
     """Unit tests for rule retrieval logic."""
 
-    def test_tc01_basic_violation_search(self):
+    def test_tc01_basic_violation_search(self, rule_retriever_instance):
         """
         TC-01: 기본 바이얼레이션 판정
         입력: "공을 들고 세 발자국 걸으면?"
         기대: 트래블링 관련 규정 반환
         """
-        retriever = RuleRetriever()
-
-        results = retriever.hybrid_search(
+        results = rule_retriever_instance.hybrid_search(
             situation="공을 들고 세 발자국 걸으면?",
             n_rules=5,
             n_glossary=3,
@@ -84,30 +195,26 @@ class TestRuleRetrieval:
         assert isinstance(results["rules"], list)
         assert isinstance(results["glossary"], list)
 
-    def test_tc02_foul_situation_search(self):
+    def test_tc02_foul_situation_search(self, rule_retriever_instance):
         """
         TC-02: 파울 판정
         입력: "수비수가 실린더를 침범하면?"
         기대: 실린더 원칙 관련 규정 반환
         """
-        retriever = RuleRetriever()
-
-        results = retriever.search_by_situation(
+        results = rule_retriever_instance.search_by_situation(
             situation="수비수가 실린더를 침범하면?",
             n_results=5,
         )
 
         assert isinstance(results, list)
 
-    def test_tc03_glossary_term_search(self):
+    def test_tc03_glossary_term_search(self, rule_retriever_instance):
         """
         TC-03: 용어 사전 검색
         입력: "트래블링"
         기대: 용어 정의 반환
         """
-        retriever = RuleRetriever()
-
-        results = retriever.search_glossary_terms(
+        results = rule_retriever_instance.search_glossary_terms(
             query="트래블링",
             n_results=3,
         )
@@ -117,15 +224,13 @@ class TestRuleRetrieval:
             assert all(isinstance(doc, Document) for doc in results)
             assert results[0].metadata.get("doc_type") == "glossary"
 
-    def test_tc04_rule_type_filtering(self):
+    def test_tc04_rule_type_filtering(self, rule_retriever_instance):
         """
         TC-04: FIBA/NBA 규정 필터링
         입력: rule_type="FIBA"
         기대: FIBA 규정만 반환
         """
-        retriever = RuleRetriever()
-
-        results = retriever.search_by_situation(
+        results = rule_retriever_instance.search_by_situation(
             situation="트래블링 규정",
             rule_type="FIBA",
             n_results=5,
@@ -136,41 +241,35 @@ class TestRuleRetrieval:
         for doc in results:
             assert doc.metadata.get("rule_type") == "FIBA"
 
-    def test_tc05_empty_input_handling(self):
+    def test_tc05_empty_input_handling(self, rule_retriever_instance):
         """
         TC-05: 예외 처리 - 빈 입력
         입력: 빈 문자열
         기대: 빈 리스트 반환 (에러 없음)
         """
-        retriever = RuleRetriever()
-
-        rules = retriever.search_by_situation(situation="")
-        glossary = retriever.search_glossary_terms(query="")
+        rules = rule_retriever_instance.search_by_situation(situation="")
+        glossary = rule_retriever_instance.search_glossary_terms(query="")
 
         assert rules == []
         assert glossary == []
 
-    def test_tc06_whitespace_input_handling(self):
+    def test_tc06_whitespace_input_handling(self, rule_retriever_instance):
         """
         TC-06: 예외 처리 - 공백만 입력
         입력: 공백 문자열
         기대: 빈 리스트 반환 (에러 없음)
         """
-        retriever = RuleRetriever()
-
-        rules = retriever.search_by_situation(situation="   ")
-        glossary = retriever.search_glossary_terms(query="   ")
+        rules = rule_retriever_instance.search_by_situation(situation="   ")
+        glossary = rule_retriever_instance.search_glossary_terms(query="   ")
 
         assert rules == []
         assert glossary == []
 
-    def test_hybrid_search_returns_both(self):
+    def test_hybrid_search_returns_both(self, rule_retriever_instance):
         """
         TC-07: 하이브리드 검색이 rules와 glossary 모두 반환하는지 확인
         """
-        retriever = RuleRetriever()
-
-        results = retriever.hybrid_search(
+        results = rule_retriever_instance.hybrid_search(
             situation="블로킹 파울과 차징 파울의 차이",
             n_rules=3,
             n_glossary=2,
