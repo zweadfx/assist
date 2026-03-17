@@ -18,6 +18,13 @@ jobs:
 
       - run: uv sync
 
-      - run: uv run pytest
+      - run: uv run pytest --junitxml=report.xml
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: pytest results
+          path: report.xml
+          reporter: java-junit
