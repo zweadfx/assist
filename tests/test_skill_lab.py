@@ -17,6 +17,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.main import app
+from src.services.rag.chroma_db import chroma_manager
 
 _FAKE_SKILL_RESPONSE = {
     "skill_name": "Crossover Dribble",
@@ -73,83 +74,6 @@ _FAKE_SKILL_RESPONSE = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Fake data for ChromaDB mock responses
-# ---------------------------------------------------------------------------
-
-_FAKE_DRILL_DOCS = [
-    "Crossover dribble drill for intermediate players using ball and cones.",
-    "Basic layup drill for beginners using ball and hoop.",
-    "Defensive slide drill for conditioning with no equipment needed.",
-    "Three-point shooting drill for advanced players using ball and hoop.",
-    "Ball handling warm-up drill for all levels using ball only.",
-]
-
-_FAKE_DRILL_METAS = [
-    {
-        "name": "Crossover Mastery",
-        "category": "dribble",
-        "difficulty": "intermediate",
-        "required_equipment": "ball,cones",
-        "duration_min": 10,
-    },
-    {
-        "name": "Layup Fundamentals",
-        "category": "shooting",
-        "difficulty": "beginner",
-        "required_equipment": "ball,hoop",
-        "duration_min": 15,
-    },
-    {
-        "name": "Defensive Slides",
-        "category": "defense",
-        "difficulty": "intermediate",
-        "required_equipment": "",
-        "duration_min": 8,
-    },
-    {
-        "name": "Deep Range Shooting",
-        "category": "shooting",
-        "difficulty": "advanced",
-        "required_equipment": "ball,hoop",
-        "duration_min": 12,
-    },
-    {
-        "name": "Ball Handling Warm-up",
-        "category": "conditioning",
-        "difficulty": "beginner",
-        "required_equipment": "ball",
-        "duration_min": 5,
-    },
-]
-
-
-def _fake_query_drills(query_texts, n_results=3, where=None):
-    """Return filtered drill results based on where clause."""
-    docs, metas = [], []
-    for d, m in zip(_FAKE_DRILL_DOCS, _FAKE_DRILL_METAS):
-        if where:
-            # Handle category filter
-            cat = where.get("category")
-            if cat and m["category"] != cat:
-                continue
-        docs.append(d)
-        metas.append(m)
-    docs = docs[:n_results]
-    metas = metas[:n_results]
-    return {"documents": [docs], "metadatas": [metas]}
-
-
-@pytest.fixture
-def mock_drills():
-    """Patch chroma_manager.query_drills to return fake data."""
-    with patch(
-        "src.services.rag.chroma_db.chroma_manager.query_drills",
-        side_effect=_fake_query_drills,
-    ) as mock:
-        yield mock
-
-
 @pytest.fixture
 def test_client():
     """FastAPI test client fixture."""
@@ -170,7 +94,7 @@ def mock_coach():
 class TestDrillRetrieval:
     """Unit tests for drill retrieval and filtering logic."""
 
-    def test_tc01_normal_drill_retrieval(self, mock_drills):
+    def test_tc01_normal_drill_retrieval(self):
         """
         TC-01: 정상 드릴 검색
         카테고리: dribble, 난이도: intermediate
@@ -182,7 +106,7 @@ class TestDrillRetrieval:
         )
 
         # Act
-        results = _fake_query_drills(
+        results = chroma_manager.query_drills(
             query_texts=[query_text],
             n_results=10,
             where={"category": "dribble"},
@@ -200,7 +124,7 @@ class TestDrillRetrieval:
                 f"Expected category 'dribble', got '{metadata['category']}'"
             )
 
-    def test_tc02_equipment_filtering(self, mock_drills):
+    def test_tc02_equipment_filtering(self):
         """
         TC-02: 장비 필터링 검증
         공만 보유 시 골대(hoop), 콘(cones) 필요 드릴 제외
@@ -210,7 +134,7 @@ class TestDrillRetrieval:
         query_text = "A beginner basketball drill for shooting skills using ball."
 
         # Act
-        results = _fake_query_drills(
+        results = chroma_manager.query_drills(
             query_texts=[query_text], n_results=10
         )
 
@@ -250,7 +174,7 @@ class TestDrillRetrieval:
                     f"but user only has {user_equipment}"
                 )
 
-    def test_tc02_ball_only_excludes_hoop_drills(self, mock_drills):
+    def test_tc02_ball_only_excludes_hoop_drills(self):
         """
         TC-02 보조: 공만 보유 시 골대 필요 드릴이 실제로 제외되는지 확인
         """
@@ -259,7 +183,7 @@ class TestDrillRetrieval:
         query_text = "A basketball drill for shooting using ball."
 
         # Act
-        results = _fake_query_drills(
+        results = chroma_manager.query_drills(
             query_texts=[query_text], n_results=10
         )
 
@@ -285,7 +209,7 @@ class TestDrillRetrieval:
                     f"Drill '{meta.get('name')}' requires hoop but user has ball only"
                 )
 
-    def test_tc03_category_filter_accuracy(self, mock_drills):
+    def test_tc03_category_filter_accuracy(self):
         """
         TC-03: 카테고리별 검색 정확도 검증
         4개 카테고리 각각 검색 시 올바른 카테고리만 반환
@@ -295,7 +219,7 @@ class TestDrillRetrieval:
         for category in categories:
             query_text = f"A basketball drill for {category}."
 
-            results = _fake_query_drills(
+            results = chroma_manager.query_drills(
                 query_texts=[query_text],
                 n_results=5,
                 where={"category": category},
@@ -307,11 +231,11 @@ class TestDrillRetrieval:
                     f"Expected '{category}', got '{metadata['category']}'"
                 )
 
-    def test_tc05_empty_query(self, mock_drills):
+    def test_tc05_empty_query(self):
         """
         TC-05: 빈 쿼리에 대한 처리
         """
-        results = _fake_query_drills(
+        results = chroma_manager.query_drills(
             query_texts=[""], n_results=5
         )
 
@@ -319,11 +243,11 @@ class TestDrillRetrieval:
         assert results is not None
         assert "documents" in results
 
-    def test_tc05_nonexistent_category(self, mock_drills):
+    def test_tc05_nonexistent_category(self):
         """
         TC-05: 존재하지 않는 카테고리 검색
         """
-        results = _fake_query_drills(
+        results = chroma_manager.query_drills(
             query_texts=["basketball drill"],
             n_results=5,
             where={"category": "nonexistent_category"},
