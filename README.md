@@ -23,30 +23,35 @@
 ---
 
 ## 🏀 Introduction
-**'Assist'** is designed to bridge the information gap faced by <b>hoopers</b> by increasing the accessibility of professional coaching systems. The AI precisely analyzes a <b>hooper's</b> physical attributes and the context of their inquiries to provide an experience akin to having a personal coach standing right by the courtside.
+**'Assist'** is designed to bridge the information gap faced by **hoopers** by increasing the accessibility of professional coaching systems. The AI precisely analyzes a **hooper's** physical attributes and the context of their inquiries to provide an experience akin to having a personal coach standing right by the courtside.
 
-> "Basketball is a game of details. Assist helps <b>hoopers</b> master those details."
+> "Basketball is a game of details. Assist helps **hoopers** master those details."
 
 ---
 
 ## 🚀 Key Features (MVP)
-This project implements four core features developed during a high-intensity development sprint, specifically tailored for the modern **hooper**.
+This project implements four core features, each powered by a dedicated LangGraph agent with its own state machine workflow.
 
 ### **1. AI Skill Lab (Personalized Skill Trainer)**
+* **Agent**: `CoachAgent` (`diagnose → retrieve → generate`)
 * **Definition**: A structured training generator that creates actionable **'Daily Routine Cards'** based on a **hooper's** specific weaknesses, position, and available time.
-* **Details**: Instead of generic advice, it retrieves specific drills from a vector database (47 drills across shooting, dribble, defense, conditioning) and orchestrates them into a complete workout session (Warm-up → Main Drills → Cool-down) in a checklist format to ensure immediate court application.
+* **Details**: Retrieves specific drills from a vector database (47 drills across shooting, dribble, defense, conditioning) and orchestrates them into a progressive workout session (Warm-up → Main Drills → Cool-down). Supports equipment-aware filtering to exclude drills requiring unavailable gear.
 
 ### **2. Weekly Drill Routine (Weekly Training Planner)**
+* **Agent**: `WeeklyCoachAgent` (`diagnose → plan_week → retrieve → generate`)
 * **Definition**: An advanced training planner that generates **'Weekly Training Plans'** spanning 1-7 days, distributing multiple focus areas with recovery-aware scheduling.
-* **Details**: A 4-node LangGraph agent (`diagnose → plan_week → retrieve → generate`) intelligently allocates focus areas across training days, retrieves drills per day from the vector database, and generates custom drill variations (`is_custom: true`) when existing drills are insufficient.
+* **Details**: Intelligently allocates focus areas across training days via LLM-based planning with round-robin fallback, retrieves drills per day from the vector database, and generates custom drill variations (`is_custom: true`) when existing drills are insufficient.
 
 ### **3. Gear Advisor (Sensory-based Recommendation)**
-* **Definition**: A next-gen recommendation engine that matches basketball shoes based on **'Sensory Preferences'** (e.g., cushion feel, traction sound) and **'Player Archetypes'**.
-* **Details**: It goes beyond basic specs by analyzing subjective inputs (like "I want to move like Kyrie") alongside physical constraints (wide feet, injuries) to find the perfect fit using RAG technology.
+* **Agent**: `GearAgent` (`analyze → retrieve → generate`)
+* **Definition**: A recommendation engine that matches basketball shoes based on **'Sensory Preferences'** (e.g., cushion feel, traction grip) and **'Player Archetypes'**.
+* **Details**: Cross-analyzes sensory tag embeddings, player archetype matching, and signature shoe boosting across 59 shoes and 20 player profiles. Supports budget filtering with dedicated `BudgetInsufficientError` handling.
 
 ### **4. The Whistle (AI Referee & Rule Dictionary)**
-* **Definition**: An on-court dispute solver that provides authoritative judgments and clear definitions of complex basketball regulations (FIBA/NBA/KBL).
-* **Details**: It acts as a real-time judge by searching vectorized rulebooks to cite specific articles for controversial plays (e.g., traveling vs. gather step) and serves as an instant glossary for technical terms.
+* **Agent**: `JudgeAgent` (`parse → retrieve → generate`)
+* **Definition**: An on-court dispute solver that provides authoritative judgments and clear definitions of complex basketball regulations (FIBA/NBA).
+* **Details**: Searches vectorized rulebooks (FIBA + NBA PDFs, article-level chunking) to cite specific articles for controversial plays and serves as an instant glossary (22 terms) for technical terminology. Includes 2-level JSON retry parsing for robust LLM output handling.
+
 ---
 
 ## 🛠 Tech Stack
@@ -64,13 +69,28 @@ The following technical ecosystem was established to ensure system stability and
 ---
 
 ## 🏗 System Architecture
-**Assist** adopts an agent architecture characterized by organic state transitions between a 'Router' and various 'Task Nodes' to serve the <b>hooper's</b> needs.
+Each feature is served by a dedicated **LangGraph StateGraph agent** that follows a consistent multi-node pipeline pattern.
 
+```
+[User Request]  →  [FastAPI Endpoint]  →  [Dedicated Agent Graph]
+                                                    │
+                                          ┌─────────┴─────────┐
+                                          │  Node 1: Parse/   │
+                                          │  Analyze Input    │
+                                          ├─────────┬─────────┤
+                                          │  Node 2: RAG      │
+                                          │  Retrieval        │
+                                          ├─────────┬─────────┤
+                                          │  Node 3: LLM      │
+                                          │  Generation       │
+                                          └─────────┬─────────┘
+                                                    │
+                                          [Pydantic Validated Response]
+```
 
-
-1.  **Intent Routing**: Analyzes the input to allocate the task to the most suitable node among 'Recommendation', 'Training', or 'Rules'.
-2.  **Context Augmentation**: Extracts necessary external knowledge (RAG) during the 'Retrieval' phase to increase prompt accuracy.
-3.  **Self-Correction**: Performs an iterative reasoning process to self-verify and correct any logical errors in the generated response before reaching the <b>hooper</b>.
+1. **Input Parsing & Sanitization**: Each agent validates and sanitizes user input, including prompt injection pattern blocking.
+2. **Context Augmentation (RAG)**: Retrieves domain-specific knowledge from ChromaDB (drills, shoes, players, rules, glossary) with metadata filtering.
+3. **Structured Generation**: LLM generates responses constrained to Pydantic schemas, with retry logic for malformed outputs.
 
 ---
 
@@ -83,7 +103,7 @@ The following technical ecosystem was established to ensure system stability and
 ### **Installation & Run**
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/assist.git
+git clone https://github.com/zweadfx/assist.git
 cd assist
 
 # 2. Install dependencies and sync virtual environment
@@ -95,8 +115,4 @@ cp .env.example .env
 
 # 4. Run the backend server
 uv run uvicorn src.main:app --reload
-
-# 5. Run the frontend (in a separate terminal)
-cd assist-frontend
-npm install
-npm run dev
+```
