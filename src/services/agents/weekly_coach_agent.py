@@ -215,6 +215,16 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
             focus_areas,
         )
 
+    all_ids = [d["id"] for drills in day_drills.values() for d in drills]
+    if all_ids:
+        diversity = len(set(all_ids)) / len(all_ids)
+        logger.info(
+            "Drill diversity: %d unique / %d total (%.0f%%)",
+            len(set(all_ids)),
+            len(all_ids),
+            diversity * 100,
+        )
+
     return {"context": day_drills}
 
 
