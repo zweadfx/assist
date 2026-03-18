@@ -1,0 +1,57 @@
+[
+  {
+    "id": "whistle-01",
+    "description": "Player carries the ball while taking three steps without dribbling",
+    "input": {
+      "situation_description": "A player catches a pass near the three-point line and takes three full steps toward the basket without dribbling before attempting a layup.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["25"],
+    "rationale": "Travelling violation per FIBA Art 25"
+  },
+  {
+    "id": "whistle-02",
+    "description": "Defender blocks driving player without established position",
+    "input": {
+      "situation_description": "A defender slides into the path of a driving ball handler at the last moment, causing a collision. The defender's feet were still moving when contact occurred.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Blocking foul - defender did not establish legal guarding position per Art 33"
+  },
+  {
+    "id": "whistle-03",
+    "description": "Offensive player charges into set defender",
+    "input": {
+      "situation_description": "An offensive player drives to the basket and runs directly into a defender who had both feet planted and was stationary before the offensive player began the drive.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Charging foul - defender had established legal guarding position per Art 33"
+  },
+  {
+    "id": "whistle-04",
+    "description": "Player stops dribble then dribbles again",
+    "input": {
+      "situation_description": "A point guard dribbles up the court, picks up the ball with both hands, then begins dribbling again to drive past the defender.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["24"],
+    "rationale": "Double dribble violation per FIBA Art 24"
+  },
+  {
+    "id": "whistle-05",
+    "description": "Defender blocks a shot while the ball is descending toward the rim",
+    "input": {
+      "situation_description": "A defender jumps to block a mid-range shot. The ball had already reached its highest point and was clearly on its way down toward the rim when the defender touched it.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["31"],
+    "rationale": "Goaltending violation per FIBA Art 31"
+  }
+]

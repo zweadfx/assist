@@ -1,0 +1,82 @@
+[
+  {
+    "id": "skill-01",
+    "description": "Beginner dribble drill with ball only, 15 minutes",
+    "input": {
+      "skill_level": "beginner",
+      "category": "dribble",
+      "available_time_min": 15,
+      "equipment": ["ball"],
+      "language": "en"
+    },
+    "constraints": {
+      "max_equipment": ["ball"],
+      "target_time_min": 15
+    },
+    "rationale": "Basic dribble with minimal equipment, should not require cones or hoop"
+  },
+  {
+    "id": "skill-02",
+    "description": "Intermediate shooting drill with ball and hoop, 20 minutes",
+    "input": {
+      "skill_level": "intermediate",
+      "category": "shooting",
+      "available_time_min": 20,
+      "equipment": ["ball", "hoop"],
+      "language": "en"
+    },
+    "constraints": {
+      "max_equipment": ["ball", "hoop"],
+      "target_time_min": 20
+    },
+    "rationale": "Shooting drill needs hoop, should not require cones or partner"
+  },
+  {
+    "id": "skill-03",
+    "description": "Advanced defense drill with no equipment, 10 minutes",
+    "input": {
+      "skill_level": "advanced",
+      "category": "defense",
+      "available_time_min": 10,
+      "equipment": [],
+      "language": "en"
+    },
+    "constraints": {
+      "max_equipment": [],
+      "target_time_min": 10
+    },
+    "rationale": "No equipment available, all steps must be bodyweight/footwork only"
+  },
+  {
+    "id": "skill-04",
+    "description": "Beginner conditioning drill with ball and cones, 25 minutes",
+    "input": {
+      "skill_level": "beginner",
+      "category": "conditioning",
+      "available_time_min": 25,
+      "equipment": ["ball", "cones"],
+      "language": "ko"
+    },
+    "constraints": {
+      "max_equipment": ["ball", "cones"],
+      "target_time_min": 25
+    },
+    "rationale": "Korean language conditioning drill, should not require hoop or partner"
+  },
+  {
+    "id": "skill-05",
+    "description": "Intermediate dribble drill with full equipment, 30 minutes",
+    "input": {
+      "skill_level": "intermediate",
+      "category": "dribble",
+      "available_time_min": 30,
+      "equipment": ["ball", "cones", "hoop"],
+      "language": "en"
+    },
+    "constraints": {
+      "max_equipment": ["ball", "cones", "hoop"],
+      "target_time_min": 30
+    },
+    "rationale": "Full equipment available, longer session with more progressive steps"
+  }
+]
