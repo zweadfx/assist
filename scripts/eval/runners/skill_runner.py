@@ -20,11 +20,17 @@ DATASETS_DIR = Path(__file__).resolve().parent.parent / "datasets"
 
 # Equipment keywords that indicate usage of specific equipment
 EQUIPMENT_KEYWORDS = {
-    "hoop": ["hoop", "rim", "basket", "backboard", "net"],
+    "hoop": ["hoop", "rim", "basket", "backboard"],
     "cones": ["cone", "cones", "marker", "markers"],
-    "partner": ["partner", "teammate", "defender", "opponent"],
+    "partner": ["partner", "teammate"],
     "ball": ["ball", "dribble", "shoot", "pass"],
 }
+
+# Phrases that mention equipment conceptually but don't require it
+SIMULATION_EXCEPTIONS = [
+    "imagin", "visualiz", "pretend", "shadow", "simulate",
+    "as if", "invisible",
+]
 
 
 def _check_equipment_constraint(

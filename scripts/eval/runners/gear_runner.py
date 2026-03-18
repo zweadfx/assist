@@ -18,11 +18,39 @@ from src.services.agents.gear_agent import gear_agent_graph
 logger = logging.getLogger(__name__)
 
 DATASETS_DIR = Path(__file__).resolve().parent.parent / "datasets"
+DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
+
+# model_name → shoe_id lookup (RAG pipeline doesn't pass shoe_id in context)
+_MODEL_TO_ID: dict[str, str] = {}
+
+
+def _get_model_to_id_map() -> dict[str, str]:
+    """Build and cache model_name → shoe_id mapping from shoes.json."""
+    if not _MODEL_TO_ID:
+        with open(DATA_DIR / "shoes.json", encoding="utf-8") as f:
+            shoes = json.load(f)
+        for s in shoes:
+            _MODEL_TO_ID[s["model_name"].lower()] = s["id"]
+    return _MODEL_TO_ID
+
+
+def _resolve_shoe_id(shoe_id_or_name: str, model_name: str) -> str:
+    """Resolve to canonical shoe_id. Falls back to model_name lookup."""
+    if shoe_id_or_name.startswith("shoe_"):
+        return shoe_id_or_name
+    lookup = _get_model_to_id_map()
+    resolved = lookup.get(model_name.lower())
+    if resolved:
+        return resolved
+    return shoe_id_or_name
 
 
 def _extract_shoe_ids(response: GearAdvisorResponse) -> list[str]:
-    """Extract shoe_id list from GearAdvisorResponse."""
-    return [shoe.shoe_id for shoe in response.shoes]
+    """Extract shoe_id list from GearAdvisorResponse, resolving names."""
+    return [
+        _resolve_shoe_id(shoe.shoe_id, shoe.model_name)
+        for shoe in response.shoes
+    ]
 
 
 def _run_single_rag(case: dict) -> list[str]:

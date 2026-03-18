@@ -6,6 +6,7 @@ then extracts cited articles for citation hit rate computation.
 
 import json
 import logging
+import re
 from pathlib import Path
 
 from langchain_core.messages import HumanMessage
@@ -17,6 +18,15 @@ from src.services.agents.judge_agent import judge_agent_graph
 logger = logging.getLogger(__name__)
 
 DATASETS_DIR = Path(__file__).resolve().parent.parent / "datasets"
+
+
+def _normalize_article(article: str) -> str:
+    """Extract the core article number from various formats.
+
+    'Art 25' → '25', '33.9' → '33', 'Article 31' → '31'
+    """
+    numbers = re.findall(r"\d+", article)
+    return numbers[0] if numbers else article
 
 
 def _run_single_whistle(case: dict) -> dict:
@@ -39,7 +49,9 @@ def _run_single_whistle(case: dict) -> dict:
     raw = final_state.get("final_response", "")
     response = WhistleResponse.model_validate_json(raw)
 
-    predicted_articles = [ref.article for ref in response.rule_references]
+    predicted_articles = [
+        _normalize_article(ref.article) for ref in response.rule_references
+    ]
     return {
         "predicted_articles": predicted_articles,
         "predicted_decision": response.decision,

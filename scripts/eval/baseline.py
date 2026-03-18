@@ -40,6 +40,7 @@ def _sensory_tags_str(shoe: dict, language: str) -> str:
 def _build_shoes_context(shoes: list, language: str) -> str:
     """Build context string from all shoes, identical format to gear_agent."""
     return "\n\n".join(
+        f"Shoe ID: {s.get('id', 'N/A')}\n"
         f"Brand: {s.get('brand', 'N/A')}\n"
         f"Model: {s.get('model_name', 'N/A')}\n"
         f"Price: {s.get('price_krw', 'N/A')} KRW\n"
