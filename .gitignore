@@ -227,3 +227,4 @@ assist-frontend/public/sw.js.map
 assist-frontend/public/swe-worker-*.js
 assist-frontend/public/workbox-*.js
 assist-frontend/public/workbox-*.js.map
+scripts/eval/results/*.md
