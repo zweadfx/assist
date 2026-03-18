@@ -66,17 +66,18 @@ def _whistle_section(whistle_data: dict) -> str:
         "",
         "### Case Details",
         "",
-        "| ID | Description | Expected Decision | Predicted Decision | Match | Expected Articles | Predicted Articles |",
-        "|----|-------------|-------------------|-------------------|-------|-------------------|-------------------|",
+        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit |",
+        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|",
     ]
 
     for d in details:
-        match = "O" if d["decision_match"] else "X"
+        decision_match = "O" if d["decision_match"] else "X"
         exp_art = ", ".join(d["expected_articles"])
         pred_art = ", ".join(d["predicted_articles"]) or "-"
+        citation_hit = "O" if set(d["expected_articles"]).issubset(set(d["predicted_articles"])) else "X"
         lines.append(
             f"| {d['id']} | {d['description']} | {d['expected_decision']} "
-            f"| {d['predicted_decision']} | {match} | {exp_art} | {pred_art} |"
+            f"| {d['predicted_decision']} | {decision_match} | {exp_art} | {pred_art} | {citation_hit} |"
         )
 
     lines.append("")
