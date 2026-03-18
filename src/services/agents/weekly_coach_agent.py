@@ -148,6 +148,7 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
     )
 
     day_drills: Dict[str, List[Dict]] = {}
+    used_drill_ids: set[str] = set()
 
     for day_key, focus_areas in week_plan.items():
         drills_for_day = []
