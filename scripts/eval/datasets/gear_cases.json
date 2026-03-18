@@ -126,8 +126,8 @@
       "budget_max_krw": 150000,
       "language": "en"
     },
-    "expected_shoe_ids": ["shoe_016", "shoe_025", "shoe_026", "shoe_027", "shoe_034", "shoe_051", "shoe_055"],
-    "rationale": "Under 150K with lightweight or responsive: GT Hustle 3 (139K), DON Issue 6 (129K), DON Issue 7 (139K), AE 1 (149K), All-Pro NITRO 2 (159K exceeds), Big3 5.0 (119K), Trae Young 3 (149K)"
+    "expected_shoe_ids": ["shoe_016", "shoe_025", "shoe_026", "shoe_027", "shoe_051", "shoe_055"],
+    "rationale": "Under 150K with lightweight or responsive: GT Hustle 3 (139K), DON Issue 6 (129K), DON Issue 7 (139K), AE 1 (149K), Big3 5.0 (119K), Trae Young 3 (149K)"
   },
   {
     "id": "gear-11",
