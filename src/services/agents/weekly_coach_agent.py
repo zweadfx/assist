@@ -148,8 +148,10 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
     )
 
     day_drills: Dict[str, List[Dict]] = {}
+    used_drill_ids: set[str] = set()
 
-    for day_key, focus_areas in week_plan.items():
+    for day_key in sorted(week_plan.keys(), key=int):
+        focus_areas = week_plan[day_key]
         drills_for_day = []
 
         for focus_area in focus_areas:
@@ -198,12 +200,29 @@ def retrieve_drills(state: WeeklyCoachState) -> dict:
                     e,
                 )
 
-        day_drills[day_key] = drills_for_day
+        fresh = [d for d in drills_for_day if d["id"] not in used_drill_ids]
+        reused = [d for d in drills_for_day if d["id"] in used_drill_ids]
+        final_drills = fresh + reused
+
+        day_drills[day_key] = final_drills
+        used_drill_ids.update(d["id"] for d in fresh)
         logger.info(
-            "Day %s: retrieved %d drills for %s",
+            "Day %s: %d drills (%d fresh, %d reused) for %s",
             day_key,
-            len(drills_for_day),
+            len(final_drills),
+            len(fresh),
+            len(reused),
             focus_areas,
+        )
+
+    all_ids = [d["id"] for drills in day_drills.values() for d in drills]
+    if all_ids:
+        diversity = len(set(all_ids)) / len(all_ids)
+        logger.info(
+            "Drill diversity: %d unique / %d total (%.0f%%)",
+            len(set(all_ids)),
+            len(all_ids),
+            diversity * 100,
         )
 
     return {"context": day_drills}
