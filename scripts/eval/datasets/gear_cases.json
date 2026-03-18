@@ -1,0 +1,197 @@
+[
+  {
+    "id": "gear-01",
+    "description": "Guard seeking Curry-style lightweight traction shoes",
+    "input": {
+      "sensory_preferences": ["traction", "responsive"],
+      "player_archetype": "Stephen Curry",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_031"],
+    "rationale": "Curry 12 is his signature shoe with responsive+traction tags"
+  },
+  {
+    "id": "gear-02",
+    "description": "Forward seeking LeBron-style cushioned stable shoes",
+    "input": {
+      "sensory_preferences": ["cushioning", "ankle_support"],
+      "player_archetype": "LeBron James",
+      "position": "forward",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_009"],
+    "rationale": "LeBron XX is his signature with cushioning+ankle_support tags"
+  },
+  {
+    "id": "gear-03",
+    "description": "Guard seeking Kobe-style court feel shoes",
+    "input": {
+      "sensory_preferences": ["court_feel", "lightweight"],
+      "player_archetype": "Kobe Bryant",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_001", "shoe_002", "shoe_003"],
+    "rationale": "Kobe 4/5/6 Protro all have court_feel+lightweight tags as his signatures"
+  },
+  {
+    "id": "gear-04",
+    "description": "Center seeking Jokic-style cushioned stable shoes",
+    "input": {
+      "sensory_preferences": ["cushioning", "stability"],
+      "player_archetype": "Nikola Jokic",
+      "position": "center",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_052"],
+    "rationale": "Joker 1 is Jokic's signature with cushioning+stability+traction+comfort"
+  },
+  {
+    "id": "gear-05",
+    "description": "Traction and lightweight combination",
+    "input": {
+      "sensory_preferences": ["traction", "lightweight"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_001", "shoe_002", "shoe_003", "shoe_004", "shoe_014", "shoe_016", "shoe_025", "shoe_026"],
+    "rationale": "Multiple shoes have both traction+lightweight tags"
+  },
+  {
+    "id": "gear-06",
+    "description": "Cushioning and stability combination",
+    "input": {
+      "sensory_preferences": ["cushioning", "stability"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_009", "shoe_015", "shoe_047", "shoe_052", "shoe_059"],
+    "rationale": "Shoes with both cushioning+stability: LeBron XX, Zoom Freak 5, Fresh Foam BB v2, Joker 1, Shock Wave 5"
+  },
+  {
+    "id": "gear-07",
+    "description": "Responsive and court feel combination",
+    "input": {
+      "sensory_preferences": ["responsive", "court_feel"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_001", "shoe_002", "shoe_003", "shoe_005", "shoe_006", "shoe_010", "shoe_012", "shoe_014", "shoe_020", "shoe_029", "shoe_044", "shoe_045"],
+    "rationale": "Shoes with both responsive+court_feel tags"
+  },
+  {
+    "id": "gear-08",
+    "description": "Stability and traction with lockdown",
+    "input": {
+      "sensory_preferences": ["stability", "lockdown"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_005", "shoe_006", "shoe_046"],
+    "rationale": "GT Cut 2/3 have lockdown+traction, KT 10 has stability+lockdown"
+  },
+  {
+    "id": "gear-09",
+    "description": "Budget constraint 100K KRW",
+    "input": {
+      "sensory_preferences": ["traction", "stability"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": 100000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_032", "shoe_050"],
+    "rationale": "Under 100K: Lockdown 6 (99K), SKX Reigns (79K)"
+  },
+  {
+    "id": "gear-10",
+    "description": "Budget constraint 150K KRW with lightweight preference",
+    "input": {
+      "sensory_preferences": ["lightweight", "responsive"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": 150000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_016", "shoe_025", "shoe_026", "shoe_027", "shoe_034", "shoe_051", "shoe_055"],
+    "rationale": "Under 150K with lightweight or responsive: GT Hustle 3 (139K), DON Issue 6 (129K), DON Issue 7 (139K), AE 1 (149K), All-Pro NITRO 2 (159K exceeds), Big3 5.0 (119K), Trae Young 3 (149K)"
+  },
+  {
+    "id": "gear-11",
+    "description": "Budget constraint 200K KRW with cushioning preference",
+    "input": {
+      "sensory_preferences": ["cushioning", "impact_protection"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": 200000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_009", "shoe_047", "shoe_053", "shoe_059"],
+    "rationale": "Under 200K with cushioning+impact_protection: LeBron XX exceeds (249K), Fresh Foam BB v2 (159K), Shock Wave 5 (139K). AJ39 exceeds (259K). GT Jump 2 (229K exceeds)"
+  },
+  {
+    "id": "gear-12",
+    "description": "Position only - guard, no player archetype",
+    "input": {
+      "sensory_preferences": ["traction", "responsive"],
+      "player_archetype": null,
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_001", "shoe_002", "shoe_003", "shoe_005", "shoe_006", "shoe_010", "shoe_014", "shoe_016", "shoe_025", "shoe_026", "shoe_044", "shoe_045", "shoe_055"],
+    "rationale": "Guard-appropriate shoes with traction+responsive tags"
+  },
+  {
+    "id": "gear-13",
+    "description": "Position only - center, no player archetype",
+    "input": {
+      "sensory_preferences": ["cushioning", "stability"],
+      "player_archetype": null,
+      "position": "center",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_009", "shoe_015", "shoe_019", "shoe_047", "shoe_048", "shoe_052"],
+    "rationale": "Center-appropriate shoes with cushioning+stability or ankle_support"
+  },
+  {
+    "id": "gear-14",
+    "description": "Complex: Damian Lillard style + guard + budget 180K",
+    "input": {
+      "sensory_preferences": ["responsive", "traction"],
+      "player_archetype": "Damian Lillard",
+      "position": "guard",
+      "budget_max_krw": 180000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_028", "shoe_029"],
+    "rationale": "Dame 8 (159K) and Dame 9 (169K) are his signatures, both under 180K with responsive+traction"
+  },
+  {
+    "id": "gear-15",
+    "description": "Complex: Kyrie Irving style + guard + budget 160K + court feel",
+    "input": {
+      "sensory_preferences": ["court_feel", "responsive"],
+      "player_archetype": "Kyrie Irving",
+      "position": "guard",
+      "budget_max_krw": 160000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_044", "shoe_045"],
+    "rationale": "Kai 1 (149K) and KAI 2 (159K) are Kyrie's signatures with responsive+court_feel+lightweight, both under 160K"
+  }
+]
