@@ -141,8 +141,8 @@ def generate_report(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     lines = [
-        f"# RAG Evaluation Report",
-        f"",
+        "# RAG Evaluation Report",
+        "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
         "---",
