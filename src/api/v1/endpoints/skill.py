@@ -207,7 +207,7 @@ async def refine_weekly_routine(
         raise HTTPException(
             status_code=504,
             detail="Weekly routine refinement timed out. Please try again.",
-        )
+        ) from None
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
