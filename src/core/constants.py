@@ -39,20 +39,27 @@ SENSORY_TAG_MAP: dict[str, str] = {
 
 # Korean Basketball Terminology Guide (injected into prompts when language=ko)
 KO_BASKETBALL_TERMINOLOGY = """
-**한국어 농구 용어 규칙:**
-아래 용어 매핑표를 반드시 따를 것. 표에 없는 영어 기술명은 한글 음차로 표기.
+**CRITICAL — 한국어 농구 용어 규칙 (반드시 준수):**
+아래 용어 매핑표를 반드시 따를 것. 영어를 절대 직역하지 말 것.
+(예: free throw → "프리드로우" X, "자유투" O / basket → "바구니" X, "림" O)
 
 | English | 한국어 |
 |---------|--------|
 | free throw | 자유투 |
-| layup | 레이업 |
+| layup / lay-in | 레이업 |
+| reverse layup | 리버스 레이업 |
+| finger roll | 핑거롤 |
 | dunk | 덩크 |
 | three-pointer / three-point shot | 3점슛 |
 | mid-range shot | 미드레인지 슛 |
+| bank shot | 뱅크 슛 |
+| hook shot | 훅 슛 |
+| tip-in | 팁인 |
+| alley-oop | 앨리웁 |
 | elbow (court area) | 엘보 |
 | elbow jumper | 엘보 점퍼 |
 | pull-up jumper | 풀업 점퍼 |
-| step-back | 스텝백 |
+| step-back / retreat | 스텝백 |
 | floater | 플로터 |
 | euro step | 유로스텝 |
 | crossover | 크로스오버 |
@@ -61,17 +68,42 @@ KO_BASKETBALL_TERMINOLOGY = """
 | in-and-out | 인앤아웃 |
 | hesitation | 헤지테이션 |
 | figure-8 | 8자 드리블 |
+| wrap-around / ball wrap | 볼 래핑 |
 | pound dribble | 파운드 드리블 |
+| power dribble | 파워 드리블 |
+| speed dribble | 스피드 드리블 |
+| retreat dribble | 리트릿 드리블 |
 | weak hand / non-dominant hand | 약손 |
 | ball handling | 볼 핸들링 |
+| triple threat | 트리플 스렛 |
+| pivot | 피벗 |
+| jab step | 잽 스텝 |
+| pump fake | 펌프 페이크 |
+| face-up | 페이스업 |
+| drop step | 드롭 스텝 |
+| up-and-under | 업앤언더 |
 | post up | 포스트업 |
 | pick and roll | 픽앤롤 |
 | screen | 스크린 |
 | fast break | 속공 |
 | transition | 전환 공격 |
+| basket / rim | 림 |
+| paint / lane | 페인트존 |
+| baseline | 베이스라인 |
+| outlet pass | 아울렛 패스 |
+| chest pass | 체스트 패스 |
+| bounce pass | 바운스 패스 |
+| overhead pass | 오버헤드 패스 |
+| no-look pass | 노룩 패스 |
 | closeout | 클로즈아웃 |
 | defensive slide | 디펜스 슬라이드 |
 | defensive stance | 수비 자세 |
+| help defense | 헬프 디펜스 |
+| man-to-man | 대인 수비 |
+| zone defense | 지역 수비 |
+| recovery step | 리커버리 스텝 |
+| steal | 스틸 |
+| block / shot block | 블록 |
 | box out | 박스 아웃 |
 | rebound | 리바운드 |
 | assist | 어시스트 |
@@ -95,7 +127,8 @@ KO_BASKETBALL_TERMINOLOGY = """
 | dynamic stretching | 동적 스트레칭 |
 | static stretching | 정적 스트레칭 |
 
-- 위 표에 있는 용어는 반드시 한국어 컬럼의 표현을 사용할 것
+- 위 표에 있는 용어는 반드시 한국어 컬럼의 표현만 사용할 것
+- 표에 없는 용어도 한국 농구에서 실제로 사용하는 표현으로 번역하고, 직역은 절대 금지
 - Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
 """
 

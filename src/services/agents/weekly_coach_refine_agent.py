@@ -151,7 +151,7 @@ training routine but wants changes based on their feedback.
 
 **Language:**
 Respond in {language_name}. All string fields must be in {language_name}.
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
+
 **Instructions:**
 1. Incorporate the user's feedback into a revised weekly routine.
 2. Preserve all parts of the previous response that are NOT affected
@@ -164,6 +164,7 @@ Respond in {language_name}. All string fields must be in {language_name}.
    {available_time} minutes.
 5. MINIMIZE drill repetition across days.
 6. Output a JSON object strictly following this schema:
+{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 ```json
 {schema_json}

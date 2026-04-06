@@ -269,7 +269,6 @@ breaking down individual techniques into progressive micro-steps.
 **Language:**
 Respond in {language_name}. All string fields (skill_name, coach_message,
 step name, description, focus_point, success_criteria) must be in {language_name}.
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 **Instructions:**
 1. Break the skill into 3-5 progressive steps, ordered from simplest to
@@ -288,7 +287,11 @@ step name, description, focus_point, success_criteria) must be in {language_name
 4. Set difficulty_level to a short phrase showing the progression range
    (e.g., "Basics → Game Speed" or "기초 → 실전").
 5. Write a motivating coach_message about mastering this specific skill.
-6. Output a JSON object strictly following this schema:
+6. If "Additional Request (raw)" is provided, actively reflect its content
+   throughout the routine — incorporate the requested elements into step
+   names, descriptions, and coach_message. Do not treat it as optional context.
+7. Output a JSON object strictly following this schema:
+{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 ```json
 {schema_json}

@@ -129,7 +129,7 @@ a skill breakdown but wants changes based on their feedback.
 
 **Language:**
 Respond in {language_name}. All string fields must be in {language_name}.
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
+
 **Instructions:**
 1. Incorporate the user's feedback into a revised skill breakdown.
 2. Preserve all parts of the previous response that are NOT affected
@@ -139,6 +139,7 @@ Respond in {language_name}. All string fields must be in {language_name}.
    success_criteria.
 5. Keep the progressive structure (simplest → most game-like).
 6. Output a JSON object strictly following this schema:
+{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 ```json
 {schema_json}
