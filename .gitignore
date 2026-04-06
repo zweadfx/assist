@@ -216,6 +216,9 @@ __marimo__/
 # PyCharm user-specific files
 .idea/workspace.xml
 
+# SQLite database files
+*.db
+
 # Next.js
 assist-frontend/node_modules/
 assist-frontend/.next/

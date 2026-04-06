@@ -91,8 +91,11 @@ def refine_generate(state: CoachRefineState) -> dict:
     feedback = state["feedback"]
     context_docs = state.get("context", [])
 
+    language = user_info.get("language", "en")
+    language_name = "Korean" if language == "ko" else "English"
+
     context_str = "\n\n".join(
-        f"Drill Name: {doc.metadata.get('name', 'N/A')}\n"
+        f"Drill Name: {doc.metadata.get('name_ko') or doc.metadata.get('name', 'N/A') if language == 'ko' else doc.metadata.get('name', 'N/A')}\n"
         f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
         f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
         f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
@@ -103,9 +106,6 @@ def refine_generate(state: CoachRefineState) -> dict:
         context_str = "No specific drills found in the database."
 
     schema_json = json.dumps(SkillBreakdownCard.model_json_schema(), indent=2)
-
-    language = user_info.get("language", "en")
-    language_name = "Korean" if language == "ko" else "English"
     available_time = user_info.get("available_time_min", 20)
 
     prompt = f"""You are an expert basketball skills coach. The user received
@@ -128,7 +128,14 @@ a skill breakdown but wants changes based on their feedback.
 
 **Language:**
 Respond in {language_name}. All string fields must be in {language_name}.
-
+{"" if language != "ko" else '''
+**한국어 농구 용어 규칙:**
+- 한국 농구에서 실제로 통용되는 표현을 사용할 것
+- 영어 기술명은 한글 음차 그대로 표기 (예: crossover → 크로스오버, behind the back → 비하인드 더 백, step-back → 스텝백)
+- 번역하면 어색한 용어는 번역하지 말 것 (예: weak hand → "약손" ✓, "비우수 손" ✗)
+- figure-8 → 8자 드리블, floater → 플로터, euro step → 유로스텝
+- Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
+'''}
 **Instructions:**
 1. Incorporate the user's feedback into a revised skill breakdown.
 2. Preserve all parts of the previous response that are NOT affected

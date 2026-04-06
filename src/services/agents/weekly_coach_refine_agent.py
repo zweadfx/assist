@@ -107,7 +107,7 @@ def refine_generate(state: WeeklyRefineState) -> dict:
         if drills:
             context_str = "\n\n".join(
                 f"Drill ID: {d.get('id', 'N/A')}\n"
-                f"Drill Name: {d['metadata'].get('name', 'N/A')}\n"
+                f"Drill Name: {d['metadata'].get('name_ko') or d['metadata'].get('name', 'N/A') if language == 'ko' else d['metadata'].get('name', 'N/A')}\n"
                 f"Phase: {d['metadata'].get('phase', 'N/A')}\n"
                 f"Difficulty: {d['metadata'].get('difficulty', 'N/A')}\n"
                 f"Suggested Duration: {d['metadata'].get('duration_min', 'N/A')} min\n"
@@ -150,7 +150,14 @@ training routine but wants changes based on their feedback.
 
 **Language:**
 Respond in {language_name}. All string fields must be in {language_name}.
-
+{"" if language != "ko" else '''
+**한국어 농구 용어 규칙:**
+- 한국 농구에서 실제로 통용되는 표현을 사용할 것
+- 영어 기술명은 한글 음차 그대로 표기 (예: crossover → 크로스오버, behind the back → 비하인드 더 백, step-back → 스텝백)
+- 번역하면 어색한 용어는 번역하지 말 것 (예: weak hand → "약손" ✓, "비우수 손" ✗)
+- figure-8 → 8자 드리블, floater → 플로터, euro step → 유로스텝
+- Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
+'''}
 **Instructions:**
 1. Incorporate the user's feedback into a revised weekly routine.
 2. Preserve all parts of the previous response that are NOT affected

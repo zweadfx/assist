@@ -183,6 +183,7 @@ class ChromaDBManager:
         for drill in drills:
             metadata = {
                 "name": drill["name"],
+                "name_ko": drill.get("name_ko", ""),
                 "category": drill["category"],
                 "difficulty": drill["difficulty"],
                 "phase": drill["phase"],
