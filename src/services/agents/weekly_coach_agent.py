@@ -296,7 +296,6 @@ Available Drills from Database:
 
 **Language:**
 Respond in {language_name}. All string fields must be written in {language_name}.
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 **Instructions:**
 1. Create a weekly routine with {training_days} days.
@@ -318,8 +317,12 @@ Respond in {language_name}. All string fields must be written in {language_name}
 8. Create a meaningful day_label for each day reflecting its focus (e.g., "Day 1 - Shooting Focus" or "1일차 - 슈팅 집중" in Korean).
 9. Write a weekly_title that captures the overall training theme.
 10. Write a coach_overview with strategic advice for the week (recovery tips, progression notes, motivation).
+11. If "Free Text Request" is provided, actively reflect its content throughout
+    the routine — incorporate the requested elements into drill descriptions,
+    coaching_tips, day_labels, and coach_overview. Do not treat it as optional context.
 
 **Output a JSON object strictly following this schema:**
+{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 ```json
 {schema_json}
 ```
