@@ -39,10 +39,11 @@ async def lifespan(app: FastAPI):
     On startup, it initializes the vector database if it's empty.
     """
     logger.info("Application startup...")
-    # Create relational DB tables (no-op if they already exist)
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables initialized.")
     try:
+        # Create relational DB tables (no-op if they already exist)
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables initialized.")
+
         chroma_manager._ensure_initialized()
         if chroma_manager.collection.count() == 0:
             logger.info("Drills collection is empty. Initializing...")
