@@ -40,7 +40,7 @@ SENSORY_TAG_MAP: dict[str, str] = {
 # Korean Basketball Terminology Guide (injected into prompts when language=ko)
 KO_BASKETBALL_TERMINOLOGY = """
 **한국어 농구 용어 규칙:**
-아래 용어 매핑표�� 반드시 따를 것. 표에 없는 영어 기술명은 한글 음차로 표기.
+아래 용어 매핑표를 반드시 따를 것. 표에 없는 영어 기술명은 한글 음차로 표기.
 
 | English | 한국어 |
 |---------|--------|
@@ -68,7 +68,7 @@ KO_BASKETBALL_TERMINOLOGY = """
 | pick and roll | 픽앤롤 |
 | screen | 스크린 |
 | fast break | 속공 |
-| transition | 전��� 공격 |
+| transition | 전환 공격 |
 | closeout | 클로즈아웃 |
 | defensive slide | 디펜스 슬라이드 |
 | defensive stance | 수비 자세 |
@@ -95,7 +95,7 @@ KO_BASKETBALL_TERMINOLOGY = """
 | dynamic stretching | 동적 스트레칭 |
 | static stretching | 정적 스트레칭 |
 
-- 위 표에 있는 용어는 반드시 한���어 컬럼의 표현을 사용할 것
+- 위 표에 있는 용어는 반드시 한국어 컬럼의 표현을 사용할 것
 - Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
 """
 
