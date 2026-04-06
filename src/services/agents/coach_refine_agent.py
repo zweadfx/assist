@@ -134,6 +134,9 @@ Respond in {language_name}. All string fields must be in {language_name}.
 1. Incorporate the user's feedback into a revised skill breakdown.
 2. Preserve all parts of the previous response that are NOT affected
    by the feedback. Only modify what the user explicitly requested.
+   Preserve any personalized elements or free_text customizations from
+   the user's original request unless the feedback explicitly asks to
+   change them.
 3. The sum of all step durations MUST equal exactly {available_time} minutes.
 4. Each step must have: name, duration_min, description, focus_point,
    success_criteria.

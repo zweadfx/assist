@@ -156,6 +156,9 @@ Respond in {language_name}. All string fields must be in {language_name}.
 1. Incorporate the user's feedback into a revised weekly routine.
 2. Preserve all parts of the previous response that are NOT affected
    by the feedback. Only modify what the user explicitly requested.
+   Preserve any personalized elements or free_text customizations from
+   the user's original request unless the feedback explicitly asks to
+   change them.
 3. Each day must have exactly 3 phases:
    - "warmup": {warmup_min} min
    - "main": {main_min} min
