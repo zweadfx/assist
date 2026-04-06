@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 
 from src.core.security import (
     create_access_token,
+    create_refresh_token,
     decode_access_token,
+    decode_refresh_token,
     hash_password,
     verify_password,
 )
@@ -16,6 +18,7 @@ from src.db.database import get_db
 from src.db.models import User
 from src.models.auth_schema import (
     LoginRequest,
+    RefreshRequest,
     SignupRequest,
     TokenResponse,
     UserResponse,
@@ -86,6 +89,28 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
             detail="Incorrect email or password.",
         )
 
-    token = create_access_token(subject=user.email)
+    access = create_access_token(subject=user.email)
+    refresh = create_refresh_token(subject=user.email)
     logger.info("User logged in: %s", user.email)
-    return TokenResponse(access_token=token)
+    return TokenResponse(access_token=access, refresh_token=refresh)
+
+
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh(request: RefreshRequest, db: Session = Depends(get_db)):
+    """Issue a new access token using a valid refresh token."""
+    email = decode_refresh_token(request.refresh_token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token.",
+        )
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found.",
+        )
+    access = create_access_token(subject=user.email)
+    refresh = create_refresh_token(subject=user.email)
+    logger.info("Token refreshed for: %s", user.email)
+    return TokenResponse(access_token=access, refresh_token=refresh)
