@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.v1.router import api_router
+from src.db import models as _db_models  # noqa: F401 — ensure models are registered
+from src.db.database import Base, engine
 from src.core.constants import (
     DRILLS_FILE_PATH,
     FIBA_RULES_PDF_PATH,
@@ -37,6 +39,9 @@ async def lifespan(app: FastAPI):
     On startup, it initializes the vector database if it's empty.
     """
     logger.info("Application startup...")
+    # Create relational DB tables (no-op if they already exist)
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables initialized.")
     try:
         chroma_manager._ensure_initialized()
         if chroma_manager.collection.count() == 0:
