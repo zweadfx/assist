@@ -8,6 +8,7 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
+from src.core.constants import KO_BASKETBALL_TERMINOLOGY
 from src.models.weekly_schema import DailyPlan, WeeklyRoutineResponse
 from src.services.agents.coach_agent import _parse_free_text
 from src.services.rag.chroma_db import chroma_manager
@@ -295,14 +296,7 @@ Available Drills from Database:
 
 **Language:**
 Respond in {language_name}. All string fields must be written in {language_name}.
-{"" if language != "ko" else '''
-**한국어 농구 용어 규칙:**
-- 한국 농구에서 실제로 통용되는 표현을 사용할 것
-- 영어 기술명은 한글 음차 그대로 표기 (예: crossover → 크로스오버, behind the back → 비하인드 더 백, step-back → 스텝백)
-- 번역하면 어색한 용어는 번역하지 말 것 (예: weak hand → "약손" ✓, "비우수 손" ✗)
-- figure-8 → 8자 드리블, floater → 플로터, euro step → 유로스텝
-- Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
-'''}
+{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 **Instructions:**
 1. Create a weekly routine with {training_days} days.
