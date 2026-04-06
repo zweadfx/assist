@@ -75,15 +75,18 @@ async def signup(request: SignupRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    logger.info("New user registered: %s", user.email)
+    logger.info("New user registered: id=%s", user.id)
     return user
 
 
 @router.post("/login", response_model=TokenResponse)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     """Authenticate and return a JWT access token."""
+    DUMMY_HASH = "$2b$12$000000000000000000000uGEAvOBGOMqJLqhQ0VUqFMo/PL6HSqaS"
     user = db.query(User).filter(User.email == request.email).first()
-    if not user or not verify_password(request.password, user.hashed_password):
+    hashed = user.hashed_password if user else DUMMY_HASH
+    valid = verify_password(request.password, hashed)
+    if not user or not valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password.",
@@ -91,7 +94,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
 
     access = create_access_token(subject=user.email)
     refresh = create_refresh_token(subject=user.email)
-    logger.info("User logged in: %s", user.email)
+    logger.info("User logged in: id=%s", user.id)
     return TokenResponse(access_token=access, refresh_token=refresh)
 
 
@@ -112,5 +115,5 @@ async def refresh(request: RefreshRequest, db: Session = Depends(get_db)):
         )
     access = create_access_token(subject=user.email)
     refresh = create_refresh_token(subject=user.email)
-    logger.info("Token refreshed for: %s", user.email)
+    logger.info("Token refreshed: id=%s", user.id)
     return TokenResponse(access_token=access, refresh_token=refresh)
