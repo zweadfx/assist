@@ -231,3 +231,12 @@ assist-frontend/public/swe-worker-*.js
 assist-frontend/public/workbox-*.js
 assist-frontend/public/workbox-*.js.map
 scripts/eval/results/*.md
+
+# AI Coding Assistants / code-review-graph
+.cursorrules
+.mcp.json
+.opencode.json
+.windsurfrules
+AGENTS.md
+CLAUDE.md
+GEMINI.md
