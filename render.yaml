@@ -1,3 +1,9 @@
+databases:
+  - name: assist-db
+    plan: free
+    databaseName: assist
+    user: assist
+
 services:
   - type: web
     name: assist-api
@@ -8,6 +14,12 @@ services:
     envVars:
       - key: OPENAI_API_KEY
         sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: assist-db
+          property: connectionString
       - key: CHROMA_DB_PATH
         value: ./data/chroma
       - key: PYTHON_VERSION
