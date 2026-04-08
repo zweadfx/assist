@@ -7,15 +7,20 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.core.config import settings
 
-if settings.DATABASE_URL.startswith("sqlite"):
-    db_path = settings.DATABASE_URL.replace("sqlite:///", "")
+database_url = settings.DATABASE_URL
+# Render provides "postgres://" but SQLAlchemy requires "postgresql://"
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+if database_url.startswith("sqlite"):
+    db_path = database_url.replace("sqlite:///", "")
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    database_url,
     connect_args=(
         {"check_same_thread": False}
-        if settings.DATABASE_URL.startswith("sqlite")
+        if database_url.startswith("sqlite")
         else {}
     ),
 )
