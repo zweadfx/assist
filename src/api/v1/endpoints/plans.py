@@ -35,8 +35,8 @@ def save_plan(
 
 @router.get("/", response_model=SuccessResponse[list[SavedPlanResponse]])
 def get_plans(
-    year: int = Query(...),
-    month: int = Query(...),
+    year: int = Query(..., ge=1, le=9999),
+    month: int = Query(..., ge=1, le=12),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> SuccessResponse[list[SavedPlanResponse]]:
