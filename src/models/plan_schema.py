@@ -28,5 +28,5 @@ class SavedPlanResponse(BaseModel):
 
 
 class CompleteDayRequest(BaseModel):
-    day_number: int
+    day_number: int = Field(..., ge=1)
     completed: bool
