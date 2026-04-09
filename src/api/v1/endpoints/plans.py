@@ -82,6 +82,9 @@ def complete_plan_day(
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
+    if req.day_number < 1 or req.day_number > plan.total_days:
+        raise HTTPException(status_code=422, detail="day_number out of range")
+
     completed: list[int] = list(plan.completed_days or [])
     if req.completed:
         if req.day_number not in completed:
