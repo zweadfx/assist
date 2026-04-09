@@ -3,15 +3,15 @@
 from datetime import date, datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SavePlanRequest(BaseModel):
     plan_type: Literal["weekly", "skill"]
-    title: str
+    title: str = Field(..., min_length=1, max_length=200)
     data: dict[str, Any]
     start_date: date
-    total_days: int
+    total_days: int = Field(..., ge=1)
 
 
 class SavedPlanResponse(BaseModel):
