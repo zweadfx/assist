@@ -191,7 +191,7 @@ app.add_middleware(
         "http://localhost:3000",
         "https://assist-frontend-plum.vercel.app",
     ],
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
