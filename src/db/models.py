@@ -1,9 +1,9 @@
 """SQLAlchemy ORM models."""
 
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db.database import Base
@@ -32,7 +32,7 @@ class SavedPlan(Base):
     plan_type: Mapped[str] = mapped_column(String(10), nullable=False)  # "weekly" | "skill"
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     data: Mapped[Any] = mapped_column(JSON, nullable=False)
-    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    training_dates: Mapped[Any] = mapped_column(JSON, nullable=False)  # ["2026-04-10", "2026-04-12", ...]
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
     completed_days: Mapped[Any] = mapped_column(JSON, nullable=False, default=list)
     created_at: Mapped[datetime] = mapped_column(

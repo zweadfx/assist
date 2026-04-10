@@ -23,8 +23,8 @@ def save_plan(
         plan_type=req.plan_type,
         title=req.title,
         data=req.data,
-        start_date=req.start_date,
-        total_days=req.total_days,
+        training_dates=[d.isoformat() for d in req.training_dates],
+        total_days=len(req.training_dates),
         completed_days=[],
     )
     db.add(plan)
@@ -40,29 +40,17 @@ def get_plans(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> SuccessResponse[list[SavedPlanResponse]]:
-    from calendar import monthrange
-    from datetime import date
-
-    first_day = date(year, month, 1)
-    last_day = date(year, month, monthrange(year, month)[1])
-
     plans = (
         db.query(SavedPlan)
-        .filter(
-            SavedPlan.user_id == current_user.id,
-            SavedPlan.start_date <= last_day,
-        )
-        .order_by(SavedPlan.start_date)
+        .filter(SavedPlan.user_id == current_user.id)
         .all()
     )
 
-    # Filter: plans whose date range overlaps with the requested month
+    # Filter: plans with any training_date in the requested month
+    month_prefix = f"{year:04d}-{month:02d}-"
     result = []
     for plan in plans:
-        from datetime import timedelta
-
-        plan_end = plan.start_date + timedelta(days=plan.total_days - 1)
-        if plan_end >= first_day:
+        if any(d.startswith(month_prefix) for d in (plan.training_dates or [])):
             result.append(SavedPlanResponse.model_validate(plan))
 
     return SuccessResponse(data=result)
@@ -82,7 +70,7 @@ def complete_plan_day(
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
-    if req.day_number < 1 or req.day_number > plan.total_days:
+    if req.day_number < 1 or req.day_number > len(plan.training_dates or []):
         raise HTTPException(status_code=422, detail="day_number out of range")
 
     completed: list[int] = list(plan.completed_days or [])
