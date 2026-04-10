@@ -10,8 +10,7 @@ class SavePlanRequest(BaseModel):
     plan_type: Literal["weekly", "skill"]
     title: str = Field(..., min_length=1, max_length=200)
     data: dict[str, Any]
-    start_date: date
-    total_days: int = Field(..., ge=1)
+    training_dates: list[date] = Field(..., min_length=1)
 
 
 class SavedPlanResponse(BaseModel):
@@ -19,7 +18,7 @@ class SavedPlanResponse(BaseModel):
     plan_type: str
     title: str
     data: dict[str, Any]
-    start_date: date
+    training_dates: list[date]
     total_days: int
     completed_days: list[int]
     created_at: datetime
