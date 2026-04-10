@@ -40,6 +40,17 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Application startup...")
     try:
+        # Migrate saved_plans: drop if old schema (start_date column exists)
+        from sqlalchemy import inspect, text
+        inspector = inspect(engine)
+        if "saved_plans" in inspector.get_table_names():
+            columns = [c["name"] for c in inspector.get_columns("saved_plans")]
+            if "start_date" in columns:
+                with engine.connect() as conn:
+                    conn.execute(text("DROP TABLE saved_plans"))
+                    conn.commit()
+                logger.info("Dropped old saved_plans table (start_date → training_dates migration).")
+
         # Create relational DB tables (no-op if they already exist)
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables initialized.")
