@@ -1,17 +1,15 @@
 import json
 import logging
-from typing import Dict, List, TypedDict
+from typing import List, TypedDict
 
 import openai
-from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
 from src.core.constants import KO_BASKETBALL_TERMINOLOGY
-from src.models.weekly_schema import DailyPlan, WeeklyRoutineResponse
+from src.models.weekly_schema import WeeklyRoutineResponse
 from src.services.agents.coach_agent import _parse_free_text
-from src.services.rag.chroma_db import chroma_manager
 from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
@@ -23,7 +21,6 @@ class WeeklyCoachState(TypedDict):
     messages: List[BaseMessage]
     user_info: dict
     week_plan: dict  # plan_week node result: day-to-focus mapping
-    context: dict  # retrieve node result: day-to-drills mapping
     final_response: str
 
 
@@ -135,106 +132,11 @@ JSON Output:"""
         return {"week_plan": fallback_plan}
 
 
-def retrieve_drills(state: WeeklyCoachState) -> dict:
-    """Retrieves drills from ChromaDB for each day's focus areas."""
-    logger.info("WEEKLY NODE: Retrieving Drills")
-    user_info = state["user_info"]
-    week_plan = state["week_plan"]
-    skill_level = user_info.get("skill_level", "")
-    user_equipment = {e.strip().lower() for e in user_info.get("equipment", [])}
-
-    level_phrase = f"{skill_level} " if skill_level else ""
-    equipment_str = (
-        ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
-    )
-
-    day_drills: Dict[str, List[Dict]] = {}
-    used_drill_ids: set[str] = set()
-
-    for day_key in sorted(week_plan.keys(), key=int):
-        focus_areas = week_plan[day_key]
-        drills_for_day = []
-
-        for focus_area in focus_areas:
-            query_text = (
-                f"A {level_phrase}basketball drill focusing on improving "
-                f"{focus_area} skills using {equipment_str}."
-            )
-
-            try:
-                where_filter = {"category": focus_area} if focus_area else None
-                results = chroma_manager.query_drills(
-                    query_texts=[query_text], n_results=10, where=where_filter
-                )
-
-                if results and results.get("documents"):
-                    documents = results["documents"][0]
-                    metadatas = results["metadatas"][0]
-                    ids = results.get("ids", [[]])[0]
-
-                    for i, doc_content in enumerate(documents):
-                        metadata = metadatas[i]
-                        drill_id = ids[i] if i < len(ids) else "unknown"
-
-                        # Equipment filter
-                        required_equipment_str = metadata.get("required_equipment", "")
-                        if required_equipment_str:
-                            required = {
-                                t.strip().lower()
-                                for t in required_equipment_str.split(",")
-                            }
-                            if not required.issubset(user_equipment):
-                                continue
-
-                        drills_for_day.append(
-                            {
-                                "id": drill_id,
-                                "content": doc_content,
-                                "metadata": metadata,
-                            }
-                        )
-            except Exception as e:
-                logger.warning(
-                    "Failed to retrieve drills for day %s, focus %s: %s",
-                    day_key,
-                    focus_area,
-                    e,
-                )
-
-        fresh = [d for d in drills_for_day if d["id"] not in used_drill_ids]
-        reused = [d for d in drills_for_day if d["id"] in used_drill_ids]
-        final_drills = fresh + reused
-
-        day_drills[day_key] = final_drills
-        used_drill_ids.update(d["id"] for d in fresh)
-        logger.info(
-            "Day %s: %d drills (%d fresh, %d reused) for %s",
-            day_key,
-            len(final_drills),
-            len(fresh),
-            len(reused),
-            focus_areas,
-        )
-
-    all_ids = [d["id"] for drills in day_drills.values() for d in drills]
-    if all_ids:
-        diversity = len(set(all_ids)) / len(all_ids)
-        logger.info(
-            "Drill diversity: %d unique / %d total (%.0f%%)",
-            len(set(all_ids)),
-            len(all_ids),
-            diversity * 100,
-        )
-
-    return {"context": day_drills}
-
-
 def generate_weekly_routine(state: WeeklyCoachState) -> dict:
     """Generates the complete weekly routine using LLM."""
     logger.info("WEEKLY NODE: Generating Weekly Routine")
     user_info = state["user_info"]
     week_plan = state["week_plan"]
-    day_drills = state["context"]
 
     training_days = user_info.get("training_days", 3)
     available_time = user_info.get("available_time_per_day_min", 60)
@@ -246,25 +148,6 @@ def generate_weekly_routine(state: WeeklyCoachState) -> dict:
     cooldown_min = max(1, int(available_time * 0.15))
     main_min = max(1, available_time - warmup_min - cooldown_min)
 
-    # Build per-day context strings
-    day_contexts = {}
-    for day_key in sorted(week_plan.keys(), key=int):
-        drills = day_drills.get(day_key, [])
-        if drills:
-            context_str = "\n\n".join(
-                f"Drill ID: {d.get('id', 'N/A')}\n"
-                f"Drill Name: {d['metadata'].get('name_ko') or d['metadata'].get('name', 'N/A') if language == 'ko' else d['metadata'].get('name', 'N/A')}\n"
-                f"Phase: {d['metadata'].get('phase', 'N/A')}\n"
-                f"Difficulty: {d['metadata'].get('difficulty', 'N/A')}\n"
-                f"Suggested Duration: {d['metadata'].get('duration_min', 'N/A')} min\n"
-                f"Required Equipment: {d['metadata'].get('required_equipment', 'none')}\n"
-                f"Description: {d['content']}"
-                for d in drills
-            )
-        else:
-            context_str = "No specific drills found in the database for this day."
-        day_contexts[day_key] = context_str
-
     # Build the full day plans section for the prompt
     days_section = ""
     for day_key in sorted(week_plan.keys(), key=int):
@@ -272,8 +155,6 @@ def generate_weekly_routine(state: WeeklyCoachState) -> dict:
         days_section += f"""
 --- Day {day_key} ---
 Focus Areas: {", ".join(focus)}
-Available Drills from Database:
-{day_contexts[day_key]}
 """
 
     schema_json = json.dumps(WeeklyRoutineResponse.model_json_schema(), indent=2)
@@ -291,7 +172,7 @@ Available Drills from Database:
 - Special Notes: {user_info.get("special_notes") or "None"}
 - Free Text Request: {user_info.get("free_text") or "None"}
 
-**Weekly Plan & Available Drills:**
+**Weekly Plan:**
 {days_section}
 
 **Language:**
@@ -304,20 +185,19 @@ Respond in {language_name}. All string fields must be written in {language_name}
    - "main": {main_min} min
    - "cooldown": {cooldown_min} min
 3. The sum of all drill durations for each day MUST equal exactly {available_time} minutes.
-4. Prioritize drills from the "Available Drills from Database" section. Use their exact names and drill IDs when possible.
-5. If the database drills are insufficient, create custom variations based on existing drills. Mark these with "is_custom": true and use IDs like "custom-day1-main-1".
-6. MINIMIZE drill repetition across days. Each day should feel fresh with different drills.
-7. Each drill needs:
-   - drill_id: Use the original drill ID from the database, or "custom-dayN-phase-N" for custom drills
+4. Design creative, diverse drills tailored to the user's skill level and equipment.
+5. MINIMIZE drill repetition across days. Each day should feel fresh with different drills.
+6. Each drill needs:
+   - drill_id: Use IDs like "day1-warmup-1", "day2-main-2"
    - name: Drill name
    - duration_min: Duration fitting the phase allocation
    - description: 2-3 sentences on how to perform the drill
    - coaching_tip: A practical tip tailored to {skill_level} level
-   - is_custom: false for DB drills, true for LLM-generated variations
-8. Create a meaningful day_label for each day reflecting its focus (e.g., "Day 1 - Shooting Focus" or "1일차 - 슈팅 집중" in Korean).
-9. Write a weekly_title that captures the overall training theme.
-10. Write a coach_overview with strategic advice for the week (recovery tips, progression notes, motivation).
-11. If "Free Text Request" is provided, actively reflect its content throughout
+   - is_custom: true
+7. Create a meaningful day_label for each day reflecting its focus (e.g., "Day 1 - Shooting Focus" or "1일차 - 슈팅 집중" in Korean).
+8. Write a weekly_title that captures the overall training theme.
+9. Write a coach_overview with strategic advice for the week (recovery tips, progression notes, motivation).
+10. If "Free Text Request" is provided, actively reflect its content throughout
     the routine — incorporate the requested elements into drill descriptions,
     coaching_tips, day_labels, and coach_overview. Do not treat it as optional context.
 
@@ -375,14 +255,12 @@ workflow = StateGraph(WeeklyCoachState)
 # Add nodes
 workflow.add_node("diagnose", diagnose_user_state)
 workflow.add_node("plan_week", plan_week)
-workflow.add_node("retrieve", retrieve_drills)
 workflow.add_node("generate", generate_weekly_routine)
 
-# Define edges: diagnose → plan_week → retrieve → generate → END
+# Define edges: diagnose → plan_week → generate → END
 workflow.set_entry_point("diagnose")
 workflow.add_edge("diagnose", "plan_week")
-workflow.add_edge("plan_week", "retrieve")
-workflow.add_edge("retrieve", "generate")
+workflow.add_edge("plan_week", "generate")
 workflow.add_edge("generate", END)
 
 # Compile the graph
