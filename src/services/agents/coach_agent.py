@@ -3,14 +3,12 @@ import logging
 from typing import List, TypedDict
 
 import openai
-from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field, ValidationError
 
 from src.core.constants import KO_BASKETBALL_TERMINOLOGY
 from src.models.skill_schema import Step
-from src.services.rag.chroma_db import chroma_manager
 from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
@@ -24,7 +22,6 @@ class CoachAgentState(TypedDict):
 
     messages: List[BaseMessage]
     user_info: dict
-    context: List[Document]
     final_response: str
 
 
@@ -121,71 +118,6 @@ def diagnose_user_state(state: CoachAgentState) -> dict:
     return {"user_info": user_info}
 
 
-def retrieve_drills(state: CoachAgentState) -> dict:
-    """
-    Retrieves relevant drills from the vector store based on user_info.
-    Uses specific_skill for semantic search when available, otherwise
-    falls back to category-based search.
-    """
-    logger.info("NODE: Retrieving Drills")
-    user_info = state["user_info"]
-    category = user_info.get("category", "")
-    specific_skill = user_info.get("specific_skill", "")
-    skill_level = user_info.get("skill_level", "")
-    user_equipment = set(user_info.get("equipment", []))
-
-    level_phrase = f"{skill_level} " if skill_level else ""
-    equipment_str = (
-        ", ".join(sorted(user_equipment)) if user_equipment else "no equipment"
-    )
-
-    if specific_skill:
-        query_text = (
-            f"A {level_phrase}basketball drill for mastering {specific_skill} "
-            f"technique using {equipment_str}."
-        )
-    else:
-        query_text = (
-            f"A {level_phrase}basketball drill focusing on improving "
-            f"{category} skills using {equipment_str}."
-        )
-    logger.info("Querying for drills: %s", query_text)
-
-    unfiltered_docs = []
-    try:
-        where_filter = {"category": category} if category else None
-
-        results = chroma_manager.query_drills(
-            query_texts=[query_text], n_results=10, where=where_filter
-        )
-        if results and results.get("documents"):
-            documents = results["documents"][0]
-            metadatas = results["metadatas"][0]
-            for i, doc_content in enumerate(documents):
-                doc = Document(page_content=doc_content, metadata=metadatas[i])
-                unfiltered_docs.append(doc)
-            logger.info("Retrieved %d candidate drills", len(unfiltered_docs))
-        else:
-            logger.warning("No drills retrieved from DB")
-    except Exception as e:
-        logger.exception("Failed to retrieve drills from RAG")
-        raise ValueError("Failed to retrieve drills from database") from e
-
-    filtered_docs = []
-    for doc in unfiltered_docs:
-        required_equipment_str = doc.metadata.get("required_equipment", "")
-        if not required_equipment_str:
-            filtered_docs.append(doc)
-            continue
-
-        required_equipment = set(required_equipment_str.split(","))
-        if required_equipment.issubset(user_equipment):
-            filtered_docs.append(doc)
-
-    logger.info("Filtered down to %d drills based on equipment", len(filtered_docs))
-    return {"context": filtered_docs}
-
-
 class SkillBreakdownCard(BaseModel):
     """Data model for the micro-step skill breakdown output."""
 
@@ -208,26 +140,12 @@ class SkillBreakdownCard(BaseModel):
 def generate_skill_breakdown(state: CoachAgentState) -> dict:
     """
     Generates a micro-step progressive breakdown of a single basketball
-    skill by synthesizing user preferences and retrieved reference drills.
+    skill based on the user's profile and preferences.
     """
     logger.info("NODE: Generating Skill Breakdown")
     user_info = state["user_info"]
-    context_docs = state["context"]
 
     language = user_info.get("language", "en")
-
-    context_str = "\n\n".join(
-        [
-            f"Drill Name: {doc.metadata.get('name_ko') or doc.metadata.get('name', 'N/A') if language == 'ko' else doc.metadata.get('name', 'N/A')}\n"
-            f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
-            f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
-            f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
-            f"Description: {doc.page_content}"
-            for doc in context_docs
-        ]
-    )
-    if not context_str:
-        context_str = "No specific drills found in the database."
 
     schema_json = json.dumps(SkillBreakdownCard.model_json_schema(), indent=2)
 
@@ -262,9 +180,6 @@ breaking down individual techniques into progressive micro-steps.
 
 **Skill Selection:**
 {skill_instruction}
-
-**Reference Drills from Database (use as inspiration):**
-{context_str}
 
 **Language:**
 Respond in {language_name}. All string fields (skill_name, coach_message,
@@ -339,12 +254,10 @@ JSON Output:
 workflow = StateGraph(CoachAgentState)
 
 workflow.add_node("diagnose", diagnose_user_state)
-workflow.add_node("retrieve", retrieve_drills)
 workflow.add_node("generate", generate_skill_breakdown)
 
 workflow.set_entry_point("diagnose")
-workflow.add_edge("diagnose", "retrieve")
-workflow.add_edge("retrieve", "generate")
+workflow.add_edge("diagnose", "generate")
 workflow.add_edge("generate", END)
 
 coach_agent_graph = workflow.compile()
