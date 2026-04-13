@@ -193,7 +193,6 @@ Respond in {language_name}. All string fields must be written in {language_name}
    - duration_min: Duration fitting the phase allocation
    - description: 2-3 sentences on how to perform the drill
    - coaching_tip: A practical tip tailored to {skill_level} level
-   - is_custom: true
 7. Create a meaningful day_label for each day reflecting its focus (e.g., "Day 1 - Shooting Focus" or "1일차 - 슈팅 집중" in Korean).
 8. Write a weekly_title that captures the overall training theme.
 9. Write a coach_overview with strategic advice for the week (recovery tips, progression notes, motivation).

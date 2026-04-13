@@ -1,10 +1,9 @@
 """
 Coach Refine Agent: refines a previously generated skill breakdown
-based on user feedback, using a LangGraph conditional-edge loop.
+based on user feedback, using a LangGraph workflow.
 
 Graph:
-    classify_feedback ──┬── re_retrieve ──→ refine_generate ──→ END
-                        └─────────────────→ refine_generate ──→ END
+    classify_feedback ──→ refine_generate ──→ END
 """
 
 import json
@@ -12,13 +11,12 @@ import logging
 from typing import List, TypedDict
 
 import openai
-from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 from pydantic import ValidationError
 
 from src.core.constants import KO_BASKETBALL_TERMINOLOGY
-from src.services.agents.coach_agent import SkillBreakdownCard, retrieve_drills
+from src.services.agents.coach_agent import SkillBreakdownCard
 from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
@@ -29,7 +27,6 @@ class CoachRefineState(TypedDict):
 
     messages: List[BaseMessage]
     user_info: dict
-    context: List[Document]
     previous_response: str
     feedback: str
     feedback_type: str
@@ -78,33 +75,15 @@ Output ONLY: re_retrieve OR regenerate_only"""
         return {"feedback_type": "regenerate_only"}
 
 
-def re_retrieve(state: CoachRefineState) -> dict:
-    """Re-retrieve drills from ChromaDB using existing retrieve_drills."""
-    logger.info("REFINE NODE: Re-retrieving Drills")
-    return retrieve_drills(state)
-
-
 def refine_generate(state: CoachRefineState) -> dict:
     """Generate a refined skill breakdown based on feedback."""
     logger.info("REFINE NODE: Generating Refined Skill Breakdown")
     user_info = state["user_info"]
     previous_response = state["previous_response"]
     feedback = state["feedback"]
-    context_docs = state.get("context", [])
 
     language = user_info.get("language", "en")
     language_name = "Korean" if language == "ko" else "English"
-
-    context_str = "\n\n".join(
-        f"Drill Name: {doc.metadata.get('name_ko') or doc.metadata.get('name', 'N/A') if language == 'ko' else doc.metadata.get('name', 'N/A')}\n"
-        f"Difficulty: {doc.metadata.get('difficulty', 'N/A')}\n"
-        f"Suggested Duration: {doc.metadata.get('duration_min', 'N/A')} min\n"
-        f"Required Equipment: {doc.metadata.get('required_equipment', 'none')}\n"
-        f"Description: {doc.page_content}"
-        for doc in context_docs
-    )
-    if not context_str:
-        context_str = "No specific drills found in the database."
 
     schema_json = json.dumps(SkillBreakdownCard.model_json_schema(), indent=2)
     available_time = user_info.get("available_time_min", 20)
@@ -123,9 +102,6 @@ a skill breakdown but wants changes based on their feedback.
 
 **User's Feedback:**
 "{feedback}"
-
-**Reference Drills from Database (use as inspiration):**
-{context_str}
 
 **Language:**
 Respond in {language_name}. All string fields must be in {language_name}.
@@ -186,28 +162,14 @@ JSON Output:
         ) from e
 
 
-def route_feedback(state: CoachRefineState) -> str:
-    """Route based on feedback classification."""
-    return state.get("feedback_type", "regenerate_only")
-
-
 # Build the refine graph
 workflow = StateGraph(CoachRefineState)
 
 workflow.add_node("classify_feedback", classify_feedback)
-workflow.add_node("re_retrieve", re_retrieve)
 workflow.add_node("refine_generate", refine_generate)
 
 workflow.set_entry_point("classify_feedback")
-workflow.add_conditional_edges(
-    "classify_feedback",
-    route_feedback,
-    {
-        "re_retrieve": "re_retrieve",
-        "regenerate_only": "refine_generate",
-    },
-)
-workflow.add_edge("re_retrieve", "refine_generate")
+workflow.add_edge("classify_feedback", "refine_generate")
 workflow.add_edge("refine_generate", END)
 
 coach_refine_graph = workflow.compile()
