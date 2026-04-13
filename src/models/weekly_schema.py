@@ -66,10 +66,6 @@ class WeeklyDrill(BaseModel):
     coaching_tip: str = Field(
         ..., description="An AI-generated tip for performing the drill effectively."
     )
-    is_custom: bool = Field(
-        default=False,
-        description="Whether this drill was generated/adapted by the LLM.",
-    )
 
 
 class DailyPlan(BaseModel):

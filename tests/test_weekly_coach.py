@@ -37,7 +37,6 @@ def _build_fake_day(day_number, focus_areas, time_per_day=30):
                 "duration_min": warmup_min,
                 "description": "Light jogging and dynamic stretches.",
                 "coaching_tip": "Keep movements controlled.",
-                "is_custom": False,
             },
             {
                 "phase": "main",
@@ -46,7 +45,6 @@ def _build_fake_day(day_number, focus_areas, time_per_day=30):
                 "duration_min": main_min,
                 "description": "Main training drill for the day.",
                 "coaching_tip": "Stay focused on technique.",
-                "is_custom": False,
             },
             {
                 "phase": "cooldown",
@@ -55,7 +53,6 @@ def _build_fake_day(day_number, focus_areas, time_per_day=30):
                 "duration_min": cooldown_min,
                 "description": "Full body static stretches.",
                 "coaching_tip": "Hold each stretch for 20 seconds.",
-                "is_custom": False,
             },
         ],
     }
@@ -107,7 +104,6 @@ class TestWeeklySchemaValidation:
             "duration_min": duration_min,
             "description": "Test description",
             "coaching_tip": "Test tip",
-            "is_custom": False,
         }
         defaults.update(kwargs)
         return WeeklyDrill(**defaults)

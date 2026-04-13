@@ -127,10 +127,8 @@ async def refine_skill_routine(
                 )
             ],
             "user_info": request.original_request.model_dump(),
-            "context": [],
             "previous_response": request.previous_response.model_dump_json(),
             "feedback": request.feedback,
-            "feedback_type": "",
             "final_response": "",
         }
 
@@ -179,10 +177,8 @@ async def refine_weekly_routine(
             ],
             "user_info": request.original_request.model_dump(),
             "week_plan": week_plan,
-            "context": {},
             "previous_response": request.previous_response.model_dump_json(),
             "feedback": request.feedback,
-            "feedback_type": "",
             "final_response": "",
         }
 

@@ -1,10 +1,9 @@
 """
 Weekly Coach Refine Agent: refines a previously generated weekly routine
-based on user feedback, using a LangGraph conditional-edge loop.
+based on user feedback, using a LangGraph workflow.
 
 Graph:
-    classify_feedback ──┬── re_retrieve ──→ refine_generate ──→ END
-                        └─────────────────→ refine_generate ──→ END
+    refine_generate ──→ END
 """
 
 import json
@@ -18,7 +17,6 @@ from pydantic import ValidationError
 
 from src.core.constants import KO_BASKETBALL_TERMINOLOGY
 from src.models.weekly_schema import WeeklyRoutineResponse
-from src.services.agents.weekly_coach_agent import retrieve_drills
 from src.utils.llm import chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
@@ -30,59 +28,9 @@ class WeeklyRefineState(TypedDict):
     messages: List[BaseMessage]
     user_info: dict
     week_plan: dict
-    context: dict  # day-to-drills mapping
     previous_response: str
     feedback: str
-    feedback_type: str
     final_response: str
-
-
-def classify_feedback(state: WeeklyRefineState) -> dict:
-    """Classify feedback as needing re-retrieval or regeneration only."""
-    logger.info("WEEKLY REFINE NODE: Classifying Feedback")
-    feedback = state["feedback"]
-
-    prompt = f"""You are a classifier for a basketball training app.
-The user received a weekly training routine and gave feedback. Classify the feedback:
-
-- "re_retrieve": feedback asks for DIFFERENT drills, exercises, or content
-  (e.g. "다른 드릴로 바꿔줘", "different exercises", "swap the drills")
-- "regenerate_only": feedback asks for ADJUSTMENTS to existing content
-  (e.g. "화요일 빼줘", "시간 줄여줘", "make day 2 easier", "remove conditioning")
-
-User Feedback: "{feedback}"
-
-Output ONLY: re_retrieve OR regenerate_only"""
-
-    try:
-        response = chat_completion_with_retry(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-        )
-
-        msg = response.choices[0].message.content
-        feedback_type = msg.strip().lower() if msg else ""
-
-        if feedback_type not in ("re_retrieve", "regenerate_only"):
-            logger.warning(
-                "Invalid feedback_type '%s', defaulting to 'regenerate_only'",
-                feedback_type,
-            )
-            feedback_type = "regenerate_only"
-
-        logger.info("Feedback classified as: %s", feedback_type)
-        return {"feedback_type": feedback_type}
-
-    except Exception:
-        logger.exception("Error classifying feedback, defaulting to regenerate_only")
-        return {"feedback_type": "regenerate_only"}
-
-
-def re_retrieve(state: WeeklyRefineState) -> dict:
-    """Re-retrieve drills from ChromaDB using existing retrieve_drills."""
-    logger.info("WEEKLY REFINE NODE: Re-retrieving Drills")
-    return retrieve_drills(state)
 
 
 def refine_generate(state: WeeklyRefineState) -> dict:
@@ -90,7 +38,6 @@ def refine_generate(state: WeeklyRefineState) -> dict:
     logger.info("WEEKLY REFINE NODE: Generating Refined Weekly Routine")
     user_info = state["user_info"]
     week_plan = state["week_plan"]
-    day_drills = state.get("context", {})
     previous_response = state["previous_response"]
     feedback = state["feedback"]
 
@@ -100,28 +47,12 @@ def refine_generate(state: WeeklyRefineState) -> dict:
     language = user_info.get("language", "en")
     language_name = "Korean" if language == "ko" else "English"
 
-    # Build per-day context strings
     days_section = ""
     for day_key in sorted(week_plan.keys(), key=int):
         focus = week_plan[day_key]
-        drills = day_drills.get(day_key, [])
-        if drills:
-            context_str = "\n\n".join(
-                f"Drill ID: {d.get('id', 'N/A')}\n"
-                f"Drill Name: {d['metadata'].get('name_ko') or d['metadata'].get('name', 'N/A') if language == 'ko' else d['metadata'].get('name', 'N/A')}\n"
-                f"Phase: {d['metadata'].get('phase', 'N/A')}\n"
-                f"Difficulty: {d['metadata'].get('difficulty', 'N/A')}\n"
-                f"Suggested Duration: {d['metadata'].get('duration_min', 'N/A')} min\n"
-                f"Description: {d['content']}"
-                for d in drills
-            )
-        else:
-            context_str = "No specific drills found in the database for this day."
         days_section += f"""
 --- Day {day_key} ---
 Focus Areas: {", ".join(focus)}
-Available Drills from Database:
-{context_str}
 """
 
     schema_json = json.dumps(WeeklyRoutineResponse.model_json_schema(), indent=2)
@@ -146,7 +77,7 @@ training routine but wants changes based on their feedback.
 **User's Feedback:**
 "{feedback}"
 
-**Weekly Plan & Available Drills:**
+**Weekly Plan:**
 {days_section}
 
 **Language:**
@@ -211,28 +142,12 @@ JSON Output:
         ) from e
 
 
-def route_feedback(state: WeeklyRefineState) -> str:
-    """Route based on feedback classification."""
-    return state.get("feedback_type", "regenerate_only")
-
-
 # Build the refine graph
 workflow = StateGraph(WeeklyRefineState)
 
-workflow.add_node("classify_feedback", classify_feedback)
-workflow.add_node("re_retrieve", re_retrieve)
 workflow.add_node("refine_generate", refine_generate)
 
-workflow.set_entry_point("classify_feedback")
-workflow.add_conditional_edges(
-    "classify_feedback",
-    route_feedback,
-    {
-        "re_retrieve": "re_retrieve",
-        "regenerate_only": "refine_generate",
-    },
-)
-workflow.add_edge("re_retrieve", "refine_generate")
+workflow.set_entry_point("refine_generate")
 workflow.add_edge("refine_generate", END)
 
 weekly_coach_refine_graph = workflow.compile()
