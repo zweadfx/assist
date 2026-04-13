@@ -11,14 +11,12 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 from src.core.config import settings
 from src.core.constants import (
-    DRILLS_COLLECTION_NAME,
     GLOSSARY_COLLECTION_NAME,
     PLAYERS_COLLECTION_NAME,
     RULES_COLLECTION_NAME,
     SHOES_COLLECTION_NAME,
 )
 from src.services.rag.formatters import (
-    format_drill_document,
     format_glossary_document,
     format_player_document,
     format_rule_document,
@@ -39,7 +37,6 @@ class ChromaDBManager:
             threading.Lock()
         )  # Protects initialization from race conditions
         self.client = None
-        self.collection = None
         self.shoes_collection = None
         self.players_collection = None
         self.rules_collection = None
@@ -81,9 +78,6 @@ class ChromaDBManager:
             )
 
             # Create or get collections
-            self.collection = self.client.get_or_create_collection(
-                name=DRILLS_COLLECTION_NAME, embedding_function=embedding_function
-            )
             self.shoes_collection = self.client.get_or_create_collection(
                 name=SHOES_COLLECTION_NAME, embedding_function=embedding_function
             )
@@ -151,73 +145,6 @@ class ChromaDBManager:
         self._ensure_initialized()
         pdf_hash = self._compute_pdf_hash(*pdf_paths)
         self.rules_collection.modify(metadata={"pdf_hash": pdf_hash})
-
-    def add_drills(
-        self, drills: List[Dict[str, Any]], embeddings: List[List[float]]
-    ) -> None:
-        """
-        Adds drill documents and their embeddings to the ChromaDB collection.
-
-        Args:
-            drills: A list of drill documents (dictionaries).
-            embeddings: A list of corresponding embedding vectors.
-
-        Raises:
-            ValueError: If the number of drills and embeddings do not match.
-        """
-        self._ensure_initialized()
-        if len(drills) != len(embeddings):
-            raise ValueError(
-                f"The number of drills ({len(drills)}) must match the number of "
-                f"embeddings ({len(embeddings)})."
-            )
-
-        if not drills:
-            return
-
-        ids = [drill["id"] for drill in drills]
-        documents = [format_drill_document(drill) for drill in drills]
-
-        # Prepare metadata, ensuring all values are simple types for ChromaDB.
-        metadatas = []
-        for drill in drills:
-            metadata = {
-                "name": drill["name"],
-                "name_ko": drill.get("name_ko", ""),
-                "category": drill["category"],
-                "difficulty": drill["difficulty"],
-                "phase": drill["phase"],
-                # Join list into a comma-separated string for metadata compatibility
-                "required_equipment": ",".join(drill.get("required_equipment", [])),
-            }
-            metadatas.append(metadata)
-
-        self.collection.add(
-            ids=ids, embeddings=embeddings, documents=documents, metadatas=metadatas
-        )
-
-    def query_drills(
-        self,
-        query_texts: List[str],
-        n_results: int = 3,
-        where: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, List[Any]]:
-        """
-        Queries the drills collection for relevant documents.
-
-        Args:
-            query_texts: A list of query texts to search for.
-            n_results: The number of results to return per query.
-            where: An optional dictionary for metadata filtering.
-
-        Returns:
-            A dictionary containing the query results.
-        """
-        self._ensure_initialized()
-        results = self.collection.query(
-            query_texts=query_texts, n_results=n_results, where=where
-        )
-        return results
 
     def add_shoes(
         self, shoes: List[Dict[str, Any]], embeddings: List[List[float]]

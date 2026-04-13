@@ -8,11 +8,6 @@ from typing import Any, Dict
 from src.core.constants import SENSORY_TAG_MAP
 
 
-def format_drill_document(drill: Dict[str, Any]) -> str:
-    """Formats a drill dictionary into a consistent string for embedding and storage."""
-    return f"Drill: {drill['name']}\nDescription: {drill['description']}"
-
-
 def format_shoe_document(shoe: Dict[str, Any]) -> str:
     """
     Formats a shoe dictionary into a consistent string for embedding and storage.
