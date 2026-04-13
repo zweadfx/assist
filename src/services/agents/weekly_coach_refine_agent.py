@@ -3,7 +3,7 @@ Weekly Coach Refine Agent: refines a previously generated weekly routine
 based on user feedback, using a LangGraph workflow.
 
 Graph:
-    classify_feedback ──→ refine_generate ──→ END
+    refine_generate ──→ END
 """
 
 import json
@@ -30,50 +30,7 @@ class WeeklyRefineState(TypedDict):
     week_plan: dict
     previous_response: str
     feedback: str
-    feedback_type: str
     final_response: str
-
-
-def classify_feedback(state: WeeklyRefineState) -> dict:
-    """Classify feedback as needing re-retrieval or regeneration only."""
-    logger.info("WEEKLY REFINE NODE: Classifying Feedback")
-    feedback = state["feedback"]
-
-    prompt = f"""You are a classifier for a basketball training app.
-The user received a weekly training routine and gave feedback. Classify the feedback:
-
-- "re_retrieve": feedback asks for DIFFERENT drills, exercises, or content
-  (e.g. "다른 드릴로 바꿔줘", "different exercises", "swap the drills")
-- "regenerate_only": feedback asks for ADJUSTMENTS to existing content
-  (e.g. "화요일 빼줘", "시간 줄여줘", "make day 2 easier", "remove conditioning")
-
-User Feedback: "{feedback}"
-
-Output ONLY: re_retrieve OR regenerate_only"""
-
-    try:
-        response = chat_completion_with_retry(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.0,
-        )
-
-        msg = response.choices[0].message.content
-        feedback_type = msg.strip().lower() if msg else ""
-
-        if feedback_type not in ("re_retrieve", "regenerate_only"):
-            logger.warning(
-                "Invalid feedback_type '%s', defaulting to 'regenerate_only'",
-                feedback_type,
-            )
-            feedback_type = "regenerate_only"
-
-        logger.info("Feedback classified as: %s", feedback_type)
-        return {"feedback_type": feedback_type}
-
-    except Exception:
-        logger.exception("Error classifying feedback, defaulting to regenerate_only")
-        return {"feedback_type": "regenerate_only"}
 
 
 def refine_generate(state: WeeklyRefineState) -> dict:
@@ -188,11 +145,9 @@ JSON Output:
 # Build the refine graph
 workflow = StateGraph(WeeklyRefineState)
 
-workflow.add_node("classify_feedback", classify_feedback)
 workflow.add_node("refine_generate", refine_generate)
 
-workflow.set_entry_point("classify_feedback")
-workflow.add_edge("classify_feedback", "refine_generate")
+workflow.set_entry_point("refine_generate")
 workflow.add_edge("refine_generate", END)
 
 weekly_coach_refine_graph = workflow.compile()
