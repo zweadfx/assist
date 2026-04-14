@@ -17,6 +17,8 @@ from src.services.agents.weekly_coach_refine_agent import weekly_coach_refine_gr
 
 router = APIRouter()
 
+SKILL_TIMEOUT_SECONDS = 60
+
 
 @router.post("/", response_model=SuccessResponse[SkillLabResponse])
 async def create_skill_routine(
@@ -38,7 +40,10 @@ async def create_skill_routine(
         }
 
         # Invoke the agent graph in a separate thread to avoid blocking the event loop
-        final_state = await asyncio.to_thread(coach_agent_graph.invoke, initial_state)
+        final_state = await asyncio.wait_for(
+            asyncio.to_thread(coach_agent_graph.invoke, initial_state),
+            timeout=SKILL_TIMEOUT_SECONDS,
+        )
 
         # The agent's final response is a JSON string, parse and validate it
         if final_response_str := final_state.get("final_response"):
@@ -49,6 +54,11 @@ async def create_skill_routine(
                 status_code=500, detail="Agent failed to produce a final response."
             )
 
+    except asyncio.TimeoutError:
+        logger.error("Skill routine generation timed out after %ds", SKILL_TIMEOUT_SECONDS)
+        raise HTTPException(
+            status_code=504, detail="Skill routine generation timed out. Please try again."
+        )
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
@@ -132,8 +142,9 @@ async def refine_skill_routine(
             "final_response": "",
         }
 
-        final_state = await asyncio.to_thread(
-            coach_refine_graph.invoke, initial_state
+        final_state = await asyncio.wait_for(
+            asyncio.to_thread(coach_refine_graph.invoke, initial_state),
+            timeout=SKILL_TIMEOUT_SECONDS,
         )
 
         if final_response_str := final_state.get("final_response"):
@@ -145,6 +156,11 @@ async def refine_skill_routine(
                 detail="Agent failed to produce a refined response.",
             )
 
+    except asyncio.TimeoutError:
+        logger.error("Skill routine refinement timed out after %ds", SKILL_TIMEOUT_SECONDS)
+        raise HTTPException(
+            status_code=504, detail="Skill routine refinement timed out. Please try again."
+        )
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
