@@ -50,11 +50,11 @@ async def create_skill_routine(
                 status_code=500, detail="Agent failed to produce a final response."
             )
 
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as e:
         logger.error("Skill routine generation timed out after %ds", SKILL_TIMEOUT_SECONDS)
         raise HTTPException(
             status_code=504, detail="Skill routine generation timed out. Please try again."
-        )
+        ) from e
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
@@ -101,12 +101,12 @@ async def generate_weekly_routine(
                 detail="Agent failed to produce a weekly routine response.",
             )
 
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as e:
         logger.error("Weekly routine generation timed out")
         raise HTTPException(
             status_code=504,
             detail="Weekly routine generation timed out. Please try again.",
-        )
+        ) from e
     except Exception as e:
         if isinstance(e, HTTPException):
             raise
