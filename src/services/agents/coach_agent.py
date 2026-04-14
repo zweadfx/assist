@@ -202,10 +202,10 @@ step name, description, focus_point, success_criteria) must be in {language_name
 4. **Step Quality Standards (STRICTLY ENFORCE):**
    - Every step must build toward real in-game application.
      Prefer: movement-based progressions, game-speed reps, adding a defender or obstacle.
-     Avoid: purely stationary isolated reps with no game context, free throw practice
-     (unless explicitly requested), drills that train a weakness in isolation without
-     connecting to a game action (e.g., do NOT generate "weak hand free throw" —
-     instead use "weak hand drive to layup" or "weak hand finish off a screen").
+     Avoid: purely stationary isolated reps with no game context, drills that train
+     a weakness in isolation without connecting to a game action (e.g., do NOT generate
+     "weak hand free throw" — instead use "weak hand drive to layup" or
+     "weak hand finish off a screen").
    - Each step must include a concrete target or success metric
      (e.g., "8 out of 10 made", "3 sets of 45 seconds", "5 consecutive clean reps").
 5. Set difficulty_level to a short phrase showing the progression range

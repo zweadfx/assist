@@ -194,16 +194,18 @@ Respond in {language_name}. All string fields must be written in {language_name}
    - description: Step-by-step execution with specific reps, sets, or distance targets (3-4 sentences minimum)
    - coaching_tip: A practical tip tailored to {skill_level} level
 7. **Drill Quality Standards (STRICTLY ENFORCE):**
-   - The "main" phase MUST contain at least 3 distinct drills.
    - Every drill must be directly applicable to real game situations.
      Prefer: movement-based drills, combination moves, game-speed reps, competitive formats.
-     Avoid: purely stationary isolated reps with no game context, free throw practice
-     (unless explicitly requested), drills that only train a weakness in isolation
-     without connecting it to a game action (e.g., do NOT generate "weak hand free throw"
-     — instead use "weak hand finishing at the rim off a drive" or "weak hand dribble
-     penetration to layup").
+     Avoid: purely stationary isolated reps with no game context, drills that only train
+     a weakness in isolation without connecting it to a game action (e.g., do NOT generate
+     "weak hand free throw" — instead use "weak hand finishing at the rim off a drive" or
+     "weak hand dribble penetration to layup").
    - Each drill must include a concrete target or success metric
      (e.g., "10 made shots", "3 sets of 30 seconds", "5 consecutive reps").
+   - Use only real, established basketball drill names. Do not invent or combine words
+     into drill names that do not exist (e.g., never generate names like "새스트랩 드리블").
+     If combining multiple moves, use standard terms like "컴비네이션 드리블" or
+     "콤보 드리블".
 8. Create a meaningful day_label for each day reflecting its focus (e.g., "Day 1 - Shooting Focus" or "1일차 - 슈팅 집중" in Korean).
 9. Write a weekly_title that captures the overall training theme.
 10. Write a coach_overview with strategic advice for the week (recovery tips, progression notes, motivation).
