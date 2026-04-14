@@ -36,9 +36,8 @@ async def create_skill_routine(
             "user_info": request.model_dump(),
         }
 
-        # Invoke the agent graph in a separate thread to avoid blocking the event loop
         final_state = await asyncio.wait_for(
-            asyncio.to_thread(coach_agent_graph.invoke, initial_state),
+            coach_agent_graph.ainvoke(initial_state),
             timeout=SKILL_TIMEOUT_SECONDS,
         )
 
@@ -87,7 +86,7 @@ async def generate_weekly_routine(
         }
 
         final_state = await asyncio.wait_for(
-            asyncio.to_thread(weekly_coach_agent_graph.invoke, initial_state),
+            weekly_coach_agent_graph.ainvoke(initial_state),
             timeout=120,
         )
 

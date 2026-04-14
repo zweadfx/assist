@@ -32,7 +32,7 @@ async def judge_situation(
 
     try:
         final_state = await asyncio.wait_for(
-            asyncio.to_thread(judge_agent_graph.invoke, initial_state),
+            judge_agent_graph.ainvoke(initial_state),
             timeout=JUDGMENT_TIMEOUT_SECONDS,
         )
     except asyncio.TimeoutError:
