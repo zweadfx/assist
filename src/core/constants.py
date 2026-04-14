@@ -121,8 +121,9 @@ KO_BASKETBALL_TERMINOLOGY = """
 | box jump | 박스 점프 |
 | wall sit | 월 싯 |
 | plyometrics | 플라이오메트릭 |
-| warm-up | 워밍업 |
-| cool-down | 마무리 |
+| warm-up / warmup | 워밍업 |
+| cool-down / cooldown | 쿨다운 |
+| combination dribble / combo dribble | 컴비네이션 드리블 |
 | dynamic stretching | 동적 스트레칭 |
 | static stretching | 정적 스트레칭 |
 
