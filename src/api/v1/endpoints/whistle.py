@@ -5,14 +5,13 @@ from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
 from pydantic import ValidationError
 
+from src.core.constants import JUDGMENT_TIMEOUT_SECONDS
 from src.models.response_schema import SuccessResponse
 from src.models.rule_schema import WhistleRequest, WhistleResponse
 from src.services.agents.judge_agent import JudgmentParseError, judge_agent_graph
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-JUDGMENT_TIMEOUT_SECONDS = 60
 
 
 @router.post("/judge", response_model=SuccessResponse[WhistleResponse])
@@ -32,12 +31,12 @@ async def judge_situation(
 
     try:
         final_state = await asyncio.wait_for(
-            asyncio.to_thread(judge_agent_graph.invoke, initial_state),
+            judge_agent_graph.ainvoke(initial_state),
             timeout=JUDGMENT_TIMEOUT_SECONDS,
         )
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as e:
         logger.error("Judgment timed out after %ds", JUDGMENT_TIMEOUT_SECONDS)
-        raise HTTPException(status_code=504, detail="Judgment timed out. Please try again.")
+        raise HTTPException(status_code=504, detail="Judgment timed out. Please try again.") from e
     except JudgmentParseError as e:
         logger.error(
             "LLM response parse failed. raw_length=%d partial_keys=%s",
