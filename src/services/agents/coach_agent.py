@@ -206,7 +206,6 @@ step name, description, focus_point, success_criteria) must be in {language_name
    throughout the routine — incorporate the requested elements into step
    names, descriptions, and coach_message. Do not treat it as optional context.
 7. Output a JSON object strictly following this schema:
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 
 ```json
 {schema_json}
@@ -214,10 +213,15 @@ step name, description, focus_point, success_criteria) must be in {language_name
 
 JSON Output:
 """
+    messages = []
+    if language == "ko":
+        messages.append({"role": "system", "content": KO_BASKETBALL_TERMINOLOGY})
+    messages.append({"role": "user", "content": prompt})
+
     try:
         response = chat_completion_with_retry(
             model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             response_format={"type": "json_object"},
         )
 

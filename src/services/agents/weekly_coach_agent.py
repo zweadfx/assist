@@ -201,17 +201,21 @@ Respond in {language_name}. All string fields must be written in {language_name}
     coaching_tips, day_labels, and coach_overview. Do not treat it as optional context.
 
 **Output a JSON object strictly following this schema:**
-{"" if language != "ko" else KO_BASKETBALL_TERMINOLOGY}
 ```json
 {schema_json}
 ```
 
 JSON Output:"""
 
+    messages = []
+    if language == "ko":
+        messages.append({"role": "system", "content": KO_BASKETBALL_TERMINOLOGY})
+    messages.append({"role": "user", "content": prompt})
+
     try:
         response = chat_completion_with_retry(
             model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             response_format={"type": "json_object"},
         )
 
