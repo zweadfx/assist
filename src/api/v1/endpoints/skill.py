@@ -101,7 +101,7 @@ async def generate_weekly_routine(
             )
 
     except asyncio.TimeoutError as e:
-        logger.error("Weekly routine generation timed out")
+        logger.error("Weekly routine generation timed out after %ds", WEEKLY_TIMEOUT_SECONDS)
         raise HTTPException(
             status_code=504,
             detail="Weekly routine generation timed out. Please try again.",
