@@ -99,6 +99,15 @@ class DailyPlan(BaseModel):
         missing = required_phases - phases_present
         if missing:
             raise ValueError(f"Missing required phases: {', '.join(sorted(missing))}")
+        main_drills = [d for d in self.drills if d.phase == "main"]
+        if len(main_drills) < 3:
+            raise ValueError(
+                f"main phase must contain at least 3 distinct drills, "
+                f"got {len(main_drills)}"
+            )
+        distinct_ids = {d.drill_id for d in main_drills}
+        if len(distinct_ids) < len(main_drills):
+            raise ValueError("main phase must contain at least 3 distinct drills")
         return self
 
 

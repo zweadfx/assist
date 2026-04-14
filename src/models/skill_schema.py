@@ -67,8 +67,8 @@ class Step(BaseModel):
     description: str = Field(
         ...,
         description=(
-            "2-3 sentences explaining how to perform this step, "
-            "including specific reps/sets/targets."
+            "Step-by-step execution with specific reps, sets, or distance targets "
+            "(3-4 sentences minimum)."
         ),
     )
     focus_point: str = Field(
