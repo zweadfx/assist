@@ -132,6 +132,12 @@ KO_BASKETBALL_TERMINOLOGY = """
 - Reference Drills의 Drill Name이 이미 한국어로 제공된 경우 그대로 사용할 것
 """
 
+# Endpoint Timeouts (seconds)
+SKILL_TIMEOUT_SECONDS = 60
+WEEKLY_TIMEOUT_SECONDS = 120
+GEAR_TIMEOUT_SECONDS = 60
+JUDGMENT_TIMEOUT_SECONDS = 60
+
 # ChromaDB Collection Names
 SHOES_COLLECTION_NAME = "basketball_shoes"
 PLAYERS_COLLECTION_NAME = "basketball_players"

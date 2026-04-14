@@ -5,14 +5,13 @@ from fastapi import APIRouter, HTTPException
 from langchain_core.messages import HumanMessage
 from pydantic import ValidationError
 
+from src.core.constants import JUDGMENT_TIMEOUT_SECONDS
 from src.models.response_schema import SuccessResponse
 from src.models.rule_schema import WhistleRequest, WhistleResponse
 from src.services.agents.judge_agent import JudgmentParseError, judge_agent_graph
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-JUDGMENT_TIMEOUT_SECONDS = 60
 
 
 @router.post("/judge", response_model=SuccessResponse[WhistleResponse])

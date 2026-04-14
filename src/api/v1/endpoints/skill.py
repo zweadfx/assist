@@ -6,6 +6,7 @@ from langchain_core.messages import HumanMessage
 
 logger = logging.getLogger(__name__)
 
+from src.core.constants import SKILL_TIMEOUT_SECONDS, WEEKLY_TIMEOUT_SECONDS
 from src.models.response_schema import SuccessResponse
 from src.models.skill_schema import SkillLabRequest, SkillLabResponse
 from src.models.weekly_schema import WeeklyRoutineRequest, WeeklyRoutineResponse
@@ -13,8 +14,6 @@ from src.services.agents.coach_agent import coach_agent_graph
 from src.services.agents.weekly_coach_agent import weekly_coach_agent_graph
 
 router = APIRouter()
-
-SKILL_TIMEOUT_SECONDS = 60
 
 
 @router.post("/", response_model=SuccessResponse[SkillLabResponse])
@@ -87,7 +86,7 @@ async def generate_weekly_routine(
 
         final_state = await asyncio.wait_for(
             weekly_coach_agent_graph.ainvoke(initial_state),
-            timeout=120,
+            timeout=WEEKLY_TIMEOUT_SECONDS,
         )
 
         if final_response_str := final_state.get("final_response"):
