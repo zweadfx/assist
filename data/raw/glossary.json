@@ -308,5 +308,257 @@
       "Selectively targeting players for tactical fouls, excluding fouled-out players"
     ],
     "tags": ["foul", "tactical", "intentional"]
+  },
+  {
+    "id": "term_023",
+    "term": "Carrying / Palming",
+    "category": "violation",
+    "definition": "A dribbling violation in which the player's hand rotates under the ball, causing it to come to rest momentarily in the palm",
+    "detailed_explanation": "Carrying (also called palming) occurs when a dribbler allows the ball to rest in the palm of their hand or rotates their hand so it is under the ball, interrupting the continuous dribble motion. This gives the ball handler an unfair advantage by effectively resetting the dribble.",
+    "related_rules": ["Art 24"],
+    "examples": [
+      "Rotating the hand under the ball during a crossover dribble",
+      "Pausing the ball in the palm before continuing to dribble",
+      "Cupping the ball from below during a between-the-legs move"
+    ],
+    "tags": ["violation", "dribbling-rule", "carrying", "palming"]
+  },
+  {
+    "id": "term_024",
+    "term": "Basket Interference",
+    "category": "violation",
+    "definition": "Touching the ball, rim, net, or backboard in a way that interferes with the opportunity for a shot to score",
+    "detailed_explanation": "Basket interference is called when any player touches the ball while it is in or directly above the basket cylinder, touches the rim or net while the ball is on or within the basket, or touches the backboard while the ball is in contact with it above rim level. If the offensive team commits it, the basket is cancelled; if the defensive team commits it, the basket is awarded.",
+    "related_rules": ["Art 31"],
+    "examples": [
+      "Offensive player tapping in a ball still sitting on the rim",
+      "Defensive player reaching into the basket to bat out a ball",
+      "Player grabbing the rim while the ball passes through the net"
+    ],
+    "tags": ["violation", "shot-interference", "basket-interference"]
+  },
+  {
+    "id": "term_025",
+    "term": "No-Charge Zone (Restricted Area)",
+    "category": "technique",
+    "definition": "A semicircular area directly under the basket within which a charging foul cannot be called on a driving offensive player",
+    "detailed_explanation": "The no-charge zone (restricted area) is a semicircle with a radius of 1.25 meters (FIBA) or 4 feet (NBA) from the center of the basket. A secondary defender who establishes position inside this zone cannot draw a charging foul from an offensive player driving to the basket. The rule prevents defenders from 'taking a charge' in a dangerous area near the basket.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Defender standing inside the restricted area — driving player contact is blocking foul, not charge",
+      "Defender with one foot outside the restricted area — charging foul possible",
+      "Primary defender (directly guarding the ball) is exempt from the restricted area rule"
+    ],
+    "tags": ["technique", "restricted-area", "charging", "no-charge-zone"]
+  },
+  {
+    "id": "term_026",
+    "term": "Bonus / Penalty Situation",
+    "category": "technique",
+    "definition": "A game state in which a team has accumulated enough team fouls that the opposing team receives free throws on every subsequent foul",
+    "detailed_explanation": "Under FIBA rules, once a team commits 4 team fouls in a quarter, each subsequent foul results in two free throws for the opponent regardless of whether the foul occurred during a shot attempt. In the NBA, the bonus begins after 5 team fouls per quarter. This rule discourages excessive fouling.",
+    "related_rules": ["Art 41"],
+    "examples": [
+      "Team commits its 5th foul in the quarter — all subsequent fouls result in free throws (NBA)",
+      "Non-shooting foul in the bonus — two free throws awarded instead of throw-in",
+      "Intentional fouling in the bonus to prevent easy baskets"
+    ],
+    "tags": ["technique", "team-foul", "bonus", "penalty-situation"]
+  },
+  {
+    "id": "term_027",
+    "term": "Reach-in Foul",
+    "category": "foul",
+    "definition": "A personal foul called when a defender extends their arm to attempt a steal and makes illegal contact with the offensive player",
+    "detailed_explanation": "A reach-in foul occurs when a defender attempts to knock the ball away from a ball handler but instead makes contact with the offensive player's arm, hand, or body. Even if the defender touches the ball, if contact is also made with the offensive player in an illegal manner, the foul is still called.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Defender slapping the offensive player's wrist while attempting a steal",
+      "Reaching around and hitting the ball handler's arm from behind",
+      "Poking at the ball and hitting the dribbler's hand"
+    ],
+    "tags": ["foul", "defense", "reach-in", "personal-foul"]
+  },
+  {
+    "id": "term_028",
+    "term": "Over the Back Foul",
+    "category": "foul",
+    "definition": "A foul called when a player makes contact with a legally positioned opponent from behind while competing for a rebound",
+    "detailed_explanation": "An over the back foul is called when a player jumps over or leans across the back of a legally positioned opponent in order to gain rebounding position or retrieve the ball. The player who is in front and properly boxed out has the right to that space; reaching over them constitutes a personal foul.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Taller player jumping over the back of a shorter player who boxed out legally",
+      "Leaning across an opponent's shoulders to tip a rebound",
+      "Landing on an opponent's back after jumping for a rebound"
+    ],
+    "tags": ["foul", "rebound", "over-the-back", "personal-foul"]
+  },
+  {
+    "id": "term_029",
+    "term": "Loose Ball Foul",
+    "category": "foul",
+    "definition": "A personal foul committed while neither team has possession of the ball",
+    "detailed_explanation": "A loose ball foul is called when illegal contact occurs as players scramble for a ball that no team currently controls — such as after a missed shot, a deflection, or a jump ball tap. Because neither team has possession, free throws are not automatically awarded; the penalty follows standard foul rules.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Two players collide fighting for a deflected pass",
+      "Player pushes an opponent while chasing a loose ball after a missed shot",
+      "Contact during a scramble for a ball on the floor"
+    ],
+    "tags": ["foul", "loose-ball", "personal-foul"]
+  },
+  {
+    "id": "term_030",
+    "term": "Shooting Foul",
+    "category": "foul",
+    "definition": "A personal foul committed against a player who is in the act of shooting",
+    "detailed_explanation": "A shooting foul is called when illegal contact is made with a player who has begun their shooting motion. If the shot is missed, the shooter receives free throws equal to the value of the attempted shot (2 or 3). If the shot is made despite the foul, the basket counts and one additional free throw is awarded (and-one).",
+    "related_rules": ["Art 33", "Art 41"],
+    "examples": [
+      "Defender hits the shooter's arm on a two-point attempt — 2 free throws",
+      "Contact on a three-point shooter — 3 free throws",
+      "Foul on a layup that goes in — basket counts plus 1 free throw (and-one)"
+    ],
+    "tags": ["foul", "shooting", "free-throw", "and-one"]
+  },
+  {
+    "id": "term_031",
+    "term": "Clear Path Foul",
+    "category": "foul",
+    "definition": "A foul committed on a player who has a clear path to the basket with no defenders between them and the basket (NBA rule)",
+    "detailed_explanation": "In the NBA, a clear path foul is called when a defender fouls a player who is ahead of the defense on a fast break with no other defenders between the ball handler and the basket. The penalty is two free throws plus possession of the ball for the fouled team.",
+    "related_rules": ["Art 37"],
+    "examples": [
+      "Defender grabs a player breaking away alone on a fast break",
+      "Fouling a player in the open court with only the basket ahead of them",
+      "Tripping a player on a breakaway from behind"
+    ],
+    "tags": ["foul", "fast-break", "clear-path", "NBA"]
+  },
+  {
+    "id": "term_032",
+    "term": "Moving Screen (Illegal Screen)",
+    "category": "foul",
+    "definition": "A foul called when a screener moves or uses their body illegally to obstruct a defender",
+    "detailed_explanation": "An illegal screen (moving screen) is called when the screener is not stationary at the moment of contact, moves into the defender's path too late to allow them to stop or change direction, or uses their arms or legs to hold or trip the defender. The screener must give the defender enough space to avoid the screen.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Screener shuffling their feet as the defender makes contact",
+      "Screener extending a hip or elbow to make contact with the defender",
+      "Setting a screen and immediately moving into the defender before they can react"
+    ],
+    "tags": ["foul", "screen", "illegal-screen", "moving-screen"]
+  },
+  {
+    "id": "term_033",
+    "term": "Out of Bounds",
+    "category": "violation",
+    "definition": "When the ball or a player in possession of the ball touches the boundary line or any area outside the court",
+    "detailed_explanation": "The ball is out of bounds when it touches a player who is out of bounds, the floor, or any object outside the boundary lines. A player is out of bounds when they touch the floor or any object outside the boundary lines. The last player to touch the ball before it goes out of bounds loses possession.",
+    "related_rules": ["Art 16"],
+    "examples": [
+      "Player catches a pass while stepping on the sideline",
+      "Ball carrier steps on the baseline while driving to the basket",
+      "Ball rolls out of bounds after deflecting off a player"
+    ],
+    "tags": ["violation", "out-of-bounds", "boundary"]
+  },
+  {
+    "id": "term_034",
+    "term": "Personal Foul",
+    "category": "foul",
+    "definition": "An illegal physical contact with an opponent that is called against an individual player",
+    "detailed_explanation": "A personal foul is the most common type of foul in basketball, involving illegal contact such as hitting, pushing, holding, charging, or blocking. Each player is allowed a limited number of personal fouls per game before being disqualified (5 in FIBA, 6 in NBA). Personal fouls also accumulate as team fouls.",
+    "related_rules": ["Art 33"],
+    "examples": [
+      "Pushing an opponent to gain rebounding position",
+      "Hitting a ball handler's arm while attempting a steal",
+      "Charging into a stationary defender"
+    ],
+    "tags": ["foul", "personal-foul", "contact"]
+  },
+  {
+    "id": "term_035",
+    "term": "Team Foul",
+    "category": "technique",
+    "definition": "The cumulative count of personal fouls committed by all players on one team within a period, used to trigger the bonus situation",
+    "detailed_explanation": "Every personal foul committed by any player on a team is counted as a team foul for that quarter (or half in some leagues). Once the team foul limit is reached (4 per quarter in FIBA, 5 per quarter in NBA), the opposing team enters the bonus and receives free throws on every subsequent non-shooting foul.",
+    "related_rules": ["Art 41"],
+    "examples": [
+      "Team reaches 5 team fouls in the first quarter — opponent is now in the bonus",
+      "Team fouls reset to zero at the start of each quarter",
+      "Intentional fouling strategy used when opponent is not yet in bonus"
+    ],
+    "tags": ["technique", "team-foul", "bonus", "penalty"]
+  },
+  {
+    "id": "term_036",
+    "term": "Foul Out (Disqualification by Fouls)",
+    "category": "technique",
+    "definition": "When a player accumulates the maximum number of personal fouls allowed and is disqualified from the rest of the game",
+    "detailed_explanation": "A player who commits 5 personal fouls (FIBA) or 6 personal fouls (NBA) is disqualified and must leave the game immediately. They may not return for the remainder of the game. The team must substitute another eligible player within a designated time.",
+    "related_rules": ["Art 37"],
+    "examples": [
+      "Player commits their 5th foul in a FIBA game — disqualified",
+      "Player commits their 6th foul in an NBA game — disqualified",
+      "Team with only 5 active players has a player foul out — technical foul issued if no substitute is available"
+    ],
+    "tags": ["technique", "foul-out", "disqualification", "personal-foul"]
+  },
+  {
+    "id": "term_037",
+    "term": "Continuation (And-One)",
+    "category": "technique",
+    "definition": "When a player is fouled during a shot attempt but completes the shot before the whistle effectively stops play, earning both the basket and a free throw",
+    "detailed_explanation": "If a player is fouled while in the act of shooting and the ball goes in, the basket counts (continuation) and the player is awarded one additional free throw. The foul is called, but because the shooting motion was already in progress and resulted in a made basket, the score is not disallowed.",
+    "related_rules": ["Art 33", "Art 41"],
+    "examples": [
+      "Player is fouled on a layup attempt, the ball goes in — basket plus 1 free throw",
+      "Player absorbs contact on a jump shot that goes in — and-one awarded",
+      "Player is fouled before beginning the shooting motion — basket does not count"
+    ],
+    "tags": ["technique", "and-one", "continuation", "shooting-foul"]
+  },
+  {
+    "id": "term_038",
+    "term": "Defensive Three Seconds",
+    "category": "violation",
+    "definition": "An NBA-specific rule that prohibits a defensive player from remaining in the lane for more than three consecutive seconds unless actively guarding an opponent",
+    "detailed_explanation": "Unlike FIBA, the NBA enforces a defensive three-second rule. A defender cannot stand in the paint for more than three consecutive seconds without actively guarding a nearby offensive player. If the defender is within arm's reach of an opponent, the count stops. Violation results in a technical foul and one free throw plus possession.",
+    "related_rules": ["Art 26"],
+    "examples": [
+      "Defender camping in the lane without guarding anyone for more than 3 seconds",
+      "Defender steps out of the lane momentarily to reset the count — legal",
+      "Defender within arm's reach of a post player — count does not apply"
+    ],
+    "tags": ["violation", "defense", "3-seconds", "NBA", "lane"]
+  },
+  {
+    "id": "term_039",
+    "term": "Delay of Game",
+    "category": "violation",
+    "definition": "Any action by a player or team that intentionally slows or stops the normal flow of the game",
+    "detailed_explanation": "Delay of game violations include touching the ball after a made basket before the inbounder can retrieve it, interfering with the throw-in, or preventing the game from resuming in a timely manner. The first offense is typically a warning; subsequent violations result in a technical foul.",
+    "related_rules": ["Art 36"],
+    "examples": [
+      "Defender tapping the ball away after a made basket to slow the fast break",
+      "Team failing to be ready to resume play after a timeout",
+      "Player intentionally knocking the ball out of bounds to stop the clock"
+    ],
+    "tags": ["violation", "delay-of-game", "technical"]
+  },
+  {
+    "id": "term_040",
+    "term": "Alternating Possession",
+    "category": "technique",
+    "definition": "A FIBA rule in which teams take turns receiving the ball on held ball situations instead of conducting a jump ball each time",
+    "detailed_explanation": "Under FIBA's alternating possession rule, after the opening tip-off, all subsequent held ball situations are resolved by awarding possession to the team whose turn it is on the possession arrow. The arrow switches after each alternating possession is used. This eliminates the need for repeated jump balls during the game.",
+    "related_rules": ["Art 12"],
+    "examples": [
+      "Two players tie up the ball — team with possession arrow gets the throw-in",
+      "Arrow points to Team A after Team B received possession from the last alternating situation",
+      "Held ball during overtime — alternating possession continues from regulation"
+    ],
+    "tags": ["technique", "alternating-possession", "held-ball", "FIBA"]
   }
 ]
