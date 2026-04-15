@@ -427,7 +427,7 @@
     "category": "foul",
     "definition": "A foul committed on a player who has a clear path to the basket with no defenders between them and the basket (NBA rule)",
     "detailed_explanation": "In the NBA, a clear path foul is called when a defender fouls a player who is ahead of the defense on a fast break with no other defenders between the ball handler and the basket. The penalty is two free throws plus possession of the ball for the fouled team.",
-    "related_rules": ["Art 37"],
+    "related_rules": ["NBA Rule No. 12, Section I"],
     "examples": [
       "Defender grabs a player breaking away alone on a fast break",
       "Fouling a player in the open court with only the basket ahead of them",
@@ -525,7 +525,7 @@
     "category": "violation",
     "definition": "An NBA-specific rule that prohibits a defensive player from remaining in the lane for more than three consecutive seconds unless actively guarding an opponent",
     "detailed_explanation": "Unlike FIBA, the NBA enforces a defensive three-second rule. A defender cannot stand in the paint for more than three consecutive seconds without actively guarding a nearby offensive player. If the defender is within arm's reach of an opponent, the count stops. Violation results in a technical foul and one free throw plus possession.",
-    "related_rules": ["Art 26"],
+    "related_rules": ["NBA Rule No. 10, Section XIII"],
     "examples": [
       "Defender camping in the lane without guarding anyone for more than 3 seconds",
       "Defender steps out of the lane momentarily to reset the count — legal",
