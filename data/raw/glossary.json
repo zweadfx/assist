@@ -136,7 +136,7 @@
     "examples": [
       "Rotating on one foot as an axis after catching the ball",
       "Maintaining the pivot foot while finding a passing angle",
-      "Lifting the pivot foot to begin a dribble (legal)",
+      "Starting a dribble by releasing the ball and then lifting the pivot foot (legal)",
       "Lifting the pivot foot and stepping down again (traveling)"
     ],
     "tags": ["technique", "movement-rule", "pivot"]
