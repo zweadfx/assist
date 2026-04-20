@@ -98,11 +98,17 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Players collection is already initialized.")
 
-        # Re-initialize rules collection only when PDF content changes
-        rules_changed = chroma_manager.reinitialize_rules_collection(
+        # Re-initialize rules collection if empty or when PDF content changes
+        rules_collection_empty = chroma_manager.rules_collection.count() == 0
+        rules_pdf_changed = chroma_manager.reinitialize_rules_collection(
             FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
         )
-        if rules_changed:
+        if rules_collection_empty or rules_pdf_changed:
+            if rules_collection_empty:
+                logger.info("Rules collection is empty. Initializing...")
+            if rules_pdf_changed:
+                logger.info("Rules PDF content changed. Re-initializing...")
+                
             all_chunks = []
 
             if FIBA_RULES_PDF_PATH.exists():
