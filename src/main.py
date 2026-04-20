@@ -13,9 +13,12 @@ from src.core.constants import (
     NBA_RULES_PDF_PATH,
     PLAYERS_FILE_PATH,
     SHOES_FILE_PATH,
+    SHOES_EMBEDDINGS_FILE_PATH,
+    PLAYERS_EMBEDDINGS_FILE_PATH,
+    RULES_EMBEDDINGS_FILE_PATH,
+    GLOSSARY_EMBEDDINGS_FILE_PATH,
 )
 from src.services.rag.chroma_db import chroma_manager
-from src.services.rag.embedding import generate_embeddings
 from src.services.rag.utils import (
     format_glossary_document,
     format_player_document,
@@ -140,9 +143,9 @@ async def lifespan(app: FastAPI):
                 logger.info(f"Loaded {len(glossary)} glossary terms from file.")
 
                 glossary_texts = [format_glossary_document(term) for term in glossary]
-                glossary_embeddings = generate_embeddings(glossary_texts)
+                glossary_embeddings = load_json_data(GLOSSARY_EMBEDDINGS_FILE_PATH)
                 logger.info(
-                    f"Generated {len(glossary_embeddings)} glossary embeddings."
+                    f"Loaded {len(glossary_embeddings)} glossary embeddings."
                 )
 
                 chroma_manager.add_glossary(

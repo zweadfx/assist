@@ -16,6 +16,12 @@ GLOSSARY_FILE_PATH = RAW_DATA_DIR / "glossary.json"
 FIBA_RULES_PDF_PATH = RAW_DATA_DIR / "fiba_rules.pdf"
 NBA_RULES_PDF_PATH = RAW_DATA_DIR / "nba_rules.pdf"
 
+# Pre-calculated Embeddings
+SHOES_EMBEDDINGS_FILE_PATH = RAW_DATA_DIR / "shoes_embeddings.json"
+PLAYERS_EMBEDDINGS_FILE_PATH = RAW_DATA_DIR / "players_embeddings.json"
+RULES_EMBEDDINGS_FILE_PATH = RAW_DATA_DIR / "rules_embeddings.json"
+GLOSSARY_EMBEDDINGS_FILE_PATH = RAW_DATA_DIR / "glossary_embeddings.json"
+
 # Sensory Tag Enum → Korean Label Mapping
 SENSORY_TAG_MAP: dict[str, str] = {
     "cushioning": "쿠셔닝",
