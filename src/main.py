@@ -66,8 +66,12 @@ async def lifespan(app: FastAPI):
             logger.info(f"Loaded {len(shoes)} shoes from file.")
 
             shoes_texts = [format_shoe_document(shoe) for shoe in shoes]
-            shoes_embeddings = generate_embeddings(shoes_texts)
-            logger.info(f"Generated {len(shoes_embeddings)} shoe embeddings.")
+            shoes_embeddings = load_json_data(SHOES_EMBEDDINGS_FILE_PATH)
+            logger.info(f"Loaded {len(shoes_embeddings)} shoe embeddings.")
+
+            if len(shoes) != len(shoes_embeddings):
+                logger.error(f"Mismatch: {len(shoes)} shoes vs {len(shoes_embeddings)} embeddings ({SHOES_FILE_PATH} vs {SHOES_EMBEDDINGS_FILE_PATH})")
+                raise ValueError("Shoes data and embeddings length mismatch")
 
             chroma_manager.add_shoes(shoes=shoes, embeddings=shoes_embeddings)
             logger.info("Successfully added shoes to ChromaDB.")
@@ -82,8 +86,12 @@ async def lifespan(app: FastAPI):
             logger.info(f"Loaded {len(players)} players from file.")
 
             players_texts = [format_player_document(player) for player in players]
-            players_embeddings = generate_embeddings(players_texts)
-            logger.info(f"Generated {len(players_embeddings)} player embeddings.")
+            players_embeddings = load_json_data(PLAYERS_EMBEDDINGS_FILE_PATH)
+            logger.info(f"Loaded {len(players_embeddings)} player embeddings.")
+
+            if len(players) != len(players_embeddings):
+                logger.error(f"Mismatch: {len(players)} players vs {len(players_embeddings)} embeddings ({PLAYERS_FILE_PATH} vs {PLAYERS_EMBEDDINGS_FILE_PATH})")
+                raise ValueError("Players data and embeddings length mismatch")
 
             chroma_manager.add_players(players=players, embeddings=players_embeddings)
             logger.info("Successfully added players to ChromaDB.")
@@ -121,8 +129,12 @@ async def lifespan(app: FastAPI):
 
             if all_chunks:
                 rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
-                rules_embeddings = generate_embeddings(rules_texts)
-                logger.info(f"Generated {len(rules_embeddings)} rule embeddings.")
+                rules_embeddings = load_json_data(RULES_EMBEDDINGS_FILE_PATH)
+                logger.info(f"Loaded {len(rules_embeddings)} rule embeddings.")
+
+                if len(all_chunks) != len(rules_embeddings):
+                    logger.error(f"Mismatch: {len(all_chunks)} rule chunks vs {len(rules_embeddings)} embeddings")
+                    raise ValueError("Rules data and embeddings length mismatch")
 
                 chroma_manager.add_rules(
                     rule_chunks=all_chunks, embeddings=rules_embeddings
@@ -147,6 +159,10 @@ async def lifespan(app: FastAPI):
                 logger.info(
                     f"Loaded {len(glossary_embeddings)} glossary embeddings."
                 )
+
+                if len(glossary) != len(glossary_embeddings):
+                    logger.error(f"Mismatch: {len(glossary)} glossary terms vs {len(glossary_embeddings)} embeddings ({GLOSSARY_FILE_PATH} vs {GLOSSARY_EMBEDDINGS_FILE_PATH})")
+                    raise ValueError("Glossary data and embeddings length mismatch")
 
                 chroma_manager.add_glossary(
                     terms=glossary, embeddings=glossary_embeddings

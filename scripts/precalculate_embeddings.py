@@ -40,14 +40,14 @@ def main():
         shoes = load_json_data(SHOES_FILE_PATH)
         shoes_texts = [format_shoe_document(shoe) for shoe in shoes]
         shoes_embeddings = generate_embeddings(shoes_texts)
-        save_embeddings(RAW_DATA_DIR / "shoes_embeddings.json", shoes_embeddings)
+        save_embeddings(SHOES_EMBEDDINGS_FILE_PATH, shoes_embeddings)
 
     # Players
     if PLAYERS_FILE_PATH.exists():
         players = load_json_data(PLAYERS_FILE_PATH)
         players_texts = [format_player_document(player) for player in players]
         players_embeddings = generate_embeddings(players_texts)
-        save_embeddings(RAW_DATA_DIR / "players_embeddings.json", players_embeddings)
+        save_embeddings(PLAYERS_EMBEDDINGS_FILE_PATH, players_embeddings)
 
     # Rules
     all_chunks = []
@@ -60,13 +60,20 @@ def main():
     if all_chunks:
         rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
         rules_embeddings = generate_embeddings(rules_texts)
-        save_embeddings(RAW_DATA_DIR / "rules_embeddings.json", rules_embeddings)
+        save_embeddings(RULES_EMBEDDINGS_FILE_PATH, rules_embeddings)
 
     # Glossary
     if GLOSSARY_FILE_PATH.exists():
         glossary = load_json_data(GLOSSARY_FILE_PATH)
         glossary_texts = [format_glossary_document(term) for term in glossary]
         glossary_embeddings = generate_embeddings(glossary_texts)
+        save_embeddings(GLOSSARY_EMBEDDINGS_FILE_PATH, glossary_embeddings)
+
+    logger.info("Done.")
+
+if __name__ == "__main__":
+    main()
+e_embeddings(glossary_texts)
         save_embeddings(RAW_DATA_DIR / "glossary_embeddings.json", glossary_embeddings)
 
     logger.info("Done.")
