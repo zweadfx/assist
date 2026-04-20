@@ -80,19 +80,29 @@ def main():
 
     # Rules (REQUIRED)
     all_chunks = []
+    
     if FIBA_RULES_PDF_PATH.exists():
         fiba_chunks = parse_rules_pdf(FIBA_RULES_PDF_PATH, rule_type="FIBA", chunk_method="article_based")
+        logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules ({FIBA_RULES_PDF_PATH})")
         all_chunks.extend(fiba_chunks)
+    else:
+        logger.error(f"Missing required FIBA rules PDF: {FIBA_RULES_PDF_PATH}")
+        raise FileNotFoundError(f"Missing required FIBA rules PDF: {FIBA_RULES_PDF_PATH}")
+
     if NBA_RULES_PDF_PATH.exists():
         nba_chunks = parse_rules_pdf(NBA_RULES_PDF_PATH, rule_type="NBA", chunk_method="article_based")
+        logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules ({NBA_RULES_PDF_PATH})")
         all_chunks.extend(nba_chunks)
+    else:
+        logger.error(f"Missing required NBA rules PDF: {NBA_RULES_PDF_PATH}")
+        raise FileNotFoundError(f"Missing required NBA rules PDF: {NBA_RULES_PDF_PATH}")
         
     if all_chunks:
         rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
         rules_embeddings = generate_embeddings(rules_texts)
         save_embeddings(RULES_EMBEDDINGS_FILE_PATH, rules_embeddings)
     else:
-        raise ValueError("Required rules chunks are empty or rules PDFs are missing")
+        raise ValueError("Required rules chunks are empty")
 
     # Glossary (OPTIONAL)
     if GLOSSARY_FILE_PATH.exists():
