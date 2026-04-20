@@ -12,7 +12,10 @@ from src.core.constants import (
     NBA_RULES_PDF_PATH,
     PLAYERS_FILE_PATH,
     SHOES_FILE_PATH,
-    RAW_DATA_DIR
+    SHOES_EMBEDDINGS_FILE_PATH,
+    PLAYERS_EMBEDDINGS_FILE_PATH,
+    RULES_EMBEDDINGS_FILE_PATH,
+    GLOSSARY_EMBEDDINGS_FILE_PATH,
 )
 from src.services.rag.embedding import generate_embeddings
 from src.services.rag.utils import (
@@ -68,13 +71,6 @@ def main():
         glossary_texts = [format_glossary_document(term) for term in glossary]
         glossary_embeddings = generate_embeddings(glossary_texts)
         save_embeddings(GLOSSARY_EMBEDDINGS_FILE_PATH, glossary_embeddings)
-
-    logger.info("Done.")
-
-if __name__ == "__main__":
-    main()
-e_embeddings(glossary_texts)
-        save_embeddings(RAW_DATA_DIR / "glossary_embeddings.json", glossary_embeddings)
 
     logger.info("Done.")
 
