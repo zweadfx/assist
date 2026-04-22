@@ -28,18 +28,12 @@ logger = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser(description="RAG Evaluation Runner")
-    parser.add_argument(
-        "--all", action="store_true", help="Run all evaluations"
-    )
+    parser.add_argument("--all", action="store_true", help="Run all evaluations")
     parser.add_argument(
         "--gear", action="store_true", help="Run Gear Advisor evaluation"
     )
-    parser.add_argument(
-        "--whistle", action="store_true", help="Run Whistle evaluation"
-    )
-    parser.add_argument(
-        "--skill", action="store_true", help="Run Skill Lab evaluation"
-    )
+    parser.add_argument("--whistle", action="store_true", help="Run Whistle evaluation")
+    parser.add_argument("--skill", action="store_true", help="Run Skill Lab evaluation")
     args = parser.parse_args()
 
     if not any([args.all, args.gear, args.whistle, args.skill]):
@@ -55,11 +49,10 @@ def main():
         from scripts.eval.runners.gear_runner import run_gear_evaluation
 
         gear_data = run_gear_evaluation()
+        logger.info("Gear RAG metrics: %s", gear_data["rag_metrics"])
+        logger.info("Gear Baseline metrics: %s", gear_data["baseline_metrics"])
         logger.info(
-            "Gear RAG metrics: %s", gear_data["rag_metrics"]
-        )
-        logger.info(
-            "Gear Baseline metrics: %s", gear_data["baseline_metrics"]
+            "Gear LLM Judge metrics: %s", gear_data.get("llm_judge_metrics", {})
         )
 
     if args.all or args.whistle:
@@ -70,6 +63,9 @@ def main():
         logger.info(
             "Whistle Citation Hit Rate: %.2f",
             whistle_data["citation_hit_rate"],
+        )
+        logger.info(
+            "Whistle LLM Judge metrics: %s", whistle_data.get("llm_judge_metrics", {})
         )
 
     if args.all or args.skill:

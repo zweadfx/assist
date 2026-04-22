@@ -1,6 +1,6 @@
 """Evaluation metrics for RAG assessment."""
 
-from typing import List
+from typing import Dict, List
 
 
 def hit_at_k(predicted_ids: List[str], expected_ids: List[str], k: int = 3) -> int:
@@ -81,4 +81,29 @@ def constraint_pass_rate(results: List[dict]) -> dict:
     return {
         "equipment": equip_passes / n,
         "time": time_passes / n,
+    }
+
+
+def compute_llm_judge_metrics(results: List[Dict[str, any]]) -> dict:
+    """Aggregate LLM Judge scores.
+
+    Each result dict must have 'accuracy_score', 'consistency_score',
+    and 'citation_score'.
+    """
+    if not results:
+        return {"accuracy": 0.0, "consistency": 0.0, "citation": 0.0}
+
+    valid_results = [r for r in results if r.get("accuracy_score") is not None]
+    n = len(valid_results)
+    if n == 0:
+        return {"accuracy": 0.0, "consistency": 0.0, "citation": 0.0}
+
+    total_accuracy = sum(r["accuracy_score"] for r in valid_results)
+    total_consistency = sum(r["consistency_score"] for r in valid_results)
+    total_citation = sum(r["citation_score"] for r in valid_results)
+
+    return {
+        "accuracy": total_accuracy / n,
+        "consistency": total_consistency / n,
+        "citation": total_citation / n,
     }
