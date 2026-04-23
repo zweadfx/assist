@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 from src.core.constants import LLM_JUDGE_EVAL_PROMPT, LLM_JUDGE_SYSTEM_PROMPT
 from src.utils.llm import chat_completion_with_retry
@@ -15,10 +15,10 @@ def evaluate_with_llm_judge(
     context: str = "",
     prompt_template: str = LLM_JUDGE_EVAL_PROMPT,
     system_prompt: str = LLM_JUDGE_SYSTEM_PROMPT,
-) -> Dict[str, any]:
+) -> Dict[str, Any]:
     """
     Evaluates the RAG pipeline output using the LLM-as-Judge approach.
-    Uses the o1 model (e.g., o1-preview) which has specific API requirements.
+    Uses gpt-4o with json_object response format.
 
     Criteria:
     1. 정확성 (Accuracy)
@@ -46,7 +46,10 @@ def evaluate_with_llm_judge(
             response_format={"type": "json_object"},
         )
 
-        content = response.choices[0].message.content.strip()
+        content = response.choices[0].message.content
+        if content is None:
+            raise ValueError("LLM returned empty content")
+        content = content.strip()
         # 순수 JSON 추출을 위한 안전 장치 (만약 마크다운이 섞여있을 경우 제거)
         if content.startswith("```json"):
             content = content[7:]

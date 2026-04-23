@@ -29,11 +29,11 @@ def _gear_section(gear_data: dict) -> str:
         "",
         f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
         f"- Consistency: {judge.get('consistency', 0.0):.2f} / 5.0",
-        f"- Citation: {judge.get('citation', 0.0):.2f} / 5.0",
+        f"- Data Fidelity: {judge.get('citation', 0.0):.2f} / 5.0",
         "",
         "### Case Details",
         "",
-        "| ID | Description | Expected | RAG Predicted | Baseline Predicted | RAG Hit | Baseline Hit | LLM Judge |  # noqa: E501",
+        "| ID | Description | Expected | RAG Predicted | Baseline Predicted | RAG Hit | Baseline Hit | LLM Judge |",  # noqa: E501
         "|----|-------------|----------|---------------|-------------------|---------|-------------|-----------|",
     ]
 
@@ -89,8 +89,8 @@ def _whistle_section(whistle_data: dict) -> str:
         "",
         "### Case Details",
         "",
-        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit | LLM Judge |  # noqa: E501",
-        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|-----------|  # noqa: E501",
+        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit | LLM Judge |",  # noqa: E501
+        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|-----------|",
     ]
 
     for d in details:

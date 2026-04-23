@@ -102,8 +102,7 @@ We employ an **LLM-as-Judge** evaluation pipeline (powered by `gpt-4o`) to asses
 *Evaluated across 25 complex player archetype and budget constraint scenarios.*
 - **Accuracy:** 3.56 / 5.0
 - **Logical Consistency:** 4.20 / 5.0
-- **Citation Appropriateness:** 3.04 / 5.0
-- **Hit@3:** 0.92
+- **Data Fidelity:** 3.04 / 5.0
 
 ### **2. The Whistle (Rule Judgment)**
 *Evaluated across 25 complex regulation scenarios including intentional fouls and violations.*

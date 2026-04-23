@@ -1,6 +1,6 @@
 """Evaluation metrics for RAG assessment."""
 
-from typing import Dict, List
+from typing import Any, Dict, List
 
 
 def hit_at_k(predicted_ids: List[str], expected_ids: List[str], k: int = 3) -> int:
@@ -84,7 +84,7 @@ def constraint_pass_rate(results: List[dict]) -> dict:
     }
 
 
-def compute_llm_judge_metrics(results: List[Dict[str, any]]) -> dict:
+def compute_llm_judge_metrics(results: List[Dict[str, Any]]) -> dict:
     """Aggregate LLM Judge scores.
 
     Each result dict must have 'accuracy_score', 'consistency_score',

@@ -87,6 +87,7 @@ def run_whistle_evaluation() -> dict:
         expected_decision = case["expected_decision"]
         logger.info("Running whistle case: %s", case_id)
 
+        agent_failed = False
         try:
             result = _run_single_whistle(case)
             predicted_articles = result["predicted_articles"]
@@ -99,28 +100,37 @@ def run_whistle_evaluation() -> dict:
             predicted_decision = "error"
             raw_response = ""
             context_text = ""
+            agent_failed = True
 
         # Run LLM Judge
-        try:
-            expected_answer_str = (
-                f"Decision: {expected_decision}, Rationale: {case.get('rationale', '')}"
-            )
-            llm_judge_score = evaluate_with_llm_judge(
-                question=case["input"]["situation_description"],
-                generated_answer=raw_response,
-                expected_answer=expected_answer_str,
-                context=context_text,
-                prompt_template=LLM_JUDGE_WHISTLE_PROMPT,
-                system_prompt=LLM_JUDGE_WHISTLE_SYSTEM_PROMPT,
-            )
-        except Exception as e:
-            logger.error("LLM Judge failed for %s: %s", case_id, e)
+        if agent_failed:
             llm_judge_score = {
                 "accuracy_score": 0,
                 "consistency_score": 0,
                 "citation_score": 0,
-                "reasoning": "Error",
+                "reasoning": "Skipped: agent failed",
             }
+        else:
+            try:
+                expected_answer_str = (
+                    f"Decision: {expected_decision}, Rationale: {case.get('rationale', '')}"
+                )
+                llm_judge_score = evaluate_with_llm_judge(
+                    question=case["input"]["situation_description"],
+                    generated_answer=raw_response,
+                    expected_answer=expected_answer_str,
+                    context=context_text,
+                    prompt_template=LLM_JUDGE_WHISTLE_PROMPT,
+                    system_prompt=LLM_JUDGE_WHISTLE_SYSTEM_PROMPT,
+                )
+            except Exception as e:
+                logger.error("LLM Judge failed for %s: %s", case_id, e)
+                llm_judge_score = {
+                    "accuracy_score": 0,
+                    "consistency_score": 0,
+                    "citation_score": 0,
+                    "reasoning": "Error",
+                }
 
         citation_results.append(
             {

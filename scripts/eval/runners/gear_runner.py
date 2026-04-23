@@ -119,6 +119,7 @@ def run_gear_evaluation() -> dict:
         logger.info("Running gear case: %s", case_id)
 
         # RAG
+        rag_failed = False
         try:
             rag_output = _run_single_rag(case)
             rag_predicted = rag_output["predicted_ids"]
@@ -129,6 +130,7 @@ def run_gear_evaluation() -> dict:
             rag_predicted = []
             raw_response = ""
             context_text = ""
+            rag_failed = True
 
         # Baseline
         try:
@@ -138,27 +140,35 @@ def run_gear_evaluation() -> dict:
             baseline_predicted = []
 
         # Run LLM Judge on RAG output
-        try:
-            expected_answer_str = (
-                f"Expected IDs: {expected_ids}, Rationale: {case.get('rationale', '')}"
-            )
-            question_str = json.dumps(case["input"], ensure_ascii=False)
-            llm_judge_score = evaluate_with_llm_judge(
-                question=question_str,
-                generated_answer=raw_response,
-                expected_answer=expected_answer_str,
-                context=context_text,
-                prompt_template=LLM_JUDGE_GEAR_PROMPT,
-                system_prompt=LLM_JUDGE_GEAR_SYSTEM_PROMPT,
-            )
-        except Exception as e:
-            logger.error("LLM Judge failed for %s: %s", case_id, e)
+        if rag_failed:
             llm_judge_score = {
                 "accuracy_score": 0,
                 "consistency_score": 0,
                 "citation_score": 0,
-                "reasoning": "Error",
+                "reasoning": "Skipped: RAG failed",
             }
+        else:
+            try:
+                expected_answer_str = (
+                    f"Expected IDs: {expected_ids}, Rationale: {case.get('rationale', '')}"
+                )
+                question_str = json.dumps(case["input"], ensure_ascii=False)
+                llm_judge_score = evaluate_with_llm_judge(
+                    question=question_str,
+                    generated_answer=raw_response,
+                    expected_answer=expected_answer_str,
+                    context=context_text,
+                    prompt_template=LLM_JUDGE_GEAR_PROMPT,
+                    system_prompt=LLM_JUDGE_GEAR_SYSTEM_PROMPT,
+                )
+            except Exception as e:
+                logger.error("LLM Judge failed for %s: %s", case_id, e)
+                llm_judge_score = {
+                    "accuracy_score": 0,
+                    "consistency_score": 0,
+                    "citation_score": 0,
+                    "reasoning": "Error",
+                }
 
         rag_results.append(
             {

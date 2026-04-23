@@ -73,8 +73,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "violation",
-    "expected_articles": ["28"],
-    "rationale": "Backcourt violation per FIBA Art 28"
+    "expected_articles": ["30"],
+    "rationale": "Backcourt violation per FIBA Art 30"
   },
   {
     "id": "whistle-08",
@@ -106,8 +106,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "foul",
-    "expected_articles": ["35"],
-    "rationale": "Technical foul for unsportsmanlike taunting behavior per FIBA Art 35"
+    "expected_articles": ["36"],
+    "rationale": "Technical foul for unsportsmanlike taunting behavior per FIBA Art 36"
   },
   {
     "id": "whistle-11",
@@ -117,8 +117,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "foul",
-    "expected_articles": ["36"],
-    "rationale": "Unsportsmanlike foul - unnecessary and excessive contact per FIBA Art 36"
+    "expected_articles": ["37"],
+    "rationale": "Unsportsmanlike foul - unnecessary and excessive contact per FIBA Art 37"
   },
   {
     "id": "whistle-12",
@@ -161,8 +161,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "violation",
-    "expected_articles": ["27"],
-    "rationale": "5-second inbound violation per FIBA Art 27"
+    "expected_articles": ["17"],
+    "rationale": "5-second inbound violation per FIBA Art 17"
   },
   {
     "id": "whistle-16",
@@ -183,8 +183,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "violation",
-    "expected_articles": ["26"],
-    "rationale": "Kicked ball violation - intentional contact with the ball by foot per FIBA rules"
+    "expected_articles": ["13"],
+    "rationale": "Kicked ball violation - intentional contact with the ball by foot per FIBA Art 13"
   },
   {
     "id": "whistle-18",
@@ -194,8 +194,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "violation",
-    "expected_articles": ["23"],
-    "rationale": "Free throw lane violation by offensive player per FIBA Art 23"
+    "expected_articles": ["43"],
+    "rationale": "Free throw lane violation by offensive player per FIBA Art 43"
   },
   {
     "id": "whistle-19",
@@ -205,8 +205,8 @@
       "rule_type": "NBA"
     },
     "expected_decision": "foul",
-    "expected_articles": ["12"],
-    "rationale": "NBA Flagrant Foul 2 / fighting - results in immediate ejection per NBA Rule No. 12"
+    "expected_articles": ["12B"],
+    "rationale": "NBA Flagrant Foul 2 / fighting - results in immediate ejection per NBA Rule No. 12B"
   },
   {
     "id": "whistle-20",
@@ -260,8 +260,8 @@
       "rule_type": "FIBA"
     },
     "expected_decision": "foul",
-    "expected_articles": ["37"],
-    "rationale": "Disqualifying foul - fighting and extreme unsportsmanlike conduct per FIBA Art 37"
+    "expected_articles": ["38"],
+    "rationale": "Disqualifying foul - fighting and extreme unsportsmanlike conduct per FIBA Art 38"
   },
   {
     "id": "whistle-25",
