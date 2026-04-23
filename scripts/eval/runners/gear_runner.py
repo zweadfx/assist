@@ -14,6 +14,7 @@ from langchain_core.messages import HumanMessage
 from scripts.eval.baseline import run_no_rag_gear
 from scripts.eval.metrics import compute_gear_metrics, compute_llm_judge_metrics
 from scripts.eval.runners.judge_llm_runner import evaluate_with_llm_judge
+from src.core.constants import LLM_JUDGE_GEAR_PROMPT, LLM_JUDGE_GEAR_SYSTEM_PROMPT
 from src.models.gear_schema import GearAdvisorResponse
 from src.services.agents.gear_agent import gear_agent_graph
 
@@ -147,6 +148,8 @@ def run_gear_evaluation() -> dict:
                 generated_answer=raw_response,
                 expected_answer=expected_answer_str,
                 context=context_text,
+                prompt_template=LLM_JUDGE_GEAR_PROMPT,
+                system_prompt=LLM_JUDGE_GEAR_SYSTEM_PROMPT,
             )
         except Exception as e:
             logger.error("LLM Judge failed for %s: %s", case_id, e)
