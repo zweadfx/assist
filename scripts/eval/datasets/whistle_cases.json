@@ -53,5 +53,225 @@
     "expected_decision": "violation",
     "expected_articles": ["31"],
     "rationale": "Goaltending violation per FIBA Art 31"
+  },
+  {
+    "id": "whistle-06",
+    "description": "Offensive player remains in the paint for more than 3 seconds",
+    "input": {
+      "situation_description": "A power forward positions himself in the lane and remains there for over 4 seconds waiting for a pass, without making any attempt to leave or move.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["26"],
+    "rationale": "Three-second violation per FIBA Art 26"
+  },
+  {
+    "id": "whistle-07",
+    "description": "Team dribbles ball back into backcourt after establishing frontcourt",
+    "input": {
+      "situation_description": "A point guard dribbles past the half-court line, establishing frontcourt possession. Under defensive pressure, he retreats and dribbles back across the half-court line into the backcourt.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["30"],
+    "rationale": "Backcourt violation per FIBA Art 30"
+  },
+  {
+    "id": "whistle-08",
+    "description": "Team fails to attempt a shot before the shot clock expires",
+    "input": {
+      "situation_description": "An offensive team is running a play and the shot clock buzzer sounds before any player releases a shot attempt. The ball has not yet left a player's hands when the buzzer goes off.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["29"],
+    "rationale": "24-second shot clock violation per FIBA Art 29"
+  },
+  {
+    "id": "whistle-09",
+    "description": "Legal two-step gather on euro step",
+    "input": {
+      "situation_description": "A guard receives a pass while running at full speed, gathers the ball, and takes two steps — one to the left and one to the right — before laying the ball up. Is this travelling?",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "legal",
+    "expected_articles": ["25"],
+    "rationale": "Legal two-step gather move per FIBA Art 25 - gather step does not count as a step"
+  },
+  {
+    "id": "whistle-10",
+    "description": "Player taunts an opponent after a dunk",
+    "input": {
+      "situation_description": "After dunking the ball, an offensive player stands over the fallen defender, points down at them, and trash-talks loudly in a taunting manner.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["36"],
+    "rationale": "Technical foul for unsportsmanlike taunting behavior per FIBA Art 36"
+  },
+  {
+    "id": "whistle-11",
+    "description": "Defender grabs and pulls down a player with excessive force",
+    "input": {
+      "situation_description": "A defender wraps both arms around a driving player from behind and pulls him violently to the floor to prevent an easy layup. The contact is excessive and unnecessary.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["37"],
+    "rationale": "Unsportsmanlike foul - unnecessary and excessive contact per FIBA Art 37"
+  },
+  {
+    "id": "whistle-12",
+    "description": "Screener moves into the path of defender at the last moment",
+    "input": {
+      "situation_description": "A player attempts to set a screen but steps directly into the path of a moving defender just as the defender reaches him, causing unavoidable contact. The screener's body was still shifting when contact occurred.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Illegal screen / moving pick - screener did not establish legal position per Art 33"
+  },
+  {
+    "id": "whistle-13",
+    "description": "Taller player reaches over shorter player to grab a rebound",
+    "input": {
+      "situation_description": "A taller defender reaches his arm over the back of a smaller offensive player who is boxed out, and makes contact with the offensive player's back while attempting to grab a rebound.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Over the back foul - illegal contact from behind per FIBA Art 33"
+  },
+  {
+    "id": "whistle-14",
+    "description": "NBA defender camps in the paint without guarding anyone",
+    "input": {
+      "situation_description": "In an NBA game, a center plants himself in the lane for 5 consecutive seconds. During this time, no offensive player is within arm's reach of him, and he is not actively guarding anyone.",
+      "rule_type": "NBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["10"],
+    "rationale": "NBA defensive three-second violation per NBA Rule No. 10"
+  },
+  {
+    "id": "whistle-15",
+    "description": "Player fails to inbound the ball within 5 seconds",
+    "input": {
+      "situation_description": "A player is given the ball for an inbound pass after the opposing team scores. He holds the ball for more than 5 seconds without releasing it while looking for an open teammate.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["17"],
+    "rationale": "5-second inbound violation per FIBA Art 17"
+  },
+  {
+    "id": "whistle-16",
+    "description": "Legal screen - defender runs into stationary screener",
+    "input": {
+      "situation_description": "An offensive player sets a pick with both feet planted and body still. A defender, while chasing the ball handler, runs directly into the stationary screener without any warning.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "legal",
+    "expected_articles": ["33"],
+    "rationale": "Legal screen - screener had established legal stationary position per Art 33"
+  },
+  {
+    "id": "whistle-17",
+    "description": "Player intentionally kicks the ball to a teammate",
+    "input": {
+      "situation_description": "A player receives a pass near the baseline and, seeing a teammate open down the court, intentionally kicks the ball with his foot toward that teammate to start a fast break.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["13"],
+    "rationale": "Kicked ball violation - intentional contact with the ball by foot per FIBA Art 13"
+  },
+  {
+    "id": "whistle-18",
+    "description": "Offensive player steps into the free throw lane before the ball hits the rim",
+    "input": {
+      "situation_description": "During a free throw attempt, an offensive player positioned along the lane steps into the restricted area before the ball hits the rim or backboard.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["43"],
+    "rationale": "Free throw lane violation by offensive player per FIBA Art 43"
+  },
+  {
+    "id": "whistle-19",
+    "description": "NBA player throws a punch at an opponent",
+    "input": {
+      "situation_description": "During an NBA game, after a hard foul, a player becomes enraged and throws a punch at the opposing player. The punch makes contact with the opponent's face.",
+      "rule_type": "NBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["12B"],
+    "rationale": "NBA Flagrant Foul 2 / fighting - results in immediate ejection per NBA Rule No. 12B"
+  },
+  {
+    "id": "whistle-20",
+    "description": "Deliberate foul to stop the clock near end of game",
+    "input": {
+      "situation_description": "A team is trailing by 3 points with 8 seconds left. A defender deliberately wraps his arms around the ball handler to stop the clock and send the opponent to the free throw line.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Intentional personal foul - deliberate contact to stop the clock per FIBA Art 33"
+  },
+  {
+    "id": "whistle-21",
+    "description": "Player steps out of bounds then re-enters and receives a pass",
+    "input": {
+      "situation_description": "A player runs along the baseline and steps on the out-of-bounds line with one foot. While still touching the line, he catches a pass from a teammate.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["23"],
+    "rationale": "Player was out of bounds when receiving the pass per FIBA Art 23"
+  },
+  {
+    "id": "whistle-22",
+    "description": "Shooter is fouled after releasing the ball - continuation play",
+    "input": {
+      "situation_description": "A guard drives to the basket and releases a floater. After the ball leaves his hand, a defender makes contact with the shooter's arm. The shot goes in.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["33"],
+    "rationale": "Shooting foul with continuation - basket counts and shooter receives 1 free throw per Art 33"
+  },
+  {
+    "id": "whistle-23",
+    "description": "Player palms the ball during a dribble",
+    "input": {
+      "situation_description": "A ball handler clearly places his hand underneath the ball and carries it for two dribble movements, causing the ball to come to rest momentarily in his palm before pushing it back down.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["24"],
+    "rationale": "Carrying / palming violation per FIBA Art 24"
+  },
+  {
+    "id": "whistle-24",
+    "description": "FIBA disqualifying foul - fighting on the court",
+    "input": {
+      "situation_description": "Two players get into a physical altercation under the basket. One player shoves the other forcefully to the ground in a manner that poses a risk of injury and is entirely disconnected from any basketball play.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "foul",
+    "expected_articles": ["38"],
+    "rationale": "Disqualifying foul - fighting and extreme unsportsmanlike conduct per FIBA Art 38"
+  },
+  {
+    "id": "whistle-25",
+    "description": "Offensive basket interference - player touches ball above the cylinder",
+    "input": {
+      "situation_description": "An offensive player tips the ball while it is sitting on the rim and still within the imaginary cylinder above the basket, guiding it into the hoop.",
+      "rule_type": "FIBA"
+    },
+    "expected_decision": "violation",
+    "expected_articles": ["31"],
+    "rationale": "Offensive basket interference - touching ball within the cylinder per FIBA Art 31"
   }
 ]

@@ -94,6 +94,24 @@ Each feature is served by a dedicated **LangGraph StateGraph agent** that follow
 
 ---
 
+## 📊 Performance Metrics
+
+We employ an **LLM-as-Judge** evaluation pipeline (powered by `gpt-4o`) to assess the quality of our RAG responses against an expanded dataset of 50 challenging test cases (25 for Gear Advisor, 25 for The Whistle).
+
+### **1. Gear Advisor (Shoe Recommendation)**
+*Evaluated across 25 complex player archetype and budget constraint scenarios.*
+- **Accuracy:** 3.56 / 5.0
+- **Logical Consistency:** 4.20 / 5.0
+- **Data Fidelity:** 3.04 / 5.0
+
+### **2. The Whistle (Rule Judgment)**
+*Evaluated across 25 complex regulation scenarios including intentional fouls and violations.*
+- **Accuracy:** 3.40 / 5.0
+- **Logical Consistency:** 3.52 / 5.0
+- **Citation Appropriateness:** 2.84 / 5.0
+
+---
+
 ## 💻 Getting Started
 
 ### **Prerequisites**

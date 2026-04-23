@@ -1,4 +1,5 @@
 """Markdown report generator for RAG evaluation results."""
+# ruff: noqa: E501
 
 from datetime import datetime
 from pathlib import Path
@@ -10,6 +11,7 @@ def _gear_section(gear_data: dict) -> str:
     """Build Gear Advisor section of the report."""
     rag = gear_data["rag_metrics"]
     baseline = gear_data["baseline_metrics"]
+    judge = gear_data.get("llm_judge_metrics", {})
     details = gear_data["details"]
 
     lines = [
@@ -23,10 +25,16 @@ def _gear_section(gear_data: dict) -> str:
         f"| {rag['mrr'] - baseline['mrr']:+.2f} |",
         f"| Cases | {rag['n_cases']} | {baseline['n_cases']} | - |",
         "",
+        "### LLM Judge Metrics (RAG)",
+        "",
+        f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
+        f"- Consistency: {judge.get('consistency', 0.0):.2f} / 5.0",
+        f"- Data Fidelity: {judge.get('citation', 0.0):.2f} / 5.0",
+        "",
         "### Case Details",
         "",
-        "| ID | Description | Expected | RAG Predicted | Baseline Predicted | RAG Hit | Baseline Hit |",
-        "|----|-------------|----------|---------------|-------------------|---------|-------------|",
+        "| ID | Description | Expected | RAG Predicted | Baseline Predicted | RAG Hit | Baseline Hit | LLM Judge |",  # noqa: E501
+        "|----|-------------|----------|---------------|-------------------|---------|-------------|-----------|",
     ]
 
     for d in details:
@@ -35,15 +43,23 @@ def _gear_section(gear_data: dict) -> str:
             expected += "..."
         rag_pred = ", ".join(d["rag_predicted"][:3]) or "-"
         base_pred = ", ".join(d["baseline_predicted"][:3]) or "-"
-        rag_hit = "O" if any(
-            sid in d["rag_predicted"][:3] for sid in d["expected_ids"]
-        ) else "X"
-        base_hit = "O" if any(
-            sid in d["baseline_predicted"][:3] for sid in d["expected_ids"]
-        ) else "X"
+        rag_hit = (
+            "O"
+            if any(sid in d["rag_predicted"][:3] for sid in d["expected_ids"])
+            else "X"
+        )
+        base_hit = (
+            "O"
+            if any(sid in d["baseline_predicted"][:3] for sid in d["expected_ids"])
+            else "X"
+        )
+
+        js = d.get("llm_judge_score", {})
+        judge_str = f"A:{js.get('accuracy_score', 0)} C:{js.get('consistency_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
+
         lines.append(
             f"| {d['id']} | {d['description']} | {expected} "
-            f"| {rag_pred} | {base_pred} | {rag_hit} | {base_hit} |"
+            f"| {rag_pred} | {base_pred} | {rag_hit} | {base_hit} | {judge_str} |"
         )
 
     lines.append("")
@@ -54,6 +70,7 @@ def _whistle_section(whistle_data: dict) -> str:
     """Build Whistle section of the report."""
     rate = whistle_data["citation_hit_rate"]
     n = whistle_data["n_cases"]
+    judge = whistle_data.get("llm_judge_metrics", {})
     details = whistle_data["details"]
 
     lines = [
@@ -64,20 +81,34 @@ def _whistle_section(whistle_data: dict) -> str:
         f"| Citation Hit Rate | {rate:.2f} |",
         f"| Cases | {n} |",
         "",
+        "### LLM Judge Metrics",
+        "",
+        f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
+        f"- Consistency: {judge.get('consistency', 0.0):.2f} / 5.0",
+        f"- Citation: {judge.get('citation', 0.0):.2f} / 5.0",
+        "",
         "### Case Details",
         "",
-        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit |",
-        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|",
+        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit | LLM Judge |",  # noqa: E501
+        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|-----------|",
     ]
 
     for d in details:
         decision_match = "O" if d["decision_match"] else "X"
         exp_art = ", ".join(d["expected_articles"])
         pred_art = ", ".join(d["predicted_articles"]) or "-"
-        citation_hit = "O" if set(d["expected_articles"]).issubset(set(d["predicted_articles"])) else "X"
+        citation_hit = (
+            "O"
+            if set(d["expected_articles"]).issubset(set(d["predicted_articles"]))
+            else "X"
+        )
+
+        js = d.get("llm_judge_score", {})
+        judge_str = f"A:{js.get('accuracy_score', 0)} C:{js.get('consistency_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
+
         lines.append(
             f"| {d['id']} | {d['description']} | {d['expected_decision']} "
-            f"| {d['predicted_decision']} | {decision_match} | {exp_art} | {pred_art} | {citation_hit} |"
+            f"| {d['predicted_decision']} | {decision_match} | {exp_art} | {pred_art} | {citation_hit} | {judge_str} |"  # noqa: E501
         )
 
     lines.append("")
@@ -115,8 +146,7 @@ def _skill_section(skill_data: dict) -> str:
         else:
             step_summary = "-"
         lines.append(
-            f"| {d['id']} | {d['description']} | {equip} | {time} "
-            f"| {step_summary} |"
+            f"| {d['id']} | {d['description']} | {equip} | {time} | {step_summary} |"
         )
 
     lines.append("")

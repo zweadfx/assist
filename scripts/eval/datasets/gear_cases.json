@@ -193,5 +193,135 @@
     },
     "expected_shoe_ids": ["shoe_044", "shoe_045"],
     "rationale": "Kai 1 (149K) and KAI 2 (159K) are Kyrie's signatures with responsive+court_feel+lightweight, both under 160K"
+  },
+  {
+    "id": "gear-16",
+    "description": "Forward seeking Kawhi-style defensive lockdown with ankle support",
+    "input": {
+      "sensory_preferences": ["ankle_support", "stability"],
+      "player_archetype": "Kawhi Leonard",
+      "position": "forward",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_048"],
+    "rationale": "Kawhi 4 is his signature with ankle_support+impact_protection+traction+stability"
+  },
+  {
+    "id": "gear-17",
+    "description": "Forward seeking impact protection under 200K, no archetype",
+    "input": {
+      "sensory_preferences": ["impact_protection", "cushioning"],
+      "player_archetype": null,
+      "position": "forward",
+      "budget_max_krw": 200000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_015", "shoe_047", "shoe_048", "shoe_059"],
+    "rationale": "Under 200K with impact_protection: Zoom Freak 5 (149K), Fresh Foam BB v2 (159K), Kawhi 4 (189K), Shock Wave 5 (139K)"
+  },
+  {
+    "id": "gear-18",
+    "description": "Cheapest option under 80K for entry-level player",
+    "input": {
+      "sensory_preferences": ["stability", "comfort"],
+      "player_archetype": null,
+      "position": null,
+      "budget_max_krw": 80000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_050"],
+    "rationale": "SKX Reigns (79K) is the only shoe under 80K with stability+comfort+value tags"
+  },
+  {
+    "id": "gear-19",
+    "description": "Guard seeking James Harden style cushioning euro-step shoe",
+    "input": {
+      "sensory_preferences": ["cushioning", "comfort"],
+      "player_archetype": "James Harden",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_023", "shoe_024"],
+    "rationale": "Harden Vol. 7 and Vol. 8 are his signatures with cushioning+stability+comfort+impact_protection"
+  },
+  {
+    "id": "gear-20",
+    "description": "Guard seeking Luka Doncic style step-back cushioning shoe",
+    "input": {
+      "sensory_preferences": ["cushioning", "ankle_support"],
+      "player_archetype": "Luka Doncic",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_018", "shoe_022"],
+    "rationale": "Luka 4 and Luka 5 are his signatures with cushioning+stability/ankle_support"
+  },
+  {
+    "id": "gear-21",
+    "description": "Guard seeking Anthony Edwards style explosive responsive shoe",
+    "input": {
+      "sensory_preferences": ["responsive", "traction"],
+      "player_archetype": "Anthony Edwards",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_027"],
+    "rationale": "AE 1 is Anthony Edwards' signature with responsive+traction+lightweight+court_feel"
+  },
+  {
+    "id": "gear-22",
+    "description": "Forward seeking Kevin Durant style lightweight balanced shoe",
+    "input": {
+      "sensory_preferences": ["lightweight", "responsive"],
+      "player_archetype": "Kevin Durant",
+      "position": "forward",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_010", "shoe_011", "shoe_012"],
+    "rationale": "KD 15/16/17 are his signatures with lightweight+responsive+cushioning+stability"
+  },
+  {
+    "id": "gear-23",
+    "description": "Guard seeking Dwyane Wade style premium cushioning shoe",
+    "input": {
+      "sensory_preferences": ["cushioning", "stability"],
+      "player_archetype": "Dwyane Wade",
+      "position": "guard",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_037", "shoe_038"],
+    "rationale": "Way of Wade 11 (cushioning+stability) and WoW 12 (cushioning+ankle_support) are his latest signatures"
+  },
+  {
+    "id": "gear-24",
+    "description": "Budget value pick under 150K for guard, no archetype preference",
+    "input": {
+      "sensory_preferences": ["value", "traction"],
+      "player_archetype": null,
+      "position": "guard",
+      "budget_max_krw": 150000,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_025", "shoe_026", "shoe_032", "shoe_042", "shoe_049", "shoe_050", "shoe_051"],
+    "rationale": "Under 150K with value tag: DON Issue 6 (129K), DON Issue 7 (139K), Lockdown 6 (99K), JB 2 (139K), AR2 (129K), SKX Reigns (79K), Big3 5.0 (119K)"
+  },
+  {
+    "id": "gear-25",
+    "description": "Jayson Tatum style forward seeking all-around balanced shoe",
+    "input": {
+      "sensory_preferences": ["cushioning", "stability"],
+      "player_archetype": "Jayson Tatum",
+      "position": "forward",
+      "budget_max_krw": null,
+      "language": "en"
+    },
+    "expected_shoe_ids": ["shoe_021"],
+    "rationale": "Tatum 3 is his signature with cushioning+stability+traction+comfort"
   }
 ]
