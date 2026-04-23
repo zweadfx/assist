@@ -157,16 +157,22 @@ def extract_keywords(state: JudgeAgentState) -> dict:
         "키워드만 출력하고 다른 텍스트는 포함하지 마세요."
     )
 
-    response = chat_completion_with_retry(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": situation},
-        ],
-    )
-    keywords = (response.choices[0].message.content or "").strip()
-    logger.info(f"Extracted search keywords: {keywords}")
-    return {"search_query": keywords}
+    try:
+        response = chat_completion_with_retry(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": situation},
+            ],
+        )
+        keywords = (response.choices[0].message.content or "").strip()
+        if not keywords:
+            raise ValueError("Empty keyword response")
+        logger.info(f"Extracted search keywords: {keywords}")
+        return {"search_query": keywords}
+    except Exception as e:
+        logger.warning(f"Keyword extraction failed, falling back to original situation: {e}")
+        return {"search_query": situation}
 
 
 def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
@@ -176,7 +182,8 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
     """
     logger.info("NODE: Retrieving Rules and Glossary")
     user_info = state["user_info"]
-    search_query = state.get("search_query") or user_info.get("situation_description", "")
+    original_situation = user_info.get("situation_description", "")
+    search_query = state.get("search_query") or original_situation
     rule_type = user_info.get("rule_type")
 
     logger.debug(
@@ -190,6 +197,18 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
             n_rules=8,
             n_glossary=3,
         )
+
+        # Fallback: retry with original situation if keyword query yielded no rules
+        if not search_results["rules"] and search_query != original_situation:
+            logger.warning(
+                "Keyword query returned no rules; retrying with original situation"
+            )
+            search_results = rule_retriever.hybrid_search(
+                situation=original_situation,
+                rule_type=rule_type,
+                n_rules=8,
+                n_glossary=3,
+            )
 
         # Combine rules and glossary into context
         context_docs = search_results["rules"] + search_results["glossary"]
@@ -272,7 +291,7 @@ authoritative judgment based on official basketball rules.
 **CRITICAL CITATION RULES:**
 - You MUST cite rule articles ONLY from the "Retrieved Rules from Database" section above.
 - Do NOT cite, invent, or reference any rule articles not present in the retrieved data.
-- Every rule_reference MUST include: exact article number, page number, and a direct excerpt.
+- For each rule_reference, include the article number and page number ONLY if they are explicitly present in the retrieved data (not shown as "N/A"); never invent or infer missing values.
 - If retrieved rules are insufficient to make a judgment, state that explicitly instead of guessing.
 
 **Instructions:**
