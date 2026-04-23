@@ -82,8 +82,12 @@ def _run_single_rag(case: dict) -> dict:
         "\n".join([doc.page_content for doc in context_docs]) if context_docs else ""
     )
 
-    response = GearAdvisorResponse.model_validate_json(raw)
-    predicted_ids = _extract_shoe_ids(response)
+    try:
+        response = GearAdvisorResponse.model_validate_json(raw)
+        predicted_ids = _extract_shoe_ids(response)
+    except Exception as e:
+        logger.error("Failed to parse RAG response: %s", e)
+        predicted_ids = []
 
     return {
         "predicted_ids": predicted_ids,
@@ -152,7 +156,16 @@ def run_gear_evaluation() -> dict:
                 expected_answer_str = (
                     f"Expected IDs: {expected_ids}, Rationale: {case.get('rationale', '')}"
                 )
-                question_str = json.dumps(case["input"], ensure_ascii=False)
+                user_input = case["input"]
+                prefs = ", ".join(user_input.get("sensory_preferences", []))
+                question_parts = [f"Recommend shoes for: {prefs}"]
+                if user_input.get("player_archetype"):
+                    question_parts.append(f"archetype: {user_input['player_archetype']}")
+                if user_input.get("position"):
+                    question_parts.append(f"position: {user_input['position']}")
+                if user_input.get("budget_max_krw"):
+                    question_parts.append(f"budget: {user_input['budget_max_krw']} KRW")
+                question_str = ", ".join(question_parts)
                 llm_judge_score = evaluate_with_llm_judge(
                     question=question_str,
                     generated_answer=raw_response,

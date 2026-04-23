@@ -58,7 +58,13 @@ def evaluate_with_llm_judge(
         if content.endswith("```"):
             content = content[:-3]
 
-        return json.loads(content.strip())
+        parsed = json.loads(content.strip())
+        return {
+            "accuracy_score": int(parsed.get("accuracy_score", 0)),
+            "consistency_score": int(parsed.get("consistency_score", 0)),
+            "citation_score": int(parsed.get("citation_score", 0)),
+            "reasoning": str(parsed.get("reasoning", "")),
+        }
 
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse JSON from LLM Judge: {content}")
