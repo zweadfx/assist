@@ -26,10 +26,10 @@ DATASETS_DIR = Path(__file__).resolve().parent.parent / "datasets"
 def _normalize_article(article: str) -> str:
     """Extract the core article number from various formats.
 
-    'Art 25' → '25', '33.9' → '33', 'Article 31' → '31'
+    'Art 25' → '25', '33.9' → '33', 'Article 31' → '31', 'Rule 12B' → '12B'
     """
-    numbers = re.findall(r"\d+", article)
-    return numbers[0] if numbers else article
+    matches = re.findall(r"\d+[A-Za-z]*", article)
+    return matches[0] if matches else article
 
 
 def _run_single_whistle(case: dict) -> dict:
