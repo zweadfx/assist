@@ -170,8 +170,10 @@ def extract_keywords(state: JudgeAgentState) -> dict:
             raise ValueError("Empty keyword response")
         logger.info(f"Extracted search keywords: {keywords}")
         return {"search_query": keywords}
-    except Exception as e:
-        logger.warning(f"Keyword extraction failed, falling back to original situation: {e}")
+    except (openai.APIError, ValueError, IndexError, AttributeError) as e:
+        logger.warning(
+            "Keyword extraction failed, falling back to original situation: %s", e
+        )
         return {"search_query": situation}
 
 
@@ -298,8 +300,9 @@ authoritative judgment based on official basketball rules.
 1. Analyze the described situation carefully.
 2. Determine whether it constitutes a violation, foul, legal play, or other.
 3. Provide clear reasoning citing specific rule articles from the retrieved data.
-4. Include every applicable rule_reference from the retrieved rules, each with the exact
-   article number, page number, and a verbatim excerpt from the rules.
+4. Include every applicable rule_reference from the retrieved rules. Copy the article
+   and page_number exactly as shown in the retrieved data; output null for any field
+   whose retrieved value is "N/A". Always include a verbatim excerpt.
 5. If relevant basketball terms appear in the glossary data, include them in
    related_terms with their definitions.
 6. Write the judgment_title as a concise Korean summary of the ruling.
