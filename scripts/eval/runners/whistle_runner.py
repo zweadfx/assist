@@ -12,7 +12,12 @@ from pathlib import Path
 
 from langchain_core.messages import HumanMessage
 
-from scripts.eval.metrics import citation_hit_rate, compute_llm_judge_metrics
+from scripts.eval.metrics import (
+    citation_hit_rate,
+    compute_llm_judge_metrics,
+    hit_at_k,
+    reciprocal_rank,
+)
 from scripts.eval.runners.judge_llm_runner import evaluate_with_llm_judge
 from src.core.constants import LLM_JUDGE_WHISTLE_PROMPT, LLM_JUDGE_WHISTLE_SYSTEM_PROMPT
 from src.models.rule_schema import WhistleResponse
@@ -55,6 +60,16 @@ def _run_single_whistle(case: dict) -> dict:
         "\n".join([doc.page_content for doc in context_docs]) if context_docs else ""
     )
 
+    # Retrieval-level: unique articles in retrieved rule docs (insertion-order dedup)
+    seen: set[str] = set()
+    retrieved_articles = []
+    for doc in context_docs:
+        if doc.metadata.get("doc_type") == "rule" and doc.metadata.get("article"):
+            art = _normalize_article(doc.metadata["article"])
+            if art not in seen:
+                seen.add(art)
+                retrieved_articles.append(art)
+
     response = WhistleResponse.model_validate_json(raw)
 
     predicted_articles = [
@@ -62,6 +77,7 @@ def _run_single_whistle(case: dict) -> dict:
     ]
     return {
         "predicted_articles": predicted_articles,
+        "retrieved_articles": retrieved_articles,
         "predicted_decision": response.decision,
         "raw_response": raw,
         "context": context_text,
@@ -78,6 +94,7 @@ def run_whistle_evaluation() -> dict:
         cases = json.load(f)
 
     citation_results = []
+    retrieval_results = []
     llm_judge_results = []
     details = []
 
@@ -91,12 +108,14 @@ def run_whistle_evaluation() -> dict:
         try:
             result = _run_single_whistle(case)
             predicted_articles = result["predicted_articles"]
+            retrieved_articles = result["retrieved_articles"]
             predicted_decision = result["predicted_decision"]
             raw_response = result["raw_response"]
             context_text = result["context"]
         except Exception as e:
             logger.error("Whistle failed for %s: %s", case_id, e)
             predicted_articles = []
+            retrieved_articles = []
             predicted_decision = "error"
             raw_response = ""
             context_text = ""
@@ -107,6 +126,7 @@ def run_whistle_evaluation() -> dict:
             llm_judge_score = {
                 "accuracy_score": 0,
                 "citation_score": 0,
+                "faithfulness_score": 0,
                 "reasoning": "Skipped: agent failed",
             }
         else:
@@ -127,12 +147,20 @@ def run_whistle_evaluation() -> dict:
                 llm_judge_score = {
                     "accuracy_score": 0,
                     "citation_score": 0,
+                    "faithfulness_score": 0,
                     "reasoning": "Error",
                 }
 
         citation_results.append(
             {
                 "predicted_articles": predicted_articles,
+                "expected_articles": expected_articles,
+            }
+        )
+
+        retrieval_results.append(
+            {
+                "retrieved_articles": retrieved_articles,
                 "expected_articles": expected_articles,
             }
         )
@@ -148,22 +176,34 @@ def run_whistle_evaluation() -> dict:
                 "predicted_decision": predicted_decision,
                 "decision_match": decision_match,
                 "expected_articles": expected_articles,
+                "retrieved_articles": retrieved_articles,
                 "predicted_articles": predicted_articles,
                 "llm_judge_score": llm_judge_score,
             }
         )
 
         logger.info(
-            "  %s → decision: %s (expected: %s) | articles: %s (expected: %s) | Judge: %s",  # noqa: E501
+            "  %s → decision: %s (expected: %s) | retrieved: %s | cited: %s | Judge: %s",  # noqa: E501
             case_id,
             predicted_decision,
             expected_decision,
+            retrieved_articles,
             predicted_articles,
-            expected_articles,
-            f"A:{llm_judge_score.get('accuracy_score')} Cit:{llm_judge_score.get('citation_score')}"  # noqa: E501,
+            f"A:{llm_judge_score.get('accuracy_score')} Cit:{llm_judge_score.get('citation_score')} Faith:{llm_judge_score.get('faithfulness_score')}"  # noqa: E501,
         )
 
+    n = len(retrieval_results)
+    hit3 = sum(
+        hit_at_k(r["retrieved_articles"], r["expected_articles"], k=3)
+        for r in retrieval_results
+    ) / n if n else 0.0
+    mrr = sum(
+        reciprocal_rank(r["retrieved_articles"], r["expected_articles"])
+        for r in retrieval_results
+    ) / n if n else 0.0
+
     return {
+        "retrieval_metrics": {"hit_at_3": hit3, "mrr": mrr, "n_cases": n},
         "citation_hit_rate": citation_hit_rate(citation_results),
         "llm_judge_metrics": compute_llm_judge_metrics(llm_judge_results),
         "n_cases": len(cases),

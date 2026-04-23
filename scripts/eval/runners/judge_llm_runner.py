@@ -23,6 +23,7 @@ def evaluate_with_llm_judge(
     Criteria:
     1. 정확성 (Accuracy)
     2. 규칙 인용 적절성 / 데이터 충실도 (도메인별 의미 차이)
+    3. 원문 충실도 (Faithfulness) — Whistle 전용, Gear는 0 반환
     """
 
     prompt = prompt_template.format(
@@ -61,6 +62,7 @@ def evaluate_with_llm_judge(
         return {
             "accuracy_score": int(parsed.get("accuracy_score", 0)),
             "citation_score": int(parsed.get("citation_score", 0)),
+            "faithfulness_score": int(parsed.get("faithfulness_score", 0)),
             "reasoning": str(parsed.get("reasoning", "")),
         }
 
@@ -69,6 +71,7 @@ def evaluate_with_llm_judge(
         return {
             "accuracy_score": 0,
             "citation_score": 0,
+            "faithfulness_score": 0,
             "reasoning": f"JSON Parsing Error: {str(e)}",
         }
     except Exception as e:
@@ -76,5 +79,6 @@ def evaluate_with_llm_judge(
         return {
             "accuracy_score": 0,
             "citation_score": 0,
+            "faithfulness_score": 0,
             "reasoning": f"API Error: {str(e)}",
         }

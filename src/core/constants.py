@@ -157,17 +157,20 @@ LLM_JUDGE_WHISTLE_SYSTEM_PROMPT = (
 
 LLM_JUDGE_WHISTLE_PROMPT = (
     "다음 농구 규칙 판정 답변을 평가하고, "
-    "지정된 2가지 기준에 따라 1점부터 5점까지 채점해.\n"
+    "지정된 3가지 기준에 따라 1점부터 5점까지 채점해.\n"
     "반드시 마크다운 코드 블록 없이 순수한 JSON 형태({{...}})로만 출력해라.\n\n"
     "평가 기준:\n"
     "1. 정확성 (Accuracy): 생성된 답변이 예상 정답(판정)과 일치하며, "
     "농구 규정에 맞게 상황을 정확히 판단했는가?\n"
     "2. 규칙 인용 적절성 (Citation Appropriateness): 근거로 제시한 조항(Article)이 "
-    "주어진 상황에 적절하며 올바르게 인용되었는가?\n\n"
+    "주어진 상황에 적절하며 올바르게 인용되었는가?\n"
+    "3. 원문 충실도 (Faithfulness): 답변이 검색된 규칙 원문(Context)에 근거하며, "
+    "실제로 존재하지 않는 조항을 지어내거나 임의로 내용을 추가하지 않았는가?\n\n"
     "출력 형식 (오직 순수 JSON만 반환):\n"
     "{{\n"
     '  "accuracy_score": <int>,\n'
     '  "citation_score": <int>,\n'
+    '  "faithfulness_score": <int>,\n'
     '  "reasoning": "<string explaining the scores in Korean>"\n'
     "}}\n\n"
     "---\n"
