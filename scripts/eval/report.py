@@ -67,33 +67,42 @@ def _gear_section(gear_data: dict) -> str:
 
 def _whistle_section(whistle_data: dict) -> str:
     """Build Whistle section of the report."""
+    retrieval = whistle_data.get("retrieval_metrics", {})
     rate = whistle_data["citation_hit_rate"]
     n = whistle_data["n_cases"]
     judge = whistle_data.get("llm_judge_metrics", {})
     details = whistle_data["details"]
 
     lines = [
-        "## Whistle: Citation Accuracy",
+        "## Whistle: RAG Evaluation",
+        "",
+        "### [1. Retrieval] DB가 문서를 잘 찾는가?",
         "",
         "| Metric | Value |",
         "|--------|-------|",
-        f"| Citation Hit Rate | {rate:.2f} |",
+        f"| Rule Hit@3 | {retrieval.get('hit_at_3', 0.0):.2f} |",
+        f"| Rule MRR | {retrieval.get('mrr', 0.0):.2f} |",
         f"| Cases | {n} |",
         "",
-        "### LLM Judge Metrics",
+        "### [2. Generation] LLM이 답변을 잘 만드는가?",
         "",
-        f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
-        f"- Citation: {judge.get('citation', 0.0):.2f} / 5.0",
+        "| Metric | Value |",
+        "|--------|-------|",
+        f"| Citation Hit Rate (Rule-based) | {rate:.2f} |",
+        f"| Accuracy (LLM Judge) | {judge.get('accuracy', 0.0):.2f} / 5.0 |",
+        f"| Citation (LLM Judge) | {judge.get('citation', 0.0):.2f} / 5.0 |",
+        f"| Faithfulness (LLM Judge) | {judge.get('faithfulness', 0.0):.2f} / 5.0 |",
         "",
         "### Case Details",
         "",
-        "| ID | Description | Expected Decision | Predicted Decision | Decision Match | Expected Articles | Predicted Articles | Citation Hit | LLM Judge |",  # noqa: E501
-        "|----|-------------|-------------------|-------------------|----------------|-------------------|-------------------|--------------|-----------|",
+        "| ID | Description | Expected | Predicted | Match | Retrieved | Cited | Cit Hit | LLM Judge |",  # noqa: E501
+        "|----|-------------|----------|-----------|-------|-----------|-------|---------|-----------|",
     ]
 
     for d in details:
         decision_match = "O" if d["decision_match"] else "X"
         exp_art = ", ".join(d["expected_articles"])
+        retr_art = ", ".join(d.get("retrieved_articles", [])[:3]) or "-"
         pred_art = ", ".join(d["predicted_articles"]) or "-"
         citation_hit = (
             "O"
@@ -102,11 +111,11 @@ def _whistle_section(whistle_data: dict) -> str:
         )
 
         js = d.get("llm_judge_score", {})
-        judge_str = f"A:{js.get('accuracy_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
+        judge_str = f"A:{js.get('accuracy_score', 0)} C:{js.get('citation_score', 0)} F:{js.get('faithfulness_score', 0)}"  # noqa: E501
 
         lines.append(
             f"| {d['id']} | {d['description']} | {d['expected_decision']} "
-            f"| {d['predicted_decision']} | {decision_match} | {exp_art} | {pred_art} | {citation_hit} | {judge_str} |"  # noqa: E501
+            f"| {d['predicted_decision']} | {decision_match} | {retr_art} | {pred_art} | {citation_hit} | {judge_str} |"  # noqa: E501
         )
 
     lines.append("")

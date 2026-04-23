@@ -87,20 +87,23 @@ def constraint_pass_rate(results: List[dict]) -> dict:
 def compute_llm_judge_metrics(results: List[Dict[str, Any]]) -> dict:
     """Aggregate LLM Judge scores.
 
-    Each result dict must have 'accuracy_score' and 'citation_score'.
+    Each result dict must have 'accuracy_score', 'citation_score',
+    and optionally 'faithfulness_score'.
     """
     if not results:
-        return {"accuracy": 0.0, "citation": 0.0}
+        return {"accuracy": 0.0, "citation": 0.0, "faithfulness": 0.0}
 
     valid_results = [r for r in results if r.get("accuracy_score") is not None]
     n = len(valid_results)
     if n == 0:
-        return {"accuracy": 0.0, "citation": 0.0}
+        return {"accuracy": 0.0, "citation": 0.0, "faithfulness": 0.0}
 
     total_accuracy = sum(r["accuracy_score"] for r in valid_results)
     total_citation = sum(r["citation_score"] for r in valid_results)
+    total_faithfulness = sum(r.get("faithfulness_score", 0) for r in valid_results)
 
     return {
         "accuracy": total_accuracy / n,
         "citation": total_citation / n,
+        "faithfulness": total_faithfulness / n,
     }
