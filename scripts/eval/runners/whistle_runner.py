@@ -106,7 +106,6 @@ def run_whistle_evaluation() -> dict:
         if agent_failed:
             llm_judge_score = {
                 "accuracy_score": 0,
-                "consistency_score": 0,
                 "citation_score": 0,
                 "reasoning": "Skipped: agent failed",
             }
@@ -127,7 +126,6 @@ def run_whistle_evaluation() -> dict:
                 logger.error("LLM Judge failed for %s: %s", case_id, e)
                 llm_judge_score = {
                     "accuracy_score": 0,
-                    "consistency_score": 0,
                     "citation_score": 0,
                     "reasoning": "Error",
                 }
@@ -162,7 +160,7 @@ def run_whistle_evaluation() -> dict:
             expected_decision,
             predicted_articles,
             expected_articles,
-            f"A:{llm_judge_score.get('accuracy_score')} C:{llm_judge_score.get('consistency_score')} Cit:{llm_judge_score.get('citation_score')}"  # noqa: E501,
+            f"A:{llm_judge_score.get('accuracy_score')} Cit:{llm_judge_score.get('citation_score')}"  # noqa: E501,
         )
 
     return {

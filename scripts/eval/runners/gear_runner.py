@@ -147,7 +147,6 @@ def run_gear_evaluation() -> dict:
         if rag_failed:
             llm_judge_score = {
                 "accuracy_score": 0,
-                "consistency_score": 0,
                 "citation_score": 0,
                 "reasoning": "Skipped: RAG failed",
             }
@@ -178,7 +177,6 @@ def run_gear_evaluation() -> dict:
                 logger.error("LLM Judge failed for %s: %s", case_id, e)
                 llm_judge_score = {
                     "accuracy_score": 0,
-                    "consistency_score": 0,
                     "citation_score": 0,
                     "reasoning": "Error",
                 }
@@ -214,7 +212,7 @@ def run_gear_evaluation() -> dict:
             rag_predicted,
             baseline_predicted,
             expected_ids,
-            f"A:{llm_judge_score.get('accuracy_score')} C:{llm_judge_score.get('consistency_score')} Cit:{llm_judge_score.get('citation_score')}"  # noqa: E501,
+            f"A:{llm_judge_score.get('accuracy_score')} Cit:{llm_judge_score.get('citation_score')}"  # noqa: E501,
         )
 
     return {

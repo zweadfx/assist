@@ -22,8 +22,7 @@ def evaluate_with_llm_judge(
 
     Criteria:
     1. 정확성 (Accuracy)
-    2. 논리 일관성 (Logical Consistency)
-    3. 규칙 인용 적절성 (Citation Appropriateness)
+    2. 규칙 인용 적절성 / 데이터 충실도 (도메인별 의미 차이)
     """
 
     prompt = prompt_template.format(
@@ -61,7 +60,6 @@ def evaluate_with_llm_judge(
         parsed = json.loads(content.strip())
         return {
             "accuracy_score": int(parsed.get("accuracy_score", 0)),
-            "consistency_score": int(parsed.get("consistency_score", 0)),
             "citation_score": int(parsed.get("citation_score", 0)),
             "reasoning": str(parsed.get("reasoning", "")),
         }
@@ -70,7 +68,6 @@ def evaluate_with_llm_judge(
         logger.error(f"Failed to parse JSON from LLM Judge: {content}")
         return {
             "accuracy_score": 0,
-            "consistency_score": 0,
             "citation_score": 0,
             "reasoning": f"JSON Parsing Error: {str(e)}",
         }
@@ -78,7 +75,6 @@ def evaluate_with_llm_judge(
         logger.error(f"LLM Judge evaluation failed: {e}")
         return {
             "accuracy_score": 0,
-            "consistency_score": 0,
             "citation_score": 0,
             "reasoning": f"API Error: {str(e)}",
         }

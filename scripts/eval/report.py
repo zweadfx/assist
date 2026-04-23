@@ -28,7 +28,6 @@ def _gear_section(gear_data: dict) -> str:
         "### LLM Judge Metrics (RAG)",
         "",
         f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
-        f"- Consistency: {judge.get('consistency', 0.0):.2f} / 5.0",
         f"- Data Fidelity: {judge.get('citation', 0.0):.2f} / 5.0",
         "",
         "### Case Details",
@@ -55,7 +54,7 @@ def _gear_section(gear_data: dict) -> str:
         )
 
         js = d.get("llm_judge_score", {})
-        judge_str = f"A:{js.get('accuracy_score', 0)} C:{js.get('consistency_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
+        judge_str = f"A:{js.get('accuracy_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
 
         lines.append(
             f"| {d['id']} | {d['description']} | {expected} "
@@ -84,7 +83,6 @@ def _whistle_section(whistle_data: dict) -> str:
         "### LLM Judge Metrics",
         "",
         f"- Accuracy: {judge.get('accuracy', 0.0):.2f} / 5.0",
-        f"- Consistency: {judge.get('consistency', 0.0):.2f} / 5.0",
         f"- Citation: {judge.get('citation', 0.0):.2f} / 5.0",
         "",
         "### Case Details",
@@ -104,7 +102,7 @@ def _whistle_section(whistle_data: dict) -> str:
         )
 
         js = d.get("llm_judge_score", {})
-        judge_str = f"A:{js.get('accuracy_score', 0)} C:{js.get('consistency_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
+        judge_str = f"A:{js.get('accuracy_score', 0)} Cit:{js.get('citation_score', 0)}"  # noqa: E501
 
         lines.append(
             f"| {d['id']} | {d['description']} | {d['expected_decision']} "

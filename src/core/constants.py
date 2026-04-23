@@ -157,19 +157,16 @@ LLM_JUDGE_WHISTLE_SYSTEM_PROMPT = (
 
 LLM_JUDGE_WHISTLE_PROMPT = (
     "다음 농구 규칙 판정 답변을 평가하고, "
-    "지정된 3가지 기준에 따라 1점부터 5점까지 채점해.\n"
+    "지정된 2가지 기준에 따라 1점부터 5점까지 채점해.\n"
     "반드시 마크다운 코드 블록 없이 순수한 JSON 형태({{...}})로만 출력해라.\n\n"
     "평가 기준:\n"
     "1. 정확성 (Accuracy): 생성된 답변이 예상 정답(판정)과 일치하며, "
     "농구 규정에 맞게 상황을 정확히 판단했는가?\n"
-    "2. 논리 일관성 (Logical Consistency): 판정의 이유를 설명하는 논리 전개가 "
-    "명확하고 모순이 없는가?\n"
-    "3. 규칙 인용 적절성 (Citation Appropriateness): 근거로 제시한 조항(Article)이 "
+    "2. 규칙 인용 적절성 (Citation Appropriateness): 근거로 제시한 조항(Article)이 "
     "주어진 상황에 적절하며 올바르게 인용되었는가?\n\n"
     "출력 형식 (오직 순수 JSON만 반환):\n"
     "{{\n"
     '  "accuracy_score": <int>,\n'
-    '  "consistency_score": <int>,\n'
     '  "citation_score": <int>,\n'
     '  "reasoning": "<string explaining the scores in Korean>"\n'
     "}}\n\n"
@@ -185,19 +182,16 @@ LLM_JUDGE_GEAR_SYSTEM_PROMPT = (
 
 LLM_JUDGE_GEAR_PROMPT = (
     "다음 농구화 추천 답변을 평가하고, "
-    "지정된 3가지 기준에 따라 1점부터 5점까지 채점해.\n"
+    "지정된 2가지 기준에 따라 1점부터 5점까지 채점해.\n"
     "반드시 마크다운 코드 블록 없이 순수한 JSON 형태({{...}})로만 출력해라.\n\n"
     "평가 기준:\n"
     "1. 정확성 (Accuracy): 추천된 신발이 사용자의 sensory preferences, player archetype, "
     "budget, position 조건에 잘 맞는가? 예상 정답(expected shoe IDs)과 비교해 판단.\n"
-    "2. 논리 일관성 (Logical Consistency): 각 신발의 추천 이유가 사용자 조건과 모순 없이 "
-    "논리적으로 설명되어 있는가?\n"
-    "3. 데이터 충실도 (Data Fidelity): 응답의 신발 정보(brand, model, price, sensory tags)가 "
+    "2. 데이터 충실도 (Data Fidelity): 응답의 신발 정보(brand, model, price, sensory tags)가 "
     "RAG로 검색된 실제 데이터를 정확히 반영했는가? 임의로 만들어낸 정보가 없는가?\n\n"
     "출력 형식 (오직 순수 JSON만 반환):\n"
     "{{\n"
     '  "accuracy_score": <int>,\n'
-    '  "consistency_score": <int>,\n'
     '  "citation_score": <int>,\n'
     '  "reasoning": "<string explaining the scores in Korean>"\n'
     "}}\n\n"
