@@ -60,12 +60,15 @@ def _run_single_whistle(case: dict) -> dict:
         "\n".join([doc.page_content for doc in context_docs]) if context_docs else ""
     )
 
-    # Retrieval-level: articles present in retrieved rule docs
-    retrieved_articles = [
-        _normalize_article(doc.metadata["article"])
-        for doc in context_docs
-        if doc.metadata.get("doc_type") == "rule" and doc.metadata.get("article")
-    ]
+    # Retrieval-level: unique articles in retrieved rule docs (insertion-order dedup)
+    seen: set[str] = set()
+    retrieved_articles = []
+    for doc in context_docs:
+        if doc.metadata.get("doc_type") == "rule" and doc.metadata.get("article"):
+            art = _normalize_article(doc.metadata["article"])
+            if art not in seen:
+                seen.add(art)
+                retrieved_articles.append(art)
 
     response = WhistleResponse.model_validate_json(raw)
 

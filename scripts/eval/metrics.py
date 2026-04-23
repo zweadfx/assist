@@ -100,7 +100,7 @@ def compute_llm_judge_metrics(results: List[Dict[str, Any]]) -> dict:
 
     total_accuracy = sum(r["accuracy_score"] for r in valid_results)
     total_citation = sum(r["citation_score"] for r in valid_results)
-    total_faithfulness = sum(r.get("faithfulness_score", 0) for r in valid_results)
+    total_faithfulness = sum(r.get("faithfulness_score") or 0 for r in valid_results)
 
     return {
         "accuracy": total_accuracy / n,
