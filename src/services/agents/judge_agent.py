@@ -53,6 +53,9 @@ class JudgeAgentState(TypedDict):
     # Information about the user's request (situation, rule_type).
     user_info: dict
 
+    # Violation-type keywords extracted from situation; used as the RAG query.
+    search_query: str
+
     # A list of relevant rule documents retrieved from the RAG store.
     context: List[Document]
 
@@ -138,6 +141,42 @@ def parse_situation(state: JudgeAgentState) -> dict:
     return {"user_info": sanitized_info}
 
 
+def extract_keywords(state: JudgeAgentState) -> dict:
+    """
+    Extracts violation-type keywords from the situation description using LLM.
+    These compact keywords are used as the RAG search query instead of the
+    full natural-language description, narrowing the embedding space mismatch
+    between long situation text and short official rule articles.
+    """
+    logger.info("NODE: Extracting Keywords")
+    situation = state["user_info"].get("situation_description", "")
+
+    system_prompt = (
+        "농구 경기 상황에서 규칙 위반 유형을 나타내는 핵심 키워드를 추출해줘. "
+        "출력 형식: 쉼표로 구분된 한국어 키워드 3-5개 (예: 파울, 트래블링, 바이얼레이션). "
+        "키워드만 출력하고 다른 텍스트는 포함하지 마세요."
+    )
+
+    try:
+        response = chat_completion_with_retry(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": situation},
+            ],
+        )
+        keywords = (response.choices[0].message.content or "").strip()
+        if not keywords:
+            raise ValueError("Empty keyword response")
+        logger.info(f"Extracted search keywords: {keywords}")
+        return {"search_query": keywords}
+    except (openai.APIError, ValueError, IndexError, AttributeError) as e:
+        logger.warning(
+            "Keyword extraction failed, falling back to original situation: %s", e
+        )
+        return {"search_query": situation}
+
+
 def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
     """
     Retrieves relevant rules and glossary terms using the RuleRetriever.
@@ -145,20 +184,33 @@ def retrieve_rules_and_glossary(state: JudgeAgentState) -> dict:
     """
     logger.info("NODE: Retrieving Rules and Glossary")
     user_info = state["user_info"]
-    situation = user_info.get("situation_description", "")
+    original_situation = user_info.get("situation_description", "")
+    search_query = state.get("search_query") or original_situation
     rule_type = user_info.get("rule_type")
 
     logger.debug(
-        f"Search params: situation={(situation or '')[:80]}..., rule_type={rule_type}"
+        f"Search params: query={(search_query or '')[:80]}..., rule_type={rule_type}"
     )
 
     try:
         search_results = rule_retriever.hybrid_search(
-            situation=situation,
+            situation=search_query,
             rule_type=rule_type,
-            n_rules=5,
+            n_rules=8,
             n_glossary=3,
         )
+
+        # Fallback: retry with original situation if keyword query yielded no rules
+        if not search_results["rules"] and search_query != original_situation:
+            logger.warning(
+                "Keyword query returned no rules; retrying with original situation"
+            )
+            search_results = rule_retriever.hybrid_search(
+                situation=original_situation,
+                rule_type=rule_type,
+                n_rules=8,
+                n_glossary=3,
+            )
 
         # Combine rules and glossary into context
         context_docs = search_results["rules"] + search_results["glossary"]
@@ -238,12 +290,19 @@ authoritative judgment based on official basketball rules.
 {glossary_section}**Retrieved Rules from Database:**
 {rules_context_str}
 
+**CRITICAL CITATION RULES:**
+- You MUST cite rule articles ONLY from the "Retrieved Rules from Database" section above.
+- Do NOT cite, invent, or reference any rule articles not present in the retrieved data.
+- For each rule_reference, include the article number and page number ONLY if they are explicitly present in the retrieved data (not shown as "N/A"); never invent or infer missing values.
+- If retrieved rules are insufficient to make a judgment, state that explicitly instead of guessing.
+
 **Instructions:**
 1. Analyze the described situation carefully.
 2. Determine whether it constitutes a violation, foul, legal play, or other.
 3. Provide clear reasoning citing specific rule articles from the retrieved data.
-4. Include at least one rule_reference with the exact article, page number, and
-   an excerpt from the rules.
+4. Include every applicable rule_reference from the retrieved rules. Copy the article
+   and page_number exactly as shown in the retrieved data; output null for any field
+   whose retrieved value is "N/A". Always include a verbatim excerpt.
 5. If relevant basketball terms appear in the glossary data, include them in
    related_terms with their definitions.
 6. Write the judgment_title as a concise Korean summary of the ruling.
@@ -296,12 +355,14 @@ workflow = StateGraph(JudgeAgentState)
 
 # Add nodes to the graph
 workflow.add_node("parse", parse_situation)
+workflow.add_node("extract_keywords", extract_keywords)
 workflow.add_node("retrieve", retrieve_rules_and_glossary)
 workflow.add_node("generate", generate_judgment)
 
 # Define the edges for the graph
 workflow.set_entry_point("parse")
-workflow.add_edge("parse", "retrieve")
+workflow.add_edge("parse", "extract_keywords")
+workflow.add_edge("extract_keywords", "retrieve")
 workflow.add_edge("retrieve", "generate")
 workflow.add_edge("generate", END)
 

@@ -1,6 +1,6 @@
-from typing import List, Literal, Optional
+from typing import Any, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class WhistleRequest(BaseModel):
@@ -34,6 +34,13 @@ class RuleReference(BaseModel):
         None, description="Page number in the rules document, if available"
     )
     excerpt: str = Field(..., description="Relevant excerpt from the rule")
+
+    @field_validator("page_number", mode="before")
+    @classmethod
+    def _coerce_na_to_none(cls, v: Any) -> Any:
+        if v == "N/A":
+            return None
+        return v
 
 
 class RelatedTerm(BaseModel):

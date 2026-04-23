@@ -158,7 +158,7 @@ class RuleRetriever:
         self,
         situation: str,
         rule_type: Optional[str] = None,
-        n_rules: int = 5,
+        n_rules: int = 8,
         n_glossary: int = 3,
     ) -> Dict[str, List[Document]]:
         """
