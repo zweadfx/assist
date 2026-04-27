@@ -11,7 +11,7 @@ Test Cases:
 """
 
 import json
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -82,9 +82,10 @@ def test_client():
 
 @pytest.fixture
 def mock_coach():
-    """Patch coach_agent_graph.invoke to return a canned response."""
+    """Patch coach_agent_graph.ainvoke to return a canned response."""
     with patch(
-        "src.api.v1.endpoints.skill.coach_agent_graph.invoke",
+        "src.api.v1.endpoints.skill.coach_agent_graph.ainvoke",
+        new_callable=AsyncMock,
         return_value={"final_response": json.dumps(_FAKE_SKILL_RESPONSE)},
     ) as mock:
         yield mock
@@ -142,7 +143,7 @@ class TestSkillLabAPI:
         available_time_min과 steps duration 합계가 일치
         """
         # Arrange
-        available_time = 30
+        available_time = 20  # matches _FAKE_SKILL_RESPONSE total_duration_min
         payload = {
             "skill_level": "beginner",
             "category": "shooting",
@@ -163,6 +164,10 @@ class TestSkillLabAPI:
         assert total_step_duration == data["total_duration_min"], (
             f"Sum of step durations ({total_step_duration}) should equal "
             f"total_duration_min ({data['total_duration_min']})"
+        )
+        assert data["total_duration_min"] == available_time, (
+            f"total_duration_min ({data['total_duration_min']}) should equal "
+            f"requested available_time_min ({available_time})"
         )
 
     def test_tc04_free_text_parsing(self, test_client, mock_coach):

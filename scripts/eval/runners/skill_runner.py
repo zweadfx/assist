@@ -90,6 +90,7 @@ def _run_llm_only(case: dict) -> SkillLabResponse:
             "available_time_min": user_input["available_time_min"],
             "equipment": user_input.get("equipment", []),
             "language": user_input.get("language", "en"),
+            "specific_skill": user_input.get("specific_skill"),
         },
     }
 

@@ -108,7 +108,6 @@ def run_rag_baseline_skill(user_input: dict) -> SkillLabResponse:
         )
     )
 
-    from src.models.skill_schema import Step  # noqa: F401 — used via SkillLabResponse
     schema_json = json.dumps(SkillLabResponse.model_json_schema(), indent=2)
     language_name = "Korean" if language == "ko" else "English"
 
