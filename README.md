@@ -33,14 +33,14 @@
 This project implements four core features, each powered by a dedicated LangGraph agent with its own state machine workflow.
 
 ### **1. AI Skill Lab (Personalized Skill Trainer)**
-* **Agent**: `CoachAgent` (`diagnose → retrieve → generate`)
-* **Definition**: A structured training generator that creates actionable **'Daily Routine Cards'** based on a **hooper's** specific weaknesses, position, and available time.
-* **Details**: Retrieves specific drills from a vector database (47 drills across shooting, dribble, defense, conditioning) and orchestrates them into a progressive workout session (Warm-up → Main Drills → Cool-down). Supports equipment-aware filtering to exclude drills requiring unavailable gear.
+* **Agent**: `CoachAgent` (`diagnose → generate`)
+* **Definition**: A micro-step skill breakdown generator that creates actionable **'Skill Breakdown Cards'** tailored to a **hooper's** category, skill level, and available time.
+* **Details**: Uses LLM-based generation to produce 3–5 progressive steps for a single basketball skill, each adding exactly one layer of complexity (stationary → ball → movement → game-speed → game situation). Parses optional free-text input to enrich user preferences (intensity, additional focus, special notes). Enforces a strict time budget so all step durations sum to exactly the requested practice time.
 
 ### **2. Weekly Drill Routine (Weekly Training Planner)**
-* **Agent**: `WeeklyCoachAgent` (`diagnose → plan_week → retrieve → generate`)
-* **Definition**: An advanced training planner that generates **'Weekly Training Plans'** spanning 1-7 days, distributing multiple focus areas with recovery-aware scheduling.
-* **Details**: Intelligently allocates focus areas across training days via LLM-based planning with round-robin fallback, retrieves drills per day from the vector database, and generates custom drill variations (`is_custom: true`) when existing drills are insufficient.
+* **Agent**: `WeeklyCoachAgent` (`diagnose → plan_week → generate`)
+* **Definition**: An advanced training planner that generates **'Weekly Training Plans'** spanning 1–7 days, distributing multiple focus areas with recovery-aware scheduling.
+* **Details**: The `plan_week` node uses an LLM to intelligently allocate focus areas across training days (round-robin fallback on failure), then the `generate` node produces a complete per-day routine with structured warm-up / main / cool-down phases. All drills are LLM-generated with concrete rep/set targets and coaching tips. Supports Korean and English output via a language flag.
 
 ### **3. Gear Advisor (Sensory-based Recommendation)**
 * **Agent**: `GearAgent` (`analyze → retrieve → generate`)
@@ -48,9 +48,19 @@ This project implements four core features, each powered by a dedicated LangGrap
 * **Details**: Cross-analyzes sensory tag embeddings, player archetype matching, and signature shoe boosting across 59 shoes and 20 player profiles. Supports budget filtering with dedicated `BudgetInsufficientError` handling.
 
 ### **4. The Whistle (AI Referee & Rule Dictionary)**
-* **Agent**: `JudgeAgent` (`parse → retrieve → generate`)
+* **Agent**: `JudgeAgent` (`parse → extract_keywords → retrieve → generate`)
 * **Definition**: An on-court dispute solver that provides authoritative judgments and clear definitions of complex basketball regulations (FIBA/NBA).
-* **Details**: Searches vectorized rulebooks (FIBA + NBA PDFs, article-level chunking) to cite specific articles for controversial plays and serves as an instant glossary (22 terms) for technical terminology. Includes 2-level JSON retry parsing for robust LLM output handling.
+* **Details**: An `extract_keywords` node distills the natural-language situation into 3–5 violation-type keywords before querying ChromaDB, narrowing the embedding space mismatch between long situation text and short rule articles. Hybrid search combines rule retrieval (FIBA + NBA PDFs, article-level chunking) with glossary lookup (22 terms). Includes 2-level JSON retry parsing for robust LLM output handling.
+
+---
+
+## 🔐 Authentication & Plan Storage
+
+### **JWT Authentication**
+User accounts are managed with JWT access + refresh tokens via `/api/v1/auth`. Passwords are hashed with bcrypt. Tokens are signed using a configurable `SECRET_KEY` and `HS256` algorithm.
+
+### **Saved Plans**
+Authenticated users can persist and track their training plans via `/api/v1/plans`. Each `SavedPlan` record stores the plan type (`weekly` | `skill`), training dates, and a `completed_days` array for progress tracking. Plans are stored in a SQLite (local) or PostgreSQL (production) database managed by SQLAlchemy ORM.
 
 ---
 
@@ -64,6 +74,8 @@ The following technical ecosystem was established to ensure system stability and
 | **Frontend** | **Next.js 15 + Tailwind CSS** | Delivers a responsive UI with server-side rendering and utility-first styling |
 | **Orchestration** | **LangGraph** | Enables advanced agent control via state-based cyclic logic for multi-functional tasks |
 | **Vector DB** | **ChromaDB** | Supports rapid data embedding and efficient vector similarity search |
+| **Relational DB** | **SQLite / PostgreSQL + SQLAlchemy** | Persists user accounts and saved training plans with ORM-managed migrations |
+| **Auth** | **JWT (python-jose) + bcrypt** | Stateless access/refresh token authentication with secure password hashing |
 | **Package/Quality**| **uv & Ruff** | Ensures ultra-fast dependency management and strict code standard compliance |
 
 ---
@@ -74,41 +86,72 @@ Each feature is served by a dedicated **LangGraph StateGraph agent** that follow
 ```
 [User Request]  →  [FastAPI Endpoint]  →  [Dedicated Agent Graph]
                                                     │
-                                          ┌─────────┴─────────┐
-                                          │  Node 1: Parse/   │
-                                          │  Analyze Input    │
-                                          ├─────────┬─────────┤
-                                          │  Node 2: RAG      │
-                                          │  Retrieval        │
-                                          ├─────────┬─────────┤
-                                          │  Node 3: LLM      │
-                                          │  Generation       │
-                                          └─────────┬─────────┘
+                           ┌────────────────────────┴────────────────────────┐
+                           │                                                  │
+                  [Skill / Weekly]                                  [Gear / Whistle]
+                           │                                                  │
+               ┌───────────┴───────────┐                      ┌──────────────┴─────────────┐
+               │  Node 1: Diagnose /   │                      │  Node 1: Analyze / Parse   │
+               │  Parse Input          │                      │  Input                     │
+               ├───────────┬───────────┤                      ├──────────────┬─────────────┤
+               │  Node 2:  │ (Weekly)  │                      │  Node 2: RAG │ (Whistle)   │
+               │  LLM      │ Plan Week │                      │  Retrieval   │ +Keywords   │
+               │  Generate │ → Generate│                      ├──────────────┬─────────────┤
+               └───────────┴───────────┘                      │  Node 3: LLM │             │
+                           │                                  │  Generation  │             │
+                           └──────────────────────────────────┘─────────────┘
                                                     │
                                           [Pydantic Validated Response]
 ```
 
-1. **Input Parsing & Sanitization**: Each agent validates and sanitizes user input, including prompt injection pattern blocking.
-2. **Context Augmentation (RAG)**: Retrieves domain-specific knowledge from ChromaDB (drills, shoes, players, rules, glossary) with metadata filtering.
-3. **Structured Generation**: LLM generates responses constrained to Pydantic schemas, with retry logic for malformed outputs.
+1. **Input Parsing & Sanitization**: Each agent validates and sanitizes user input, including prompt injection pattern blocking and field-length enforcement.
+2. **Context Augmentation (RAG)**: Gear and Whistle agents retrieve domain-specific knowledge from ChromaDB (shoes, players, rules, glossary) with metadata filtering. Whistle additionally runs an LLM keyword extraction step before vector search.
+3. **LLM Generation**: All agents use `gpt-4o` for final generation against Pydantic schemas. Skill and Weekly agents use pure LLM generation without RAG; Whistle uses `gpt-4o-mini` for keyword extraction to reduce cost.
+4. **Structured Output with Retry**: Responses are validated against Pydantic schemas. Whistle implements a 2-level retry loop (re-send invalid JSON to LLM for correction before raising an error).
 
 ---
 
 ## 📊 Performance Metrics
 
-We employ an **LLM-as-Judge** evaluation pipeline (powered by `gpt-4o`) to assess the quality of our RAG responses against an expanded dataset of 50 challenging test cases (25 for Gear Advisor, 25 for The Whistle).
+We employ a two-layer evaluation pipeline to assess RAG quality separately for retrieval and generation.
 
 ### **1. Gear Advisor (Shoe Recommendation)**
 *Evaluated across 25 complex player archetype and budget constraint scenarios.*
-- **Accuracy:** 3.56 / 5.0
-- **Logical Consistency:** 4.20 / 5.0
-- **Data Fidelity:** 3.04 / 5.0
+
+| Layer | Metric | Value |
+| :--- | :--- | :--- |
+| **Retrieval** | Hit@3 | **0.92** |
+| **Retrieval** | MRR | **0.87** |
+| **Generation** | Accuracy (LLM Judge) | **4.36 / 5.0** |
+| **Generation** | Data Fidelity (LLM Judge) | **4.76 / 5.0** |
 
 ### **2. The Whistle (Rule Judgment)**
 *Evaluated across 25 complex regulation scenarios including intentional fouls and violations.*
-- **Accuracy:** 3.40 / 5.0
-- **Logical Consistency:** 3.52 / 5.0
-- **Citation Appropriateness:** 2.84 / 5.0
+
+| Layer | Metric | Value |
+| :--- | :--- | :--- |
+| **Retrieval** | Rule Hit@3 | **0.56** |
+| **Retrieval** | Rule MRR | **0.46** |
+| **Generation** | Citation Hit Rate | **0.72** |
+| **Generation** | Accuracy (LLM Judge) | **4.68 / 5.0** |
+| **Generation** | Citation (LLM Judge) | **4.40 / 5.0** |
+| **Generation** | Faithfulness (LLM Judge) | **4.76 / 5.0** |
+
+### **3. AI Skill Lab (Skill Breakdown)**
+*Evaluated for constraint compliance across multiple skill level and equipment scenarios.*
+
+| Metric | Description |
+| :--- | :--- |
+| **Equipment Pass Rate** | Fraction of cases where generated steps respect available equipment |
+| **Time Pass Rate** | Fraction of cases where step durations sum exactly to the requested time |
+
+To run evaluations:
+```bash
+uv run python scripts/evaluate.py --all      # all agents
+uv run python scripts/evaluate.py --gear     # Gear Advisor only
+uv run python scripts/evaluate.py --whistle  # The Whistle only
+uv run python scripts/evaluate.py --skill    # Skill Lab only
+```
 
 ---
 
@@ -129,7 +172,10 @@ uv sync
 
 # 3. Configure environment variables
 cp .env.example .env
-# Enter required keys such as OPENAI_API_KEY in the .env file
+# Enter required keys in the .env file:
+#   OPENAI_API_KEY=...
+#   SECRET_KEY=...          (any random string for JWT signing)
+#   DATABASE_URL=...        (defaults to sqlite:///./data/assist.db)
 
 # 4. Run the backend server
 uv run uvicorn src.main:app --reload
