@@ -74,8 +74,12 @@ def main():
 
         skill_data = run_skill_evaluation()
         logger.info(
-            "Skill Constraint Pass Rate: %s",
-            skill_data["constraint_pass_rate"],
+            "Skill LLM-only Constraint Pass Rate: %s",
+            skill_data["llm_constraint_pass_rate"],
+        )
+        logger.info(
+            "Skill RAG Baseline Constraint Pass Rate: %s",
+            skill_data["rag_constraint_pass_rate"],
         )
 
     report_path = generate_report(gear_data, whistle_data, skill_data)
