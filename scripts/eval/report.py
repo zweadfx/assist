@@ -124,36 +124,35 @@ def _whistle_section(whistle_data: dict) -> str:
 
 def _skill_section(skill_data: dict) -> str:
     """Build Skill Lab section of the report."""
-    rates = skill_data["constraint_pass_rate"]
+    llm_rates = skill_data["llm_constraint_pass_rate"]
+    rag_rates = skill_data["rag_constraint_pass_rate"]
     n = skill_data["n_cases"]
     details = skill_data["details"]
 
     lines = [
-        "## Skill Lab: Constraint Compliance",
+        "## Skill Lab: LLM-only vs RAG Baseline",
         "",
-        "| Metric | Value |",
-        "|--------|-------|",
-        f"| Equipment Pass Rate | {rates['equipment']:.2f} |",
-        f"| Time Pass Rate | {rates['time']:.2f} |",
-        f"| Cases | {n} |",
+        "| Metric | LLM-only | RAG Baseline | Delta |",
+        "|--------|----------|--------------|-------|",
+        f"| Equipment Pass Rate | {llm_rates['equipment']:.2f} | {rag_rates['equipment']:.2f} "
+        f"| {llm_rates['equipment'] - rag_rates['equipment']:+.2f} |",
+        f"| Time Pass Rate | {llm_rates['time']:.2f} | {rag_rates['time']:.2f} "
+        f"| {llm_rates['time'] - rag_rates['time']:+.2f} |",
+        f"| Cases | {n} | {n} | - |",
         "",
         "### Case Details",
         "",
-        "| ID | Description | Equipment | Time | Steps |",
-        "|----|-------------|-----------|------|-------|",
+        "| ID | Description | LLM Equip | LLM Time | RAG Equip | RAG Time |",
+        "|----|-------------|-----------|----------|-----------|----------|",
     ]
 
     for d in details:
-        equip = "PASS" if d["equipment_pass"] else "FAIL"
-        time = "PASS" if d["time_pass"] else "FAIL"
-        if d["steps"]:
-            step_summary = ", ".join(
-                f"{s['name']}({s['duration_min']}m)" for s in d["steps"]
-            )
-        else:
-            step_summary = "-"
         lines.append(
-            f"| {d['id']} | {d['description']} | {equip} | {time} | {step_summary} |"
+            f"| {d['id']} | {d['description']} "
+            f"| {'PASS' if d['llm_equipment_pass'] else 'FAIL'} "
+            f"| {'PASS' if d['llm_time_pass'] else 'FAIL'} "
+            f"| {'PASS' if d['rag_equipment_pass'] else 'FAIL'} "
+            f"| {'PASS' if d['rag_time_pass'] else 'FAIL'} |"
         )
 
     lines.append("")
