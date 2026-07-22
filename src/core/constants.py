@@ -8,6 +8,11 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT_DIR.parent / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
+PARSED_DATA_DIR = DATA_DIR / "parsed"
+
+# Parsed rule chunks (committed) — the rulebook PDFs are copyrighted, so the repo
+# ships the parsed chunks instead. Startup prefers this file; PDF parsing is the fallback.
+PARSED_RULES_FILE_PATH = PARSED_DATA_DIR / "rules_chunks.json"
 
 # Data Files
 SHOES_FILE_PATH = RAW_DATA_DIR / "shoes.json"

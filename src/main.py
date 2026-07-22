@@ -11,6 +11,7 @@ from src.core.constants import (
     FIBA_RULES_PDF_PATH,
     GLOSSARY_FILE_PATH,
     NBA_RULES_PDF_PATH,
+    PARSED_RULES_FILE_PATH,
     PLAYERS_FILE_PATH,
     SHOES_FILE_PATH,
     SHOES_EMBEDDINGS_FILE_PATH,
@@ -43,6 +44,7 @@ async def lifespan(app: FastAPI):
     try:
         # Migrate saved_plans: drop if old schema (start_date column exists)
         from sqlalchemy import inspect, text
+
         inspector = inspect(engine)
         if "saved_plans" in inspector.get_table_names():
             columns = [c["name"] for c in inspector.get_columns("saved_plans")]
@@ -50,7 +52,9 @@ async def lifespan(app: FastAPI):
                 with engine.connect() as conn:
                     conn.execute(text("DROP TABLE saved_plans"))
                     conn.commit()
-                logger.info("Dropped old saved_plans table (start_date → training_dates migration).")
+                logger.info(
+                    "Dropped old saved_plans table (start_date → training_dates migration)."
+                )
 
         # Create relational DB tables (no-op if they already exist)
         Base.metadata.create_all(bind=engine)
@@ -70,7 +74,9 @@ async def lifespan(app: FastAPI):
             logger.info(f"Loaded {len(shoes_embeddings)} shoe embeddings.")
 
             if len(shoes) != len(shoes_embeddings):
-                logger.error(f"Mismatch: {len(shoes)} shoes vs {len(shoes_embeddings)} embeddings ({SHOES_FILE_PATH} vs {SHOES_EMBEDDINGS_FILE_PATH})")
+                logger.error(
+                    f"Mismatch: {len(shoes)} shoes vs {len(shoes_embeddings)} embeddings ({SHOES_FILE_PATH} vs {SHOES_EMBEDDINGS_FILE_PATH})"
+                )
                 raise ValueError("Shoes data and embeddings length mismatch")
 
             chroma_manager.add_shoes(shoes=shoes, embeddings=shoes_embeddings)
@@ -90,7 +96,9 @@ async def lifespan(app: FastAPI):
             logger.info(f"Loaded {len(players_embeddings)} player embeddings.")
 
             if len(players) != len(players_embeddings):
-                logger.error(f"Mismatch: {len(players)} players vs {len(players_embeddings)} embeddings ({PLAYERS_FILE_PATH} vs {PLAYERS_EMBEDDINGS_FILE_PATH})")
+                logger.error(
+                    f"Mismatch: {len(players)} players vs {len(players_embeddings)} embeddings ({PLAYERS_FILE_PATH} vs {PLAYERS_EMBEDDINGS_FILE_PATH})"
+                )
                 raise ValueError("Players data and embeddings length mismatch")
 
             chroma_manager.add_players(players=players, embeddings=players_embeddings)
@@ -98,20 +106,31 @@ async def lifespan(app: FastAPI):
         else:
             logger.info("Players collection is already initialized.")
 
-        # Re-initialize rules collection if empty or when PDF content changes
-        rules_collection_empty = chroma_manager.rules_collection.count() == 0
-        rules_pdf_changed = chroma_manager.reinitialize_rules_collection(
-            FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
+        # Re-initialize rules collection if empty or when the rules source changes.
+        # Source of truth: committed parsed chunks JSON if present (PDFs are copyrighted
+        # and no longer shipped in the repo), else the local PDFs (fallback).
+        rules_sources = (
+            (PARSED_RULES_FILE_PATH,)
+            if PARSED_RULES_FILE_PATH.exists()
+            else (FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH)
         )
+        rules_collection_empty = chroma_manager.rules_collection.count() == 0
+        rules_pdf_changed = chroma_manager.reinitialize_rules_collection(*rules_sources)
         if rules_collection_empty or rules_pdf_changed:
             if rules_collection_empty:
                 logger.info("Rules collection is empty. Initializing...")
             if rules_pdf_changed:
                 logger.info("Rules PDF content changed. Re-initializing...")
-                
+
             all_chunks = []
 
-            if FIBA_RULES_PDF_PATH.exists():
+            # Prefer committed parsed chunks; fall back to parsing local PDFs.
+            use_parsed = PARSED_RULES_FILE_PATH.exists()
+            if use_parsed:
+                all_chunks = load_json_data(PARSED_RULES_FILE_PATH)
+                logger.info(f"Loaded {len(all_chunks)} rule chunks from parsed JSON.")
+
+            if not use_parsed and FIBA_RULES_PDF_PATH.exists():
                 fiba_chunks = parse_rules_pdf(
                     FIBA_RULES_PDF_PATH,
                     rule_type="FIBA",
@@ -119,10 +138,10 @@ async def lifespan(app: FastAPI):
                 )
                 all_chunks.extend(fiba_chunks)
                 logger.info(f"Parsed {len(fiba_chunks)} chunks from FIBA rules.")
-            else:
+            elif not use_parsed:
                 logger.warning(f"FIBA rules PDF not found: {FIBA_RULES_PDF_PATH}")
 
-            if NBA_RULES_PDF_PATH.exists():
+            if not use_parsed and NBA_RULES_PDF_PATH.exists():
                 nba_chunks = parse_rules_pdf(
                     NBA_RULES_PDF_PATH,
                     rule_type="NBA",
@@ -130,7 +149,7 @@ async def lifespan(app: FastAPI):
                 )
                 all_chunks.extend(nba_chunks)
                 logger.info(f"Parsed {len(nba_chunks)} chunks from NBA rules.")
-            else:
+            elif not use_parsed:
                 logger.warning(f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}")
 
             if all_chunks:
@@ -139,15 +158,15 @@ async def lifespan(app: FastAPI):
                 logger.info(f"Loaded {len(rules_embeddings)} rule embeddings.")
 
                 if len(all_chunks) != len(rules_embeddings):
-                    logger.error(f"Mismatch: {len(all_chunks)} rule chunks vs {len(rules_embeddings)} embeddings")
+                    logger.error(
+                        f"Mismatch: {len(all_chunks)} rule chunks vs {len(rules_embeddings)} embeddings"
+                    )
                     raise ValueError("Rules data and embeddings length mismatch")
 
                 chroma_manager.add_rules(
                     rule_chunks=all_chunks, embeddings=rules_embeddings
                 )
-                chroma_manager.commit_rules_hash(
-                    FIBA_RULES_PDF_PATH, NBA_RULES_PDF_PATH
-                )
+                chroma_manager.commit_rules_hash(*rules_sources)
                 logger.info("Successfully added rules to ChromaDB.")
             else:
                 logger.warning("No rules PDF files found. Skipping rules init.")
@@ -162,12 +181,12 @@ async def lifespan(app: FastAPI):
 
                 glossary_texts = [format_glossary_document(term) for term in glossary]
                 glossary_embeddings = load_json_data(GLOSSARY_EMBEDDINGS_FILE_PATH)
-                logger.info(
-                    f"Loaded {len(glossary_embeddings)} glossary embeddings."
-                )
+                logger.info(f"Loaded {len(glossary_embeddings)} glossary embeddings.")
 
                 if len(glossary) != len(glossary_embeddings):
-                    logger.error(f"Mismatch: {len(glossary)} glossary terms vs {len(glossary_embeddings)} embeddings ({GLOSSARY_FILE_PATH} vs {GLOSSARY_EMBEDDINGS_FILE_PATH})")
+                    logger.error(
+                        f"Mismatch: {len(glossary)} glossary terms vs {len(glossary_embeddings)} embeddings ({GLOSSARY_FILE_PATH} vs {GLOSSARY_EMBEDDINGS_FILE_PATH})"
+                    )
                     raise ValueError("Glossary data and embeddings length mismatch")
 
                 chroma_manager.add_glossary(
