@@ -70,4 +70,6 @@ uv run uvicorn src.main:app --reload
 
 Python 3.10+ · API 문서: 서버 기동 후 `/docs`
 
+**룰 데이터 출처**: 레포에는 FIBA·NBA 룰북의 **파싱 결과물**(조문 단위 청크, `data/parsed/rules_chunks.json`)만 포함됩니다. 원문 PDF는 저작권 문제로 포함하지 않습니다 — 원문은 공식 사이트(FIBA.basketball / official.nba.com)에서 구할 수 있습니다.
+
 라이선스: MIT
