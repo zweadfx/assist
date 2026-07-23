@@ -20,12 +20,6 @@ from src.core.constants import (
     GLOSSARY_EMBEDDINGS_FILE_PATH,
 )
 from src.services.rag.chroma_db import chroma_manager
-from src.services.rag.utils import (
-    format_glossary_document,
-    format_player_document,
-    format_rule_document,
-    format_shoe_document,
-)
 from src.utils.file_loader import load_json_data
 from src.utils.pdf_parser import parse_rules_pdf
 
@@ -68,8 +62,6 @@ async def lifespan(app: FastAPI):
 
             shoes = load_json_data(SHOES_FILE_PATH)
             logger.info(f"Loaded {len(shoes)} shoes from file.")
-
-            shoes_texts = [format_shoe_document(shoe) for shoe in shoes]
             shoes_embeddings = load_json_data(SHOES_EMBEDDINGS_FILE_PATH)
             logger.info(f"Loaded {len(shoes_embeddings)} shoe embeddings.")
 
@@ -90,8 +82,6 @@ async def lifespan(app: FastAPI):
 
             players = load_json_data(PLAYERS_FILE_PATH)
             logger.info(f"Loaded {len(players)} players from file.")
-
-            players_texts = [format_player_document(player) for player in players]
             players_embeddings = load_json_data(PLAYERS_EMBEDDINGS_FILE_PATH)
             logger.info(f"Loaded {len(players_embeddings)} player embeddings.")
 
@@ -153,7 +143,6 @@ async def lifespan(app: FastAPI):
                 logger.warning(f"NBA rules PDF not found: {NBA_RULES_PDF_PATH}")
 
             if all_chunks:
-                rules_texts = [format_rule_document(chunk) for chunk in all_chunks]
                 rules_embeddings = load_json_data(RULES_EMBEDDINGS_FILE_PATH)
                 logger.info(f"Loaded {len(rules_embeddings)} rule embeddings.")
 
@@ -178,8 +167,6 @@ async def lifespan(app: FastAPI):
             if GLOSSARY_FILE_PATH.exists():
                 glossary = load_json_data(GLOSSARY_FILE_PATH)
                 logger.info(f"Loaded {len(glossary)} glossary terms from file.")
-
-                glossary_texts = [format_glossary_document(term) for term in glossary]
                 glossary_embeddings = load_json_data(GLOSSARY_EMBEDDINGS_FILE_PATH)
                 logger.info(f"Loaded {len(glossary_embeddings)} glossary embeddings.")
 
