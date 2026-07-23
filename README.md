@@ -31,21 +31,25 @@ Python · FastAPI · LangGraph · ChromaDB(벡터) · SQLAlchemy(SQLite/PostgreS
 
 The Whistle에는 `extract_keywords` 노드를 따로 뒀습니다 — 긴 상황 서술문과 짧은 룰 조문의 임베딩 공간이 어긋나 검색이 빗나가는 문제를, 상황문을 3~5개 위반 유형 키워드로 압축한 뒤 검색하는 방식으로 줄였습니다.
 
-## 평가 (2026-04-22 측정)
+## 평가 (2026-04-24 측정)
 
-LLM-as-Judge(gpt-4o) 파이프라인으로 기능별 25케이스를 채점했습니다. 아래는 당시 측정값이며, 이후 코드가 변경되어 현재 코드 기준으로 재측정된 값이 아닙니다.
+규칙 기반 지표 + LLM-as-Judge(gpt-4o)로 기능별 채점했습니다. 4/22 1차 측정 후 **평가 자체를 재설계**(데이터셋 기대 조문 수정, Judge 프롬프트 도메인 분리, retrieval/generation 지표 분리)했기 때문에, 아래는 재설계 후 측정값이며 1차 수치와의 직접 비교(델타)는 하지 않습니다.
 
-| 기능 | Accuracy | Logical Consistency | 기타 |
+| 기능 | 지표 | 값 | 근거 리포트 |
 |---|---|---|---|
-| Gear Advisor (25케이스) | 3.56 / 5.0 | 4.20 / 5.0 | Data Fidelity 3.04 |
-| The Whistle (25케이스) | 3.40 / 5.0 | 3.52 / 5.0 | Citation Appropriateness 2.84 |
+| **The Whistle** (25케이스) | Rule Hit@3 / MRR | 0.56 / 0.46 | [20260424_091815](docs/eval/eval_report_20260424_091815.md) |
+| | Citation Hit Rate | 0.72 | 〃 |
+| | Accuracy / Citation / Faithfulness (Judge) | 4.68 / 4.40 / 4.76 (5.0 만점) | 〃 |
+| **Gear Advisor** (25케이스) | Hit@3 / MRR (RAG) | 0.92 / 0.87 | [20260424_093601](docs/eval/eval_report_20260424_093601.md) |
+| | Accuracy / Data Fidelity (Judge) | 4.36 / 4.76 (5.0 만점) | 〃 |
+| **Skill Lab** (5케이스, 2026-04-28) | 장비 준수율 / 시간 준수율 | 1.00 / 1.00 (RAG 베이스라인 0.80 / 1.00) | [20260428_230907](docs/eval/eval_report_20260428_230907.md) |
 
-평가 스크립트와 케이스 데이터셋은 `scripts/eval/`에 있습니다.
+**평가 여정** — 실패런 포함 전 리포트를 [docs/eval/](docs/eval/)에 그대로 커밋했습니다: 3/18 규칙 기반 1차는 id 매칭 버그로 전 지표 0.00([리포트](docs/eval/eval_report_20260318_151043.md)) → 같은 날 수정 후 Gear Hit@3 0.87([리포트](docs/eval/eval_report_20260318_151753.md)). 4/22 LLM-as-Judge 도입 — 스코어 파싱 실패런 2회 뒤 성공([리포트](docs/eval/eval_report_20260422_164143.md)). 4/23~24 평가 재설계 후 재측정한 것이 위 표입니다. 평가 스크립트와 케이스 데이터셋은 `scripts/eval/`에 있습니다.
 
 ## 한계
 
-- **평가 수치는 LLM이 LLM을 채점한 값입니다.** 사람 검증을 거치지 않았고, 측정 시점 이후 코드 변경분이 반영되지 않았습니다.
-- **Whistle의 인용 적합성(2.84/5)이 가장 약합니다.** 판정은 그럴듯한데 근거 조문이 어긋나는 경우가 남아 있습니다.
+- **Judge 수치는 LLM이 LLM을 채점한 값입니다.** 사람 검증을 거치지 않았고, 측정 시점 이후 코드 변경분이 반영되지 않았습니다.
+- **Whistle의 검색 지표가 가장 약합니다(Rule Hit@3 0.56 · MRR 0.46).** 생성 단계 지표는 높지만, 정답 조문이 상위 검색에 못 든 케이스가 절반 가까이 됩니다.
 - **일부 통합 테스트가 로컬 벡터 DB 적재 상태에 의존합니다.** fresh clone에서 전부 통과하지 않습니다.
 - **무료 호스팅 콜드스타트** — 첫 요청 약 1분.
 
