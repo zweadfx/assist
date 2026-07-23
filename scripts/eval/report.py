@@ -101,7 +101,6 @@ def _whistle_section(whistle_data: dict) -> str:
 
     for d in details:
         decision_match = "O" if d["decision_match"] else "X"
-        exp_art = ", ".join(d["expected_articles"])
         retr_art = ", ".join(d.get("retrieved_articles", [])[:3]) or "-"
         pred_art = ", ".join(d["predicted_articles"]) or "-"
         citation_hit = (
