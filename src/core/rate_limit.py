@@ -19,12 +19,20 @@ _ip_hits: dict[str, deque[float]] = defaultdict(deque)
 _global_hits: deque[float] = deque()
 
 
-def client_ip(request: Request) -> str:
-    # Render 프록시 뒤에서는 X-Forwarded-For의 첫 값이 실제 클라이언트 IP다.
+def client_ip(request: Request) -> tuple[str, str]:
+    """(ip, 출처) 반환. 출처는 cf | xff | socket.
+
+    Render 인바운드는 전부 Cloudflare를 경유하고, Cloudflare는 클라이언트가 보낸
+    X-Forwarded-For를 제거하지 않고 뒤에 append만 하므로 XFF 첫 값은 위조 가능하다.
+    Cloudflare 엣지가 직접 세팅하는 CF-Connecting-IP를 우선 신뢰한다.
+    """
+    cf = request.headers.get("cf-connecting-ip")
+    if cf:
+        return cf.strip(), "cf"
     fwd = request.headers.get("x-forwarded-for")
     if fwd:
-        return fwd.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
+        return fwd.split(",")[0].strip(), "xff"
+    return (request.client.host if request.client else "unknown"), "socket"
 
 
 def _prune(hits: deque[float], now: float) -> None:
@@ -37,15 +45,16 @@ async def enforce_rate_limit(request: Request) -> None:
 
     거절된 요청은 카운트를 소비하지 않는다.
     """
-    ip = client_ip(request)
+    ip, ip_source = client_ip(request)
     now = time.time()
     _prune(_global_hits, now)
     hits = _ip_hits[ip]
     _prune(hits, now)
     if len(_global_hits) >= GLOBAL_DAILY_LIMIT or len(hits) >= IP_DAILY_LIMIT:
         logger.warning(
-            "Rate limit exceeded: ip=%s ip_count=%d/%d global_count=%d/%d",
+            "Rate limit exceeded: ip=%s src=%s ip_count=%d/%d global_count=%d/%d",
             ip,
+            ip_source,
             len(hits),
             IP_DAILY_LIMIT,
             len(_global_hits),
@@ -55,8 +64,9 @@ async def enforce_rate_limit(request: Request) -> None:
     _global_hits.append(now)
     hits.append(now)
     logger.info(
-        "LLM request accepted: ip=%s ip_count=%d/%d global_count=%d/%d",
+        "LLM request accepted: ip=%s src=%s ip_count=%d/%d global_count=%d/%d",
         ip,
+        ip_source,
         len(hits),
         IP_DAILY_LIMIT,
         len(_global_hits),
