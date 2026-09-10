@@ -2,8 +2,10 @@
 
 훈련 루틴 생성, 주간 플랜, 농구화 추천, 룰 판정 — 네 기능을 각각 전용 LangGraph 에이전트로 구현한 FastAPI 백엔드입니다.
 
-**Live Demo: https://assist-frontend-plum.vercel.app**
-(무료 서버라 **첫 요청은 서버 기동으로 약 1분** 걸릴 수 있습니다. 한 번 뜨면 이후엔 즉시 응답합니다.)
+[![Status](https://img.shields.io/badge/Status-Service%20Ended-6B7280)](https://github.com/zweadfx/assist)
+
+> **운영 종료** — 백엔드를 내렸습니다. [데모 사이트](https://assist-frontend-plum.vercel.app)는 열리지만
+> 로그인·코칭 기능은 동작하지 않습니다. 실제 화면은 아래 스크린샷으로, 구현은 이 레포에서 볼 수 있습니다.
 
 ![The Whistle — 트래블링 상황을 FIBA Art 25 인용과 함께 판정한 실제 화면](docs/images/whistle-judgment.png)
 
